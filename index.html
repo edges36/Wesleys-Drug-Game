@@ -21,41 +21,35 @@ body{margin:0;background:var(--wall);color:var(--ink);font-family:var(--body);ov
 button{font-family:var(--body);cursor:pointer;border-radius:0;border:none}
 button:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
 .stage{position:fixed;inset:0;background:var(--wall);overflow:hidden}
-.floor{position:absolute;left:-60%;right:-60%;bottom:0;height:46%;
-  background:repeating-linear-gradient(90deg,transparent 0 78px,var(--grid) 78px 79px),
-    repeating-linear-gradient(0deg,transparent 0 78px,var(--grid) 78px 79px),
-    linear-gradient(#F6F6F9,var(--floor));
-  transform:perspective(560px) rotateX(64deg);transform-origin:bottom center}
-.horizon{position:absolute;left:0;right:0;bottom:46%;height:130px;
-  background:linear-gradient(transparent,rgba(20,18,26,.07));pointer-events:none}
+
 .figwrap{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);z-index:3;
   height:min(62vh,470px);transform-origin:bottom center}
 .figure{height:100%;width:auto;display:block}
-.castshadow{position:absolute;left:50%;bottom:16%;
-  transform:translateX(-50%) translateX(-30%) scaleX(1.28) scaleY(1.46) skewX(12deg);
-  transform-origin:bottom center;height:min(62vh,470px);width:auto;opacity:.19;
-  filter:blur(8px);z-index:1;pointer-events:none}
-.groundshadow{position:absolute;left:50%;bottom:15%;transform:translateX(-50%);
-  width:min(30vh,230px);height:min(6vh,44px);border-radius:50%;
-  background:radial-gradient(ellipse,rgba(20,18,26,.34),transparent 68%);z-index:2;pointer-events:none}
+.castshadow{position:absolute;left:50%;bottom:15.5%;
+  transform:translateX(-50%) translateX(-19%) scaleX(1.05) scaleY(1.24) skewX(8deg);
+  transform-origin:bottom center;height:min(62vh,470px);width:auto;opacity:.13;
+  filter:blur(6px);z-index:1;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to top,#000 25%,rgba(0,0,0,.45) 70%,transparent 100%);
+  mask-image:linear-gradient(to top,#000 25%,rgba(0,0,0,.45) 70%,transparent 100%)}
+
 .spot{position:absolute;left:50%;top:-14%;transform:translateX(-50%);
   width:min(74vh,560px);height:min(74vh,560px);pointer-events:none;z-index:0;
   background:radial-gradient(circle,rgba(232,145,42,.11),transparent 66%)}
 /* ── he reacts physically ── */
 @keyframes hitshake{
-  0%{transform:translateX(0) rotate(0)} 12%{transform:translateX(-13px) rotate(-6deg)}
-  26%{transform:translateX(11px) rotate(5deg)} 40%{transform:translateX(-8px) rotate(-4deg)}
-  56%{transform:translateX(6px) rotate(3deg)} 72%{transform:translateX(-3px) rotate(-1deg)}
-  100%{transform:translateX(0) rotate(0)} }
+  0%{transform:translateX(-50%) rotate(0)} 12%{transform:translateX(calc(-50% - 13px)) rotate(-6deg)}
+  26%{transform:translateX(calc(-50% + 11px)) rotate(5deg)} 40%{transform:translateX(calc(-50% - 8px)) rotate(-4deg)}
+  56%{transform:translateX(calc(-50% + 6px)) rotate(3deg)} 72%{transform:translateX(calc(-50% - 3px)) rotate(-1deg)}
+  100%{transform:translateX(-50%) rotate(0)} }
 @keyframes stagger{
-  0%{transform:translateX(0) rotate(0)} 30%{transform:translateX(-26px) rotate(-13deg)}
-  60%{transform:translateX(16px) rotate(8deg)} 100%{transform:translateX(0) rotate(0)} }
+  0%{transform:translateX(-50%) rotate(0)} 30%{transform:translateX(calc(-50% - 26px)) rotate(-13deg)}
+  60%{transform:translateX(calc(-50% + 16px)) rotate(8deg)} 100%{transform:translateX(-50%) rotate(0)} }
 @keyframes celebrate{
-  0%,100%{transform:translateY(0)} 30%{transform:translateY(-26px)} 55%{transform:translateY(0)}
-  72%{transform:translateY(-13px)} }
-@keyframes shiver{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-2.5px)}
-  75%{transform:translateX(2.5px)} }
-@keyframes collapse{ 0%{transform:rotate(0) translateY(0)} 100%{transform:rotate(-84deg) translateY(46px)} }
+  0%,100%{transform:translateX(-50%) translateY(0)} 30%{transform:translateX(-50%) translateY(-26px)}
+  55%{transform:translateX(-50%) translateY(0)} 72%{transform:translateX(-50%) translateY(-13px)} }
+@keyframes shiver{ 0%,100%{transform:translateX(-50%)} 25%{transform:translateX(calc(-50% - 2.5px))}
+  75%{transform:translateX(calc(-50% + 2.5px))} }
+@keyframes collapse{ 0%{transform:translateX(-50%) rotate(0)} 100%{transform:translateX(-50%) rotate(-84deg) translateY(46px)} }
 @keyframes flash{ 0%{opacity:0} 6%{opacity:1} 100%{opacity:0} }
 .figwrap.hit{animation:hitshake .55s ease-out}
 .figwrap.stagger{animation:stagger .8s ease-out}
@@ -221,6 +215,102 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
 .sec{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--sodium);
   margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
 
+
+/* ══════════ HE IS ALIVE ══════════ */
+/* a blink roughly every 2 seconds */
+@keyframes blink{ 0%,88%,100%{transform:scaleY(1)} 92%,95%{transform:scaleY(.06)} }
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 2.1s infinite}
+.eyes .eye:nth-of-type(2){animation-delay:.04s}
+/* an idle sway: weight shifting, breathing, the occasional lean */
+@keyframes sway{
+  0%,100%{transform:rotate(0deg) translateY(0)}
+  18%{transform:rotate(.7deg) translateY(-1.2px)}
+  40%{transform:rotate(0deg) translateY(.6px)}
+  62%{transform:rotate(-.8deg) translateY(-1px)}
+  82%{transform:rotate(.3deg) translateY(.3px)}
+}
+.mroot.sway{transform-box:fill-box;transform-origin:50% 92%;animation:sway 7.5s ease-in-out infinite}
+/* a slower breath on top, so the two never quite line up */
+@keyframes breathe{
+  0%,100%{transform:translateX(-50%) scaleY(1)}
+  50%{transform:translateX(-50%) scaleY(1.008)}
+}
+.figwrap{animation:breathe 4.3s ease-in-out infinite}
+.figwrap.hit,.figwrap.stagger,.figwrap.happy,.figwrap.down{animation-play-state:paused}
+
+/* ══════════ HE IS STANDING ON SOMETHING ══════════ */
+/* contact shadow: small and dark right under the shoes */
+.contact{position:absolute;left:50%;bottom:15.2%;transform:translateX(-50%);
+  width:min(13vh,96px);height:min(2.2vh,16px);border-radius:50%;z-index:2;pointer-events:none;
+  background:radial-gradient(ellipse,rgba(18,16,24,.62),rgba(18,16,24,.30) 45%,transparent 72%);
+  filter:blur(1.5px)}
+/* ambient shadow: wider, softer, further out */
+.groundshadow{position:absolute;left:50%;bottom:13.4%;transform:translateX(-50%);
+  width:min(34vh,260px);height:min(7vh,50px);border-radius:50%;z-index:2;pointer-events:none;
+  background:radial-gradient(ellipse,rgba(20,18,26,.30),rgba(20,18,26,.12) 42%,transparent 70%);
+  filter:blur(7px)}
+/* the floor he is standing on */
+.floor{position:absolute;left:-60%;right:-60%;bottom:0;height:46%;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 78px,rgba(150,150,165,.30) 78px 79px),
+    repeating-linear-gradient(0deg,transparent 0 78px,rgba(150,150,165,.30) 78px 79px),
+    linear-gradient(#FAFAFC 0%,#EFEFF3 40%,#E2E2E9 100%);
+  transform:perspective(560px) rotateX(64deg);transform-origin:bottom center}
+/* where the floor meets the wall, plus a pool of light around his feet */
+.floorglow{position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse 40% 60% at 50% 12%,rgba(255,244,228,.55),transparent 70%)}
+.horizon{position:absolute;left:0;right:0;bottom:46%;height:150px;pointer-events:none;
+  background:linear-gradient(transparent,rgba(20,18,26,.10))}
+
+
+/* ── the layer physics moves, kept separate from his own animations ── */
+.figphys{position:absolute;left:0;right:0;bottom:0;top:0;pointer-events:none;z-index:3}
+.figphys .figwrap{pointer-events:auto}
+.figphys.grabbing .figwrap{cursor:grabbing}
+/* ── speech ── */
+
+/* the phone, once he's finished with it */
+
+/* cigarette smoke */
+.smoke{position:fixed;z-index:12;pointer-events:none;border-radius:50%;
+  background:radial-gradient(circle,rgba(210,210,215,.55),rgba(210,210,215,.16) 55%,transparent 72%);
+  transform:translate(-50%,-50%) scale(.4);opacity:0;
+  transition:transform 2.4s cubic-bezier(.2,.5,.4,1),opacity 2.4s ease-out}
+.smoke.go{transform:translate(calc(-50% + var(--dx)),-190px) scale(var(--sc));opacity:0}
+.smoke{opacity:.75}
+.flyphone{position:fixed;z-index:60;pointer-events:none;transform:translate(-50%,-50%);
+  transition:transform .78s cubic-bezier(.25,.6,.5,1),opacity .78s ease-in}
+.flyphone.go{transform:translate(calc(-50% + var(--fx)),calc(-50% - 160px)) rotate(var(--fr));opacity:0}
+.bubble{position:absolute;z-index:46;max-width:min(70vw,300px);
+  background:#fff;border:3px solid var(--ink);border-radius:16px;
+  padding:11px 14px;font-family:var(--body);font-size:14px;font-weight:600;line-height:1.35;
+  color:var(--ink);opacity:0;transform:translate(-50%,-8px) scale(.85);
+  transition:opacity .18s ease,transform .18s cubic-bezier(.34,1.6,.64,1);
+  pointer-events:none;box-shadow:4px 4px 0 rgba(20,18,26,.18)}
+.bubble.on{opacity:1;transform:translate(-50%,0) scale(1)}
+.bubble::after{content:'';position:absolute;left:50%;bottom:-15px;margin-left:-10px;
+  border:10px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.bubble::before{content:'';position:absolute;left:50%;bottom:-10px;margin-left:-7px;z-index:1;
+  border:7px solid transparent;border-top-color:#fff;border-bottom:0}
+@keyframes squash{0%{transform:translateX(-50%) scale(1,1)}
+  30%{transform:translateX(-50%) scale(1.28,.66)}
+  60%{transform:translateX(-50%) scale(.92,1.09)}
+  100%{transform:translateX(-50%) scale(1,1)}}
+.figwrap.squash{animation:squash .55s cubic-bezier(.3,1.4,.5,1)}
+/* ── he fiddles with the weapon ── */
+.wepinner{transform-box:fill-box;transform-origin:8% 55%}
+@keyframes wswing{0%,100%{transform:rotate(0)}22%{transform:rotate(-46deg)}55%{transform:rotate(26deg)}78%{transform:rotate(-8deg)}}
+@keyframes wheft{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-9px) rotate(-7deg)}60%{transform:translateY(2px) rotate(3deg)}}
+@keyframes wspin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes winspect{0%,100%{transform:rotate(0) translate(0,0)}
+  25%{transform:rotate(-24deg) translate(-6px,-7px)}
+  60%{transform:rotate(-18deg) translate(-4px,-5px)}}
+.wepinner.wswing{animation:wswing .9s ease-in-out}
+.wepinner.wheft{animation:wheft 1.1s ease-in-out}
+.wepinner.wspin{animation:wspin 1.2s ease-in-out}
+.wepinner.winspect{animation:winspect 1.4s ease-in-out}
+/* pupils glide rather than snap */
+.pupil{transition:transform .16s ease-out}
 /* ══════════ TOUCH & SMALL SCREENS ══════════ */
 html{-webkit-text-size-adjust:100%}
 body{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
@@ -351,10 +441,14 @@ button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 })();
 </script>
 <div class="stage">
-  <div class="spot"></div><div class="floor"></div><div class="horizon"></div>
+  <div class="spot"></div><div class="floor"></div><div class="floorglow"></div><div class="horizon"></div>
   <svg class="castshadow" id="shade" viewBox="0 0 200 330" aria-hidden="true"></svg>
   <div class="groundshadow"></div>
-  <div class="figwrap" id="figwrap"><svg class="figure" id="man" viewBox="0 0 200 330" role="img" aria-label="Your dealer"></svg></div>
+  <div class="contact"></div>
+  <div class="figphys" id="figphys">
+    <div class="figwrap" id="figwrap"><svg class="figure" id="man" viewBox="0 0 200 330" role="img" aria-label="Your dealer"></svg></div>
+  </div>
+  <div class="bubble" id="bubble"><span id="bubbletext"></span></div>
 </div>
 <div class="nukeflash" id="nukeflash"></div>
 <div class="top">
@@ -448,6 +542,7 @@ var WEAPONS=[
  {id:"chain",  n:"Chainsaw (no chain)",  p:32000,     w:.55, k:"The chainsaw has no chain but it makes the noise. He faints from the noise alone."},
  {id:"bees",   n:"Jar of angry bees",    p:60000,     w:.58, k:"You open the jar. The bees have been waiting for this. They are not gentle."},
  {id:"tuba",   n:"Tuba",                 p:110000,    w:.61, k:"You play one catastrophic note directly into his ear. He is never the same."},
+ {id:"ak",     n:"Trevor's AK-47",       p:150000,    w:.63, k:"Trevor swore it was decommissioned. Trevor was, on this occasion, wrong."},
  {id:"vending",n:"Vending machine",      p:200000,    w:.64, k:"You tip a vending machine onto him. Ironically it still refuses to dispense."},
  {id:"catapult",n:"Desk catapult",       p:380000,    w:.67, k:"You launch a stapler at 200mph. It staples him to the wall. All of him."},
  {id:"lawn",   n:"Weaponised lawnmower", p:700000,    w:.70, k:"You push the mower at him. It has been modified. Grass is not what it cuts."},
@@ -460,6 +555,116 @@ var WEAPONS=[
  {id:"blackhole",n:"Pocket black hole",  p:90000000,  w:.94, k:"You open the little jar. He, his car, and one confused seagull cease to exist."}
 ];
 var NUKE={id:"nuke", n:"Suitcase atomic bomb", p:250000000};
+
+/* ══════════ WEAPON ARTWORK ══════════
+   Each is drawn around its own origin at his hand, then scaled to suit. */
+var WEP_ART={
+ sock:function(c){return '<g><path d="M0,-4 q16,-3 24,4 q7,7 3,14 q-5,6 -12,2 q-9,-5 -15,-12 z" fill="#B8B4C4" stroke="'+c+'" stroke-width="2"/>'+
+   '<circle cx="20" cy="10" r="3" fill="#8E8A9C"/><circle cx="26" cy="6" r="2.6" fill="#8E8A9C"/>'+
+   '<path d="M0,-4 q-3,6 0,10" stroke="'+c+'" stroke-width="2.4" fill="none"/></g>';},
+ baguette:function(c){return '<g transform="rotate(-18)"><path d="M0,0 q22,-9 44,-2 q6,3 2,7 q-22,7 -44,3 z" fill="#D6A44E" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M10,-3 l4,4 M20,-4 l4,4 M30,-3 l4,4" stroke="#8A6224" stroke-width="1.8"/></g>';},
+ trout:function(c){return '<g><path d="M0,0 q14,-11 30,-2 q10,6 0,12 q-16,8 -30,-1 z" fill="#8FB6C8" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M0,0 l-9,-7 l2,14 z" fill="#6E96A8" stroke="'+c+'" stroke-width="2"/>'+
+   '<circle cx="24" cy="2" r="2.4" fill="#fff" stroke="'+c+'" stroke-width="1.2"/>'+
+   '<path d="M12,-4 q5,5 0,10" stroke="#6E96A8" stroke-width="1.6" fill="none"/></g>';},
+ bowling:function(c){return '<g><circle cx="12" cy="6" r="15" fill="#2B2833" stroke="'+c+'" stroke-width="2.4"/>'+
+   '<circle cx="7" cy="1" r="2.4" fill="#0D0B12"/><circle cx="14" cy="0" r="2.4" fill="#0D0B12"/>'+
+   '<circle cx="10" cy="7" r="2.4" fill="#0D0B12"/>'+
+   '<ellipse cx="6" cy="0" rx="5" ry="3" fill="rgba(255,255,255,.18)"/></g>';},
+ garden:function(c){return '<g><path d="M10,20 q-9,0 -8,-8 q1,-9 8,-10 q7,1 8,10 q1,8 -8,8 z" fill="#6FA8D8" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M2,4 q8,-16 16,0 z" fill="#D8434F" stroke="'+c+'" stroke-width="2"/>'+
+   '<circle cx="10" cy="9" r="4.6" fill="#F0CBA8" stroke="'+c+'" stroke-width="1.6"/>'+
+   '<path d="M6,16 q4,5 8,0" stroke="#8A6224" stroke-width="2.6" fill="none"/></g>';},
+ nailbat:function(c){return '<g transform="rotate(-24)"><path d="M0,0 l4,-4 q22,10 34,26 q-4,6 -9,4 q-16,-16 -29,-26 z" fill="#9A6B3C" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M24,10 l10,-6" stroke="#C9CDD6" stroke-width="3"/><circle cx="35" cy="4" r="2" fill="#C9CDD6"/></g>';},
+ fire:function(c){return '<g><rect x="0" y="-6" width="15" height="34" rx="6" fill="#C8323E" stroke="'+c+'" stroke-width="2.2"/>'+
+   '<rect x="2" y="2" width="11" height="9" fill="rgba(255,255,255,.18)"/>'+
+   '<path d="M7,-6 l0,-6 l10,0 l0,5" stroke="'+c+'" stroke-width="2.4" fill="none"/>'+
+   '<rect x="15" y="-13" width="10" height="5" rx="2" fill="#3A3548" stroke="'+c+'" stroke-width="1.6"/></g>';},
+ chain:function(c){return '<g>'+
+   '<path d="M0,0 q-2,-9 8,-10 l16,0 q9,1 9,9 l0,12 q0,8 -9,8 l-15,0 q-9,0 -9,-8 z" fill="#E0682A" stroke="'+c+'" stroke-width="2.2"/>'+
+   '<rect x="4" y="-4" width="14" height="8" rx="2" fill="#2B2833"/>'+
+   '<path d="M8,-10 q10,-7 19,-1" stroke="'+c+'" stroke-width="3" fill="none"/>'+
+   '<path d="M33,2 l34,-3 q7,3 0,7 l-34,3 z" fill="#B9BDC7" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M36,-1 l0,-4 M42,-2 l0,-4 M48,-2 l0,-4 M54,-3 l0,-4 M60,-3 l0,-4" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M36,10 l0,4 M42,10 l0,4 M48,9 l0,4 M54,9 l0,4 M60,8 l0,4" stroke="'+c+'" stroke-width="2"/>'+
+   '<circle cx="27" cy="16" r="3" fill="#2B2833"/></g>';},
+ bees:function(c){return '<g><path d="M0,0 l22,0 l2,26 q-13,4 -26,0 z" fill="rgba(180,210,225,.55)" stroke="'+c+'" stroke-width="2.2"/>'+
+   '<rect x="-2" y="-6" width="26" height="7" rx="2" fill="#B9761F" stroke="'+c+'" stroke-width="2"/>'+
+   '<circle cx="7" cy="9" r="3" fill="#EDC33C" stroke="'+c+'" stroke-width="1.2"/>'+
+   '<circle cx="16" cy="15" r="3" fill="#EDC33C" stroke="'+c+'" stroke-width="1.2"/>'+
+   '<circle cx="10" cy="19" r="2.6" fill="#EDC33C" stroke="'+c+'" stroke-width="1.2"/>'+
+   '<path d="M30,4 q6,-4 10,0 M32,12 q6,-4 10,0" stroke="#EDC33C" stroke-width="1.8" fill="none"/></g>';},
+ tuba:function(c){return '<g><path d="M6,22 q-14,-12 -2,-24 q12,-11 24,-1 q9,8 2,17" fill="none" stroke="#D8A93C" stroke-width="7"/>'+
+   '<path d="M30,14 q14,-6 22,-16 l6,5 q-9,13 -25,19 z" fill="#D8A93C" stroke="'+c+'" stroke-width="2"/>'+
+   '<ellipse cx="55" cy="-6" rx="11" ry="9" fill="#E8BE55" stroke="'+c+'" stroke-width="2.2" transform="rotate(-38 55 -6)"/>'+
+   '<circle cx="14" cy="6" r="2.6" fill="#8A6224"/></g>';},
+ ak:function(c){return '<g>'+
+   /* stock */
+   '<path d="M-16,10 l14,-4 l0,10 l-14,3 q-3,-4 0,-9 z" fill="#8A5A2E" stroke="'+c+'" stroke-width="2"/>'+
+   /* receiver */
+   '<rect x="-2" y="2" width="30" height="11" rx="2" fill="#2E2A38" stroke="'+c+'" stroke-width="2"/>'+
+   /* banana magazine, the recognisable bit */
+   '<path d="M6,13 q-2,14 6,20 q7,-1 8,-8 q-4,-6 -2,-12 z" fill="#5E4A2E" stroke="'+c+'" stroke-width="2"/>'+
+   /* grip */
+   '<path d="M22,13 l7,0 l-2,12 l-6,0 z" fill="#5E4A2E" stroke="'+c+'" stroke-width="2"/>'+
+   /* barrel and gas block */
+   '<rect x="28" y="4" width="34" height="6" rx="2" fill="#3A3548" stroke="'+c+'" stroke-width="1.8"/>'+
+   '<rect x="34" y="0" width="9" height="5" rx="1" fill="#2E2A38" stroke="'+c+'" stroke-width="1.6"/>'+
+   /* wooden handguard */
+   '<rect x="44" y="3" width="14" height="8" rx="2" fill="#8A5A2E" stroke="'+c+'" stroke-width="1.8"/>'+
+   /* front sight */
+   '<path d="M60,4 l0,-6 l4,0 l0,6" stroke="'+c+'" stroke-width="2" fill="none"/>'+
+   /* duct tape, because it is Trevor\'s */
+   '<rect x="26" y="1" width="6" height="13" fill="#9AA0AE" stroke="'+c+'" stroke-width="1.2" opacity=".85"/></g>';},
+ vending:function(c){return '<g><rect x="0" y="-16" width="28" height="44" rx="3" fill="#C8323E" stroke="'+c+'" stroke-width="2.4"/>'+
+   '<rect x="3" y="-13" width="16" height="30" rx="2" fill="rgba(180,210,225,.5)" stroke="'+c+'" stroke-width="1.6"/>'+
+   '<rect x="5" y="-11" width="5" height="5" fill="#EDC33C"/><rect x="12" y="-11" width="5" height="5" fill="#5FBF6A"/>'+
+   '<rect x="5" y="-4" width="5" height="5" fill="#4FC3E8"/><rect x="12" y="-4" width="5" height="5" fill="#F06BD0"/>'+
+   '<rect x="21" y="-12" width="5" height="14" rx="1" fill="#2B2833"/>'+
+   '<rect x="4" y="20" width="20" height="6" rx="1" fill="#2B2833"/></g>';},
+ catapult:function(c){return '<g><path d="M0,20 l30,0 l-4,-8 l-22,0 z" fill="#8A5A2E" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M6,12 l6,-22 M22,12 l-4,-22" stroke="#8A5A2E" stroke-width="4"/>'+
+   '<path d="M12,-10 q8,-6 6,0" stroke="#C8323E" stroke-width="2.5" fill="none"/>'+
+   '<rect x="10" y="-18" width="12" height="7" rx="1" fill="#9AA0AE" stroke="'+c+'" stroke-width="1.8"/></g>';},
+ lawn:function(c){return '<g><path d="M0,20 q0,-14 16,-14 l14,0 q14,0 14,14 z" fill="#4E8F4A" stroke="'+c+'" stroke-width="2.2"/>'+
+   '<path d="M40,6 l14,-22" stroke="'+c+'" stroke-width="4"/><path d="M50,-16 l10,0" stroke="'+c+'" stroke-width="4"/>'+
+   '<circle cx="10" cy="20" r="7" fill="#2B2833" stroke="'+c+'" stroke-width="2"/>'+
+   '<circle cx="38" cy="20" r="7" fill="#2B2833" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M6,14 l8,-5 M18,14 l8,-5 M30,14 l8,-5" stroke="#C9CDD6" stroke-width="2"/></g>';},
+ cannon:function(c){return '<g><path d="M0,0 l0,14 l16,0 l0,-14 z" fill="#2B2833" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M16,-4 l22,-9 l0,32 l-22,-9 z" fill="#8E4AC8" stroke="'+c+'" stroke-width="2.2"/>'+
+   '<circle cx="44" cy="-6" r="3" fill="#EDC33C"/><circle cx="50" cy="4" r="2.6" fill="#4FC3E8"/>'+
+   '<circle cx="46" cy="16" r="3" fill="#F06BD0"/><circle cx="54" cy="-2" r="2.2" fill="#5FBF6A"/>'+
+   '<circle cx="56" cy="12" r="2.4" fill="#E8912A"/></g>';},
+ anvil:function(c){return '<g><path d="M0,4 q-4,-10 8,-10 l24,0 q8,0 10,6 l-8,4 l0,8 q0,6 -8,6 l-14,0 q-8,0 -8,-6 z" fill="#3A3548" stroke="'+c+'" stroke-width="2.4"/>'+
+   '<path d="M6,-6 l0,-4 l22,0 l0,4" fill="#3A3548" stroke="'+c+'" stroke-width="2"/>'+
+   '<ellipse cx="14" cy="-4" rx="8" ry="2" fill="rgba(255,255,255,.16)"/></g>';},
+ pigeon:function(c){return '<g><ellipse cx="14" cy="6" rx="15" ry="11" fill="#8E96A8" stroke="'+c+'" stroke-width="2.2"/>'+
+   '<circle cx="28" cy="-2" r="7" fill="#A2AABA" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M34,-2 l7,2 l-7,2 z" fill="#E8912A" stroke="'+c+'" stroke-width="1.4"/>'+
+   '<circle cx="30" cy="-4" r="1.8" fill="#C8323E"/>'+
+   '<path d="M6,2 q10,-9 18,-1 q-8,7 -18,1 z" fill="#6E7688" stroke="'+c+'" stroke-width="1.8"/>'+
+   '<path d="M6,14 l-4,7 M16,15 l-2,7" stroke="#E8912A" stroke-width="2.4"/></g>';},
+ jetski:function(c){return '<g><path d="M0,14 q4,-12 22,-13 l20,-1 q14,0 16,10 l-8,8 z" fill="#D8434F" stroke="'+c+'" stroke-width="2.2"/>'+
+   '<path d="M18,1 l16,0 l3,7 l-20,0 z" fill="#2B2833"/>'+
+   '<path d="M40,0 l10,-10" stroke="'+c+'" stroke-width="3.4"/><path d="M46,-10 l9,0" stroke="'+c+'" stroke-width="3.4"/>'+
+   '<path d="M0,16 q16,7 34,3" stroke="#8FD0E8" stroke-width="3" fill="none"/></g>';},
+ piano:function(c){return '<g><path d="M0,0 l44,-10 q10,4 6,14 l-44,10 q-10,-6 -6,-14 z" fill="#1A1720" stroke="'+c+'" stroke-width="2.2"/>'+
+   '<path d="M4,10 l42,-10 l1,5 l-42,10 z" fill="#EFEDE6" stroke="'+c+'" stroke-width="1.4"/>'+
+   '<path d="M10,10 l2,-4 M17,8 l2,-4 M27,6 l2,-4 M34,5 l2,-4 M41,3 l2,-4" stroke="#1A1720" stroke-width="2"/>'+
+   '<path d="M22,-8 l0,-12" stroke="'+c+'" stroke-width="2" fill="none"/></g>';},
+ whale:function(c){return '<g><path d="M0,8 q10,-18 34,-17 q26,1 30,14 q-6,12 -30,13 q-24,1 -34,-10 z" fill="#4A6E8E" stroke="'+c+'" stroke-width="2.4"/>'+
+   '<path d="M0,8 q-12,-8 -14,-14 q10,2 14,6 z" fill="#3A5A78" stroke="'+c+'" stroke-width="2"/>'+
+   '<path d="M8,14 q22,7 44,1" stroke="#7FA2BE" stroke-width="3" fill="none"/>'+
+   '<circle cx="52" cy="2" r="2.6" fill="#fff" stroke="'+c+'" stroke-width="1.2"/>'+
+   '<path d="M30,-9 q3,-8 7,-9 q-1,7 -3,9" fill="#8FC8E8" stroke="'+c+'" stroke-width="1.4"/></g>';},
+ blackhole:function(c){return '<g><circle cx="14" cy="6" r="14" fill="#0A0810" stroke="#8E4AC8" stroke-width="2.6"/>'+
+   '<ellipse cx="14" cy="6" rx="21" ry="6" fill="none" stroke="#B03BE8" stroke-width="2.4" opacity=".85"/>'+
+   '<ellipse cx="14" cy="6" rx="17" ry="4" fill="none" stroke="#E8912A" stroke-width="1.8" opacity=".7"/>'+
+   '<circle cx="14" cy="6" r="6" fill="#000"/></g>';}
+};
 
 var VESTS=[
  {id:"kevlar",n:"Kevlar vest",    p:8000,   t:1, r:.25},
@@ -505,13 +710,245 @@ var SERVICES=[
  {id:"surgeon",n:"Private surgeon",     p:0,        d:"Full patch-up anywhere, at triple the street price"}
 ];
 
+/* ══════════ TROUBLE: FIGHT, RUN, OR PAY ══════════
+   Each one states its odds up front so the choice is a real decision and not a
+   guess. {N} is swapped for whatever the player called themselves. */
+var DANGERS=[
+ {t:"The Chicken Man",
+  b:"A man in a full chicken costume plants himself in front of you. He says you owe him $400 from a bet in 2019. He will not remove the head. His voice is very muffled.",
+  bribe:400, runOdds:0.74,
+  win:"You knock the beak clean off. Underneath is a man in his fifties who immediately apologises.",
+  lose:"He is a surprisingly good fighter for a chicken. You are pecked in a manner you will not describe to anyone.",
+  paid:"You hand over $400. He salutes with a wing and jogs away, clucking."},
+
+ {t:"Geese",
+  b:"Eleven Canada geese have surrounded you in a car park. The largest one is making eye contact with {N} specifically. It has clearly done this before.",
+  bribe:120, runOdds:0.52,
+  win:"You disperse the flock. The big one retreats slowly, walking backwards, still watching you.",
+  lose:"They get you. Everyone in the car park watches and nobody helps.",
+  paid:"You throw an entire loaf. They abandon you instantly for the bread."},
+
+ {t:"Big Terry's Nephew",
+  b:"A wiry man blocks the pavement. \"You're {N},\" he says. \"My uncle Terry says you're on his corner.\" You have never met Terry. He seems certain.",
+  bribe:9000, runOdds:0.66,
+  win:"He goes down over a bin. From inside the bin he shouts that Terry will hear about this.",
+  lose:"The nephew is better at this than his uncle. You leave without your dignity or your wallet.",
+  paid:"He takes the money, nods once, and says he'll tell Terry you were very reasonable."},
+
+ {t:"The Ice Cream Van",
+  b:"An ice cream van has been following you for six blocks playing the same eight notes. The driver leans out and says you know exactly what you did.",
+  bribe:2500, runOdds:0.58,
+  win:"The van speeds off, jingle doppler-shifting into the distance. You will hear it in your sleep.",
+  lose:"You are hit with a 99 Flake at improbable speed. It should not hurt this much.",
+  paid:"You buy his entire stock. He is delighted. You are now carrying forty ice creams."},
+
+ {t:"Mall Security",
+  b:"A security guard called Dennis has decided today is the day. He has a torch and a lanyard and absolutely no legal authority, and he is walking towards {N} with real purpose.",
+  bribe:1500, runOdds:0.80,
+  win:"Dennis is dealt with. His radio lands in a fountain. He does not get up quickly.",
+  lose:"Dennis has done a course. Dennis has done several courses.",
+  paid:"Dennis accepts the money, then asks if you want to hear about franchise opportunities."},
+
+ {t:"Somebody's Mum",
+  b:"A woman in a dressing gown is standing in the road with her arms folded. She says she knows what you sold her son and she has phoned his father.",
+  bribe:6000, runOdds:0.44,
+  win:"You cannot fight her. Nobody could fight her. You back away and call it a win.",
+  lose:"She gets you by the ear. Actually by the ear. In front of everyone.",
+  paid:"She takes the money for his college fund and tells you to get a proper job."},
+
+ {t:"The Cousin",
+  b:"A stranger embraces {N} warmly and calls you cousin. He says the family has missed you. He is now going through your coat pockets while maintaining eye contact.",
+  bribe:800, runOdds:0.70,
+  win:"You remove your cousin. He shouts something about the wedding as he leaves.",
+  lose:"He is faster than family should be. He leaves with rather a lot of your things.",
+  paid:"You give him something for the trip. He blesses you and steals a little anyway."},
+
+ {t:"A Man With A Puppet",
+  b:"At the border a man is doing questions through a fox puppet. The puppet is asking where you have been. The man is not making eye contact but the puppet very much is.",
+  bribe:12000, runOdds:0.50,
+  win:"You dispatch the puppet. The man is inconsolable. You leave quickly.",
+  lose:"You go for the puppet. The man was ready for that. He was always ready for that.",
+  paid:"The puppet accepts the money. The man appears not to notice this happening."},
+
+ {t:"The Rollerbladers",
+  b:"Six teenagers on rollerblades have circled you like sharks. Their leader is eating a whole pineapple. They want everything you've got.",
+  bribe:3500, runOdds:0.62,
+  win:"You take out the front two and the rest scatter, wheels skittering. The pineapple is abandoned.",
+  lose:"You cannot fight six people on wheels. That was never going to work.",
+  paid:"They take the money, do one lap of celebration, and leave the pineapple as a gift."},
+
+ {t:"Bin Situation",
+  b:"You have accidentally parked in the space belonging to a man who has been waiting eleven years for someone to park in it. He is already walking over. He has a clipboard.",
+  bribe:600, runOdds:0.86,
+  win:"The clipboard is destroyed. He kneels beside it. This is the worst day of his life.",
+  lose:"He knows things about parking law that should not be weaponisable, and yet.",
+  paid:"He takes the money and writes you a receipt. An actual receipt."},
+
+ {t:"The Man Who Wants A Word",
+  b:"A very calm man taps {N} on the shoulder and says he'd like a word outside. You are already outside. He seems aware of this and says it anyway.",
+  bribe:20000, runOdds:0.55,
+  win:"He goes down mid-sentence. He was still being polite about it.",
+  lose:"The calm was not a bluff. It never is with the calm ones.",
+  paid:"He counts it slowly, thanks you by name, and walks off without another word."},
+
+ {t:"Ostrich",
+  b:"An ostrich has escaped from somewhere and is standing in the road looking at you. It is nearly nine feet tall. Its expression cannot be read.",
+  bribe:900, runOdds:0.40,
+  win:"You win. You have beaten an ostrich in single combat. Tell nobody, they won't believe you.",
+  lose:"It kicks like a horse that has been personally wronged. You limp away.",
+  paid:"You empty a bag of nuts onto the tarmac. It loses interest in you immediately."},
+{t:"The Man With The Ladder",
+  b:"A man carrying an enormous ladder has turned round three times and hit {N} with it three times. He is now furious that you keep getting in the way of his ladder.",
+  bribe:700, runOdds:0.78,
+  win:"You take the ladder off him. He stands there with his arms still in ladder position.",
+  lose:"He gets you with the ladder a fourth time. This one was on purpose.",
+  paid:"He accepts the money for ladder damages, which is not a thing, and leaves."},
+
+ {t:"Bouncy Castle Incident",
+  b:"You have wandered into a children's party. A bouncy castle is deflating around a man who blames {N} entirely. He is waist-deep in castle and still coming.",
+  bribe:1800, runOdds:0.82,
+  win:"You leave him tangled in a wall of the castle. A child applauds.",
+  lose:"He gets free faster than anyone waist-deep in a castle should.",
+  paid:"He takes the money for a new castle and immediately calms down."},
+
+ {t:"Wrong Wesley",
+  b:"Two serious men grab you and say \"Finally. Wesley.\" They then look at each other and say \"is that Wesley?\" They are no longer sure. They are still holding you.",
+  bribe:15000, runOdds:0.68,
+  win:"You convince them, forcefully, that you are the wrong Wesley.",
+  lose:"They decide that any Wesley will do, on the day.",
+  paid:"They take the money and apologise to the wrong Wesley very politely."},
+
+ {t:"The Segway Patrol",
+  b:"Three men on Segways have formed a triangle around {N}. Their helmets are too small. They have not said what they want yet.",
+  bribe:2200, runOdds:0.88,
+  win:"Segways do not handle being pushed. All three go over like dominoes.",
+  lose:"They are better on those than they have any right to be.",
+  paid:"They take the money and glide away in formation, which is genuinely impressive."},
+
+ {t:"A Swan",
+  b:"A swan has decided the towpath is its towpath. It is doing the neck thing. It is doing the wings thing. It has clearly killed before.",
+  bribe:200, runOdds:0.46,
+  win:"You win. Against a swan. The other swans have seen this and are reconsidering everything.",
+  lose:"It breaks something. Everyone said a swan could and you didn't listen.",
+  paid:"You throw an entire sandwich. The swan accepts your tribute."},
+
+ {t:"The Karaoke Man",
+  b:"A man is singing at {N} from six inches away. He has not blinked. He is on the second verse. Nobody in this bar will help you.",
+  bribe:450, runOdds:0.72,
+  win:"You end the performance. The bar is silent, then someone quietly cheers.",
+  lose:"He knows all the verses. There are eleven verses.",
+  paid:"You pay him to stop. He takes it, then starts a different song."},
+
+ {t:"Council Business",
+  b:"A woman with a laminated badge says {N} is in breach of a bylaw from 1974. She has the bylaw. She has laminated the bylaw.",
+  bribe:5500, runOdds:0.60,
+  win:"The lamination is destroyed. She has three more copies but this one hurt.",
+  lose:"She was ready. She has been ready for eleven years.",
+  paid:"She issues a receipt, a compliance certificate, and a small pamphlet."},
+
+ {t:"Escalator Standoff",
+  b:"A man is standing on the left of the escalator. He is doing it deliberately. He is looking at {N} while he does it. This is a challenge.",
+  bribe:100, runOdds:0.90,
+  win:"He is moved to the right. Order is restored. A commuter weeps with gratitude.",
+  lose:"He does not budge. You ride the entire escalator behind him. It takes a year.",
+  paid:"You pay a stranger to distract him. It works. You slip past."},
+
+ {t:"The Reunion",
+  b:"A woman hugs {N} and says it has been twenty years. She is crying. She is describing shared memories in detail. You have never seen her before in your life.",
+  bribe:1200, runOdds:0.64,
+  win:"You extract yourself. She is still calling out details of a holiday you never took.",
+  lose:"You get drawn into a two-hour conversation about people who do not exist.",
+  paid:"You give her money for a taxi. She calls you by a completely different name."},
+
+ {t:"The Sausage Dispute",
+  b:"A hot dog vendor claims {N} took a sausage. You did not take a sausage. He has produced a photograph. The photograph is of a different man entirely.",
+  bribe:340, runOdds:0.76,
+  win:"The cart goes over. Sausages everywhere. Seagulls arrive within seconds.",
+  lose:"He is defending his livelihood and you are defending a sausage you never had.",
+  paid:"You pay for a sausage you did not take. He gives you a sausage. Fair enough."}
+];
+
+/* ══════════ OPPORTUNITIES: TAKE IT OR LEAVE IT ══════════ */
+var OPPS=[
+ {id:"car", t:"Keys In The Ignition",
+  b:"There's a sedan idling outside a shop with nobody in it and the keys still in. The owner is inside arguing about a sandwich.",
+  take:"Take the car", skip:"Leave it alone",
+  note:"A free sedan, but it's stolen and the plates are known",
+  ride:"sedan", heat:14},
+
+ {id:"van", t:"An Unattended Van",
+  b:"A panel van is parked with its back doors open and its engine running. There is a man nearby, but he is fully committed to a phone argument.",
+  take:"Drive off in it", skip:"Walk past",
+  note:"A free van, and definitely reported within the hour",
+  ride:"van", heat:20},
+
+ {id:"boat", t:"The Unlocked Speedboat",
+  b:"A speedboat is tied up at the end of the jetty with a cover half off and a key on a float. Nobody has looked at it in two days.",
+  take:"Untie it", skip:"Admire it and move on",
+  note:"A free speedboat. Coast guard will have the registration.",
+  ride:"speed", heat:26},
+
+ {id:"cash", t:"A Bag On A Bench",
+  b:"There is a sports bag on a bench with money visibly inside it. There is nobody within a hundred metres. This is either luck or a very specific trap.",
+  take:"Take the bag", skip:"Absolutely not",
+  note:"Might be money. Might be somebody's very bad idea.",
+  bagLo:8000, bagHi:70000, heat:5},
+
+ {id:"vend", t:"The Wounded Vending Machine",
+  b:"A vending machine has been tipped onto its side and is dispensing things freely. A small crowd is pretending not to notice.",
+  take:"Join in", skip:"Keep walking",
+  note:"Free snacks and a bit of cash. Minor crime, minor risk.",
+  bagLo:200, bagHi:1400, heat:2},
+
+ {id:"suit", t:"An Abandoned Suitcase",
+  b:"A hard-shell suitcase is sitting alone in the middle of the concourse. It is not ticking. {N} checks. It is definitely not ticking.",
+  take:"Open it", skip:"Report it and go",
+  note:"Could be product. Could be somebody's holiday clothes.",
+  drugs:true, heat:6}
+,{id:"bike", t:"A Motorbike, Running",
+  b:"A courier has left a bike running on the kerb while he argues with a doorbell. The helmet is on the seat. It would fit {N} perfectly.",
+  take:"Take the bike", skip:"Let him have his day",
+  note:"Not much room, but it moves and nobody looks at couriers",
+  ride:"sedan", heat:11},
+
+ {id:"truck", t:"The Idling Freight Truck",
+  b:"A freight truck is idling behind a depot with the driver nowhere in sight. The cab is unlocked. There is a flask of tea still warm on the dash.",
+  take:"Take the truck", skip:"Leave the man his tea",
+  note:"Enormous capacity. Enormously stolen.",
+  ride:"truck", heat:30},
+
+ {id:"jet", t:"An Unattended Cessna",
+  b:"There is a small plane on a private strip with the door open and the chocks out. {N} does not have a pilot's licence. {N} has seen a video.",
+  take:"Get in the plane", skip:"Be realistic about this",
+  note:"A free Cessna. Federal agencies will take an interest.",
+  ride:"cessna", heat:38},
+
+ {id:"safe", t:"A Safe On The Pavement",
+  b:"A small safe has fallen off a van and burst open at {N}'s feet. The van has not stopped. It is not going to stop.",
+  take:"Empty it", skip:"Walk on by",
+  note:"Whatever was in the safe, minus the dignity",
+  bagLo:20000, bagHi:180000, heat:9},
+
+ {id:"fete", t:"The Charity Raffle Tin",
+  b:"A church fete raffle tin is sitting unguarded next to a lot of cake. Taking it would be genuinely low, even by the standards of this week.",
+  take:"Take the tin", skip:"Buy a raffle ticket instead",
+  note:"It is a small amount of money and a large amount of shame",
+  bagLo:400, bagHi:2600, heat:4},
+
+ {id:"lorry", t:"A Split Delivery",
+  b:"A pallet has come off a lorry and burst. Boxes are everywhere. Several people are already helping themselves and one of them nods at {N} encouragingly.",
+  take:"Help yourself", skip:"Help the driver instead",
+  note:"Could be anything. Genuinely anything.",
+  drugs:true, heat:7}
+];
+
 var POCKETS=8;
 var S={}, view="home", pend=null, endInfo=null;
 
 /* ══════════ STATE ══════════ */
 function reset(name){
   S={name:name||"Wesley",day:1,days:30,mile:0,loc:"nyc",cash:2000,bank:0,debt:5500,hp:100,heat:0,
-     coat:100,wep:{},vestT:0,ammo:0,ride:"foot",owned:{foot:1},props:{},crew:{},nuke:0,
+     coat:100,wep:{},vestT:0,ammo:0,ride:"foot",owned:{foot:1},hot:{},props:{},crew:{},nuke:0,
      inv:{},stash:{},nat:{},prices:{},prev:{},flags:{},pat:{},dev:{},plan:{},rumour:[],
      borrowedToday:0,interest:0,lastInterest:0,cost:{},
      hist:{},log:[],over:false,mood:"",bandage:0};
@@ -618,15 +1055,28 @@ function stepPattern(g){
   }else{ f *= 1+(Math.random()*2-1)*0.035; S.dev[g.id]=0; }
   return clamp(f,0.14,5.6);
 }
+/* A day's trading, not just its closing price: open where yesterday finished,
+   then wander within the day before settling on the close. */
+function candle(g,prevClose,close){
+  var open = prevClose>0 ? prevClose : Math.round(close*(0.97+Math.random()*0.06));
+  var hi=Math.max(open,close), lo=Math.min(open,close);
+  var wick=(0.12+g.v*0.55);
+  var high=Math.round(hi*(1+Math.random()*wick));
+  var low =Math.round(lo*(1-Math.random()*wick*0.8));
+  return {o:Math.round(open), h:Math.max(high,hi), l:Math.max(1,Math.min(low,lo)), c:Math.round(close)};
+}
+function closeOf(x){ return (x&&typeof x==="object") ? x.c : x; }
+function closes(arr){ return arr.map(closeOf); }
 function seedHistory(n){
   GOODS.forEach(function(g){
     S.pat[g.id]=newPattern(g); S.hist[g.id]=[];
-    var mid=(g.lo+g.hi)/2;
+    var mid=(g.lo+g.hi)/2, prevClose=0;
     for(var i=0;i<n;i++){
       S.plan={}; if(Math.random()<0.20) S.plan[g.id]={up:Math.random()<0.5,mag:1.9+Math.random()*2.6};
-      S.hist[g.id].push(Math.max(1,Math.round(mid*stepPattern(g))));
+      var c=Math.max(1,Math.round(mid*stepPattern(g)));
+      S.hist[g.id].push(candle(g,prevClose,c)); prevClose=c;
     }
-    S.nat[g.id]=S.hist[g.id][S.hist[g.id].length-1];
+    S.nat[g.id]=closeOf(S.hist[g.id][S.hist[g.id].length-1]);
   });
 }
 var SPIKE_LINES=[
@@ -664,16 +1114,17 @@ function roll(){
   var p=city(); S.prev=S.prices; S.prices={}; S.flags={};
   GOODS.forEach(function(g){
     var nat=Math.max(1,Math.round((g.lo+g.hi)/2*stepPattern(g)));
-    S.nat[g.id]=nat; S.hist[g.id].push(nat);
+    var prevC=S.hist[g.id].length?closeOf(S.hist[g.id][S.hist[g.id].length-1]):0;
+    S.nat[g.id]=nat; S.hist[g.id].push(candle(g,prevC,nat));
     if(S.hist[g.id].length>200) S.hist[g.id].shift();
     if(Math.random()<0.12){S.prices[g.id]=0;return;}
     var b=nat*p.m, r=Math.random();
     if(r<0.006){                                   /* the bottom falls out completely */
       b=ri(1,4); S.flags[g.id]="glut";
-    }else if(r<0.012){                             /* somebody desperate, somewhere rich */
-      b*=25+Math.random()*115; S.flags[g.id]="frenzy";
-    }else if(r<0.087){b*=2+Math.random()*4;S.flags[g.id]="spike";}
-    else if(r<0.172){b/=2+Math.random()*3.5;S.flags[g.id]="crash";}
+    }else if(r<0.0085){                            /* a genuine once-in-a-run payday */
+      b*=11+Math.random()*26; S.flags[g.id]="frenzy";
+    }else if(r<0.075){b*=2+Math.random()*3;S.flags[g.id]="spike";}
+    else if(r<0.165){b/=2+Math.random()*3.5;S.flags[g.id]="crash";}
     S.prices[g.id]=Math.max(1,Math.round(b));
   });
   for(var k in S.flags){
@@ -714,10 +1165,10 @@ function hurt(n){
 function checkMiles(){
   var w=worth();
   while(S.mile<MILES.length && w>=MILES[S.mile]){
-    S.mile++; S.days+=15;
+    S.mile++; S.days+=5;
     var m=MILES[S.mile-1];
-    say("Passed "+money(m)+". You bought yourself another 15 days.","mile");
-    toast("MILESTONE "+money(m)+" — 15 more days. You now have until day "+S.days+".","mile");
+    say("Passed "+money(m)+". You bought yourself another 5 days.","mile");
+    toast("MILESTONE "+money(m)+" — 5 more days. You now have until day "+S.days+".","mile"); remark("milestone");
     animate("happy"); flashMood("rich");
   }
 }
@@ -834,76 +1285,853 @@ function faceSVG(col){
     s+='<path d="M87,37 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0" stroke-width="2.4"/>';
     s+='<path d="M105,37 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0" stroke-width="2.4"/>';
     s+='<path d="M88,57 q6,6 12,0 q6,-6 12,0" stroke-width="2.8"/>';
+  }else if(typeof phys!=="undefined" && phys.chomp){   /* mouth open, going for it */
+    s+='<g class="eyes">'+
+       '<g class="pupil"><ellipse class="eye" cx="91" cy="39" rx="4.2" ry="4.6" fill="'+col+'" stroke="none"/>'+
+       '<circle cx="92.6" cy="37.4" r="1.3" fill="#fff" stroke="none"/></g>'+
+       '<g class="pupil"><ellipse class="eye" cx="109" cy="37" rx="5.8" ry="6.2" fill="'+col+'" stroke="none"/>'+
+       '<circle cx="111" cy="35" r="1.7" fill="#fff" stroke="none"/></g></g>';
+    s+='<path d="M85,50 Q100,44 115,50 Q112,68 100,68 Q88,68 85,50 Z" fill="#7A2030" stroke="'+col+'" stroke-width="2.6"/>';
+    s+='<path d="M88,51 l4,6 l4,-6 l4,6 l4,-6 l4,6 l4,-6" fill="#fff" stroke="none"/>';
+    s+='<ellipse cx="100" cy="64" rx="6" ry="3.4" fill="#C2413A" stroke="none"/>';
   }else{                                          /* the usual unsettling grin */
-    s+='<circle cx="91" cy="41" r="3.1" fill="'+col+'" stroke="none"/>';
-    s+='<circle cx="109" cy="38" r="4.9" fill="'+col+'" stroke="none"/>';
+    s+='<g class="eyes">'+
+       '<g class="pupil"><ellipse class="eye" cx="91" cy="41" rx="3.4" ry="3.9" fill="'+col+'" stroke="none"/>'+
+       '<circle cx="92.4" cy="39.4" r="1.15" fill="#fff" stroke="none"/></g>'+
+       '<g class="pupil"><ellipse class="eye" cx="109" cy="38" rx="5.2" ry="5.6" fill="'+col+'" stroke="none"/>'+
+       '<circle cx="110.8" cy="36" r="1.6" fill="#fff" stroke="none"/></g></g>';
     s+='<path d="M87,49 Q100,66 113,47"/>';
     s+='<path d="M87,49 l-3,-4.5"/><path d="M113,47 l3,-4.5"/>';
   }
   return s+'</g>';
 }
 function manSVG(sil){
-  var col=sil?"#14121A":"#1C1A24", coat=sil?"#14121A":"#8A5F3A";
-  var lining=sil?"#14121A":"#4A3324";
-  var sw=sil?9:4.5, cw=sil?9:4;
+  var col=sil?"#14121A":"#1C1A24";
+  var sw=sil?9:4.6, cw=sil?9:4;
   var pk=pocketColours(), dmg=Math.round((100-S.hp)/13);
   var hurtLean = S.hp<40?7:S.hp<70?3:0;
-  var s='<g stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate('+hurtLean+' 100 300)">';
-  /* legs — one buckles as he weakens */
-  var kneeL = S.hp<45 ? 92 : 84, kneeR = S.hp<45 ? 112 : 117;
-  s+='<path d="M100,196 L'+kneeL+',262 L'+(kneeL-3)+',300"/>';
-  s+='<path d="M100,196 L'+kneeR+',262 L'+(kneeR+3)+',300"/>';
-  s+='<path d="M'+(kneeL-3)+',300 L'+(kneeL-16)+',300"/><path d="M'+(kneeR+3)+',300 L'+(kneeR+16)+',300"/>';
-  /* arms — he clutches his ribs when badly hurt */
-  if(S.hp<40){
-    s+='<path d="M70,96 L62,146 L92,162"/><path d="M130,96 L138,146 L110,166"/>';
-  }else{
-    s+='<path d="M70,96 L54,140 L52,180"/><path d="M130,96 L146,140 L148,180"/>';
-  }
-  s+='<path d="M86,84 L114,84 L114,216 L86,216 Z" fill="'+lining+'" stroke="none"/>';
-  s+='<path d="M100,84 L68,92 L58,214 L94,214 L100,126 Z" fill="'+coat+'" stroke-width="'+cw+'"/>';
-  s+='<path d="M100,84 L132,92 L142,214 L106,214 L100,126 Z" fill="'+coat+'" stroke-width="'+cw+'"/>';
+  var swayClass = (!sil && S.hp>25) ? " sway" : "";
+
+  /* ── shading so he reads as a solid object rather than a flat outline ── */
+  var defs="";
   if(!sil){
-    if(S.vestT) s+='<path d="M84,92 L116,92 L116,150 L84,150 Z" fill="#3C4450" stroke="'+col+'" stroke-width="2.5"/>';
+    defs='<defs>'+
+      /* the coat: light from above-left, darker at the hems */
+      '<linearGradient id="coatL" x1="0" y1="0" x2="1" y2="0.3">'+
+        '<stop offset="0" stop-color="#A87549"/><stop offset="0.45" stop-color="#8A5F3A"/>'+
+        '<stop offset="1" stop-color="#5E3F26"/></linearGradient>'+
+      '<linearGradient id="coatR" x1="0" y1="0" x2="1" y2="0.3">'+
+        '<stop offset="0" stop-color="#7C5433"/><stop offset="0.55" stop-color="#8A5F3A"/>'+
+        '<stop offset="1" stop-color="#6B4830"/></linearGradient>'+
+      /* the head: a ball, not a circle */
+      '<radialGradient id="skin" cx="0.36" cy="0.30" r="0.78">'+
+        '<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.55" stop-color="#F2EFE9"/>'+
+        '<stop offset="1" stop-color="#CFC8BE"/></radialGradient>'+
+      /* rounded limbs */
+      '<linearGradient id="limb" x1="0" y1="0" x2="1" y2="0">'+
+        '<stop offset="0" stop-color="#2A2733"/><stop offset="0.4" stop-color="#1C1A24"/>'+
+        '<stop offset="1" stop-color="#100E16"/></linearGradient>'+
+      '<linearGradient id="lining" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="#31221A"/><stop offset="1" stop-color="#54392A"/></linearGradient>'+
+      /* soft occlusion where the coat meets the body */
+      '<radialGradient id="ao" cx="0.5" cy="0.5" r="0.5">'+
+        '<stop offset="0" stop-color="#000" stop-opacity="0.30"/>'+
+        '<stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>'+
+      '</defs>';
+  }
+
+  var limbStroke = sil?col:"url(#limb)";
+  var s=defs+'<g id="manroot" class="mroot'+swayClass+'" stroke="'+col+'" stroke-width="'+sw+
+    '" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate('+hurtLean+' 100 300)">';
+
+  /* ── legs, with a little knee bend so he isn't a stick ── */
+  var kneeL = S.hp<45 ? 92 : 86, kneeR = S.hp<45 ? 112 : 115;
+  s+='<path d="M100,196 Q'+(kneeL-4)+',230 '+kneeL+',262 T'+(kneeL-3)+',298" stroke="'+limbStroke+'" stroke-width="'+(sw+1)+'"/>';
+  s+='<path d="M100,196 Q'+(kneeR+4)+',230 '+kneeR+',262 T'+(kneeR+3)+',298" stroke="'+limbStroke+'" stroke-width="'+(sw+1)+'"/>';
+  /* shoes: little wedges, so he has weight on the floor */
+  if(!sil){
+    s+='<path d="M'+(kneeL-3)+',298 q-15,0 -17,5 q1,4 8,4 l12,0 q3,-4 -3,-9 z" fill="#15131C" stroke="'+col+'" stroke-width="2"/>';
+    s+='<path d="M'+(kneeR+3)+',298 q15,0 17,5 q-1,4 -8,4 l-12,0 q-3,-4 3,-9 z" fill="#15131C" stroke="'+col+'" stroke-width="2"/>';
+  }else{
+    s+='<path d="M'+(kneeL-3)+',300 L'+(kneeL-19)+',300"/><path d="M'+(kneeR+3)+',300 L'+(kneeR+19)+',300"/>';
+  }
+
+  /* ── arms ── */
+  if(!sil){
+    /* both arms exist as elements; the physics loop reshapes them each frame */
+    s+='<path id="armL" d="M70,96 Q58,140 52,180" stroke="'+limbStroke+'" stroke-width="'+(sw+0.5)+'" fill="none"/>';
+    s+='<path id="armR" d="M130,96 Q142,140 148,180" stroke="'+limbStroke+'" stroke-width="'+(sw+0.5)+'" fill="none"/>';
+    s+='<circle id="handL" cx="52" cy="182" r="7" fill="#1C1A24" stroke="'+col+'" stroke-width="2"/>';
+    s+='<circle id="handR" cx="148" cy="182" r="7" fill="#1C1A24" stroke="'+col+'" stroke-width="2"/>';
+    s+=cigSVG(col);
+    s+=phoneSVG(col);
+  }else{
+    s+='<path d="M70,96 Q58,140 52,180" stroke="'+col+'" stroke-width="'+(sw+0.5)+'" fill="none"/>';
+    s+='<path d="M130,96 Q142,140 148,180" stroke="'+col+'" stroke-width="'+(sw+0.5)+'" fill="none"/>';
+  }
+  s+='<path d="M86,84 L114,84 L114,216 L86,216 Z" fill="'+(sil?col:"url(#lining)")+'" stroke="none"/>';
+  s+='<path d="M100,84 Q80,86 68,92 Q60,150 58,214 L94,214 Q98,170 100,126 Z" fill="'+
+     (sil?col:"url(#coatL)")+'" stroke="'+col+'" stroke-width="'+cw+'"/>';
+  s+='<path d="M100,84 Q120,86 132,92 Q140,150 142,214 L106,214 Q102,170 100,126 Z" fill="'+
+     (sil?col:"url(#coatR)")+'" stroke="'+col+'" stroke-width="'+cw+'"/>';
+
+  if(!sil){
+    /* a soft crease down each panel so the fabric has form */
+    s+='<path d="M80,100 Q76,155 74,208" stroke="rgba(0,0,0,.16)" stroke-width="5" fill="none"/>';
+    s+='<path d="M120,100 Q124,155 126,208" stroke="rgba(0,0,0,.16)" stroke-width="5" fill="none"/>';
+    /* highlight along the left shoulder, where the light is */
+    s+='<path d="M96,88 Q82,90 71,95" stroke="rgba(255,255,255,.22)" stroke-width="4" fill="none"/>';
+    if(S.vestT){
+      s+='<path d="M84,92 L116,92 L116,150 L84,150 Z" fill="#3C4450" stroke="'+col+'" stroke-width="2.5"/>';
+      s+='<path d="M86,95 L114,95" stroke="rgba(255,255,255,.18)" stroke-width="3"/>';
+    }
     for(var i=0;i<POCKETS;i++){
       var x=POCKET_XY[i][0], y=POCKET_XY[i][1], c=pk[i];
-      s+='<rect x="'+x+'" y="'+y+'" width="26" height="20" rx="2" stroke-width="2.5" fill="'+(c||"#6E4A2C")+'" stroke="'+col+'"/>';
-      if(c) s+='<path d="M'+(x+5)+','+(y+13)+' q8,-9 16,0" stroke="rgba(0,0,0,.34)" stroke-width="2" fill="none"/>';
+      s+='<rect x="'+x+'" y="'+y+'" width="26" height="20" rx="3" stroke-width="2.5" fill="'+(c||"#6E4A2C")+'" stroke="'+col+'"/>';
+      s+='<rect x="'+(x+2)+'" y="'+(y+2)+'" width="22" height="5" rx="2" fill="rgba(255,255,255,.16)" stroke="none"/>';
+      if(c) s+='<path d="M'+(x+5)+','+(y+14)+' q8,-9 16,0" stroke="rgba(0,0,0,.34)" stroke-width="2" fill="none"/>';
     }
     if(!S.vestT) s+='<path d="M86,80 L100,104 L114,80" stroke-width="4"/>';
+    /* occlusion under the chin and inside the coat opening */
+    s+='<ellipse cx="100" cy="88" rx="20" ry="9" fill="url(#ao)" stroke="none"/>';
   }
-  s+='<path d="M100,67 L100,84"/>';
-  s+='<circle cx="100" cy="46" r="21" fill="'+(sil?"#14121A":"#FFFFFF")+'" stroke-width="'+sw+'"/>';
-  if(!sil) s+=faceSVG(col);
-  /* whatever he's holding */
+
+  /* ── neck and head ── */
+  s+='<path d="M100,67 L100,86" stroke="'+limbStroke+'" stroke-width="'+(sw+1)+'"/>';
+  s+='<circle cx="100" cy="46" r="21.5" fill="'+(sil?col:"url(#skin)")+'" stroke="'+col+'" stroke-width="'+sw+'"/>';
+  if(!sil){
+    /* specular highlight: the thing that makes it look like a rendered ball */
+    s+='<ellipse cx="91" cy="35" rx="7" ry="5" fill="rgba(255,255,255,.75)" stroke="none" transform="rotate(-25 91 35)"/>';
+    s+='<ellipse cx="107" cy="58" rx="9" ry="4" fill="rgba(0,0,0,.10)" stroke="none"/>';
+    s+=faceSVG(col);
+  }
+
+  /* ── whatever he's holding ── */
   var W=wep();
   if(S.nuke){
-    s+='<g transform="translate(140,178)">'+
-       '<rect x="0" y="0" width="34" height="26" rx="2" fill="#3A3548" stroke="'+col+'" stroke-width="2.4"/>'+
-       '<path d="M12,0 L12,-6 L22,-6 L22,0" stroke="'+col+'" stroke-width="2.4" fill="none"/>'+
-       '<circle cx="17" cy="13" r="6" fill="#D8324B" stroke="'+col+'" stroke-width="1.8"/>'+
-       '<path d="M17,9 L17,17 M13,13 L21,13" stroke="#FFF" stroke-width="1.6"/></g>';
-  }else if(W && !sil){
-    var t=WEAPONS.indexOf(W)/WEAPONS.length;
-    var sz=(0.9+t*1.5).toFixed(2);
-    s+='<g transform="translate(146,172) scale('+sz+')" stroke="'+col+'" stroke-width="2.2" fill="#2B2833" stroke-linejoin="round">'+
-       '<rect x="0" y="-6" width="'+(14+Math.round(t*22))+'" height="13" rx="2"/>'+
-       '<path d="M4,7 L4,17" stroke-width="3"/></g>';
+    s+='<g transform="translate(142,176)">'+
+       '<rect x="0" y="0" width="36" height="27" rx="3" fill="'+(sil?col:"#3A3548")+'" stroke="'+col+'" stroke-width="2.4"/>'+
+       '<rect x="2" y="2" width="32" height="7" fill="rgba(255,255,255,.12)" stroke="none"/>'+
+       '<path d="M13,0 L13,-7 L24,-7 L24,0" stroke="'+col+'" stroke-width="2.4" fill="none"/>'+
+       (sil?'':'<circle cx="18" cy="15" r="6.5" fill="#D8324B" stroke="'+col+'" stroke-width="1.8"/>'+
+             '<path d="M18,11 L18,19 M14,15 L22,15" stroke="#FFF" stroke-width="1.8"/>'+
+             '<rect x="4" y="18" width="8" height="5" rx="1" fill="#EDC33C" stroke="'+col+'" stroke-width="1.2"/>')+
+       '</g>';
+  }else if(W){
+    var SZ={sock:1.05,baguette:.95,trout:1.0,bowling:.95,garden:1.0,nailbat:.95,fire:.95,
+            chain:.85,bees:.95,tuba:.80,ak:.82,vending:.80,catapult:.90,lawn:.85,cannon:.80,
+            anvil:1.0,pigeon:.95,jetski:.80,piano:.80,whale:.72,blackhole:.90};
+    var sz=SZ[W.id]||1;
+    var wy=(W.id==="vending"||W.id==="fire")?162:174;
+    if(sil){
+      /* the shadow only needs a believable mass, not the detail */
+      s+='<g transform="translate(150,'+wy+') scale('+sz+')">'+
+         '<rect x="-4" y="-12" width="52" height="30" rx="6" fill="'+col+'" stroke="none"/></g>';
+    }else{
+      var art=WEP_ART[W.id];
+      s+='<g class="wep" transform="translate(150,'+wy+') scale('+sz+')" stroke-linejoin="round">'+
+         '<g class="wepinner">'+
+         (art?art(col):'<rect x="0" y="-6" width="22" height="13" rx="2" fill="#2B2833" stroke="'+col+'" stroke-width="2"/>')+
+         '</g></g>';
+    }
   }
+
+  /* ── damage ── */
   if(!sil){
     for(var k=0;k<Math.min(dmg,SCRATCH.length);k++)
-      s+='<path d="'+SCRATCH[k]+'" stroke="'+(k%2?"#D8324B":"#B02038")+'" stroke-width="3.2"/>';
-    /* plasters accumulate as he takes hits */
-    for(var b=0;b<Math.min(S.bandage,4);b++){
-      var bx=[74,120,90,126][b], by=[128,190,240,96][b];
-      s+='<g transform="translate('+bx+','+by+') rotate('+(b*37-20)+')">'+
+      s+='<path d="'+SCRATCH[k]+'" stroke="'+(k%2?"#D8324B":"#B02038")+'" stroke-width="3.2" fill="none"/>';
+    for(var bd=0;bd<Math.min(S.bandage,4);bd++){
+      var bx=[74,120,90,126][bd], by=[128,190,240,96][bd];
+      s+='<g transform="translate('+bx+','+by+') rotate('+(bd*37-20)+')">'+
          '<rect x="-9" y="-4" width="18" height="8" rx="2" fill="#E8DCC0" stroke="'+col+'" stroke-width="1.6"/>'+
-         '<rect x="-3" y="-4" width="6" height="8" fill="#D4C4A0"/></g>';
+         '<rect x="-3" y="-4" width="6" height="8" fill="#D4C4A0" stroke="none"/></g>';
     }
-    if(S.hp<35) s+='<path d="M82,30 L118,58" stroke="#D8324B" stroke-width="4.5"/>';
+    if(S.hp<35) s+='<path d="M82,30 L118,58" stroke="#D8324B" stroke-width="4.5" fill="none"/>';
   }
   return s+'</g>';
+}/* ── he looks where the cursor is ── */
+var gaze={x:0,y:0};
+function applyGaze(){
+  var man=document.getElementById("man"); if(!man) return;
+  var ps=man.querySelectorAll(".pupil");
+  for(var i=0;i<ps.length;i++)
+    ps[i].setAttribute("transform","translate("+gaze.x.toFixed(2)+","+gaze.y.toFixed(2)+")");
 }
+function lookAt(clientX,clientY){
+  var man=document.getElementById("man"); if(!man) return;
+  var b=man.getBoundingClientRect(); if(!b.width) return;
+  /* the head sits at roughly (100,46) in a 200x330 viewBox */
+  var hx=b.left+b.width*(100/200), hy=b.top+b.height*(46/330);
+  var dx=clientX-hx, dy=clientY-hy;
+  var d=Math.sqrt(dx*dx+dy*dy)||1;
+  var reach=Math.min(1,d/260);            /* look further for things further away */
+  gaze.x=clamp(dx/d*3.1*reach,-3.1,3.1);
+  gaze.y=clamp(dy/d*2.4*reach,-2.4,2.4);
+  applyGaze();
+  if(typeof paintArms==="function") paintArms();
+}
+document.addEventListener("mousemove",function(e){lookAt(e.clientX,e.clientY);});
+document.addEventListener("touchmove",function(e){
+  if(e.touches&&e.touches[0]) lookAt(e.touches[0].clientX,e.touches[0].clientY);
+},{passive:true});
+
+/* ── he fiddles with whatever he's holding ── */
+var WEP_MOVES=["wswing","wheft","wspin","winspect"];
+var wepTimer=null;
+function scheduleFidget(){
+  clearTimeout(wepTimer);
+  wepTimer=setTimeout(function(){
+    var el=document.querySelector("#man .wepinner");
+    if(el && S.hp>25 && !S.over){
+      var mv=WEP_MOVES[ri(0,WEP_MOVES.length-1)];
+      el.classList.remove.apply(el.classList,WEP_MOVES);
+      void el.getBoundingClientRect();
+      el.classList.add(mv);
+      setTimeout(function(){ if(el&&el.classList) el.classList.remove(mv); },1500);
+    }
+    scheduleFidget();
+  }, 5000+Math.random()*9000);
+}
+scheduleFidget();
+
+
+/* ══════════════════════════════════════════════════════════════
+   HE IS A LIVING THING NOW: he talks, he watches the cursor, and
+   if it gets close enough he will absolutely try to eat it.
+   ══════════════════════════════════════════════════════════════ */
+var SAYINGS=[
+ "I have eaten a bee. It's still in there. We've come to an arrangement.",
+ "Wesley. WESLEY. There's a duck in the van and it's driving.",
+ "I've been dead for six minutes before. Nothing. Absolutely nothing. Awful service.",
+ "My mother sold me for a caravan. Good caravan, mind.",
+ "I don't have bones. I've just got a very confident posture.",
+ "Nobody has ever seen me and a horse in the same room. Think about that.",
+ "I once won a fight with a swan. The swan disagrees. The swan is not here.",
+ "There's a man in Detroit who calls me 'that one' and he's not wrong.",
+ "I've got a will. Everything goes to a pigeon I've never met.",
+ "Every mirror I look in shows a slightly angrier version of me.",
+ "I keep a list of everyone who's wronged me. It's just my own name, forty times.",
+ "I'm legally three men in Nevada.",
+ "Sometimes I clap and a stranger somewhere falls over. I've tested it.",
+ "I put my keys somewhere safe. That was in April. I've since bought a new house.",
+ "The bins know. The bins have always known.",
+ "I told a hospital I was a doctor. Now I own a boat and I'm not allowed in Ohio.",
+ "My blood type is 'probably fine'.",
+ "I've never lost a staring contest because I've never blinked on purpose. That's a lie.",
+ "Wesley, if I get arrested, my last words are 'the ostrich started it'.",
+ "I ate a lightbulb once to see what would happen. What happened was surgery.",
+ "There's a version of me in every city and they're all cross with me.",
+ "I've been banned from a zoo. Not for what you think. Worse.",
+ "I don't sleep. I just stand somewhere dark and buffer.",
+ "My teeth are fine. All forty of them.",
+ "I've made peace with the fact that I'll die owing a man called Terry.",
+ "Two men mistook me for a different Wesley. He's had a much better time.",
+ "I dreamt I was a helicopter and woke up on the roof. Unrelated, obviously.",
+ "I'm not afraid of anything except the specific noise a fridge makes at 3am.",
+ "Money's just paper. Bones are just crunchy. Get me more of both.",
+ "I've got a plan and the plan is mostly screaming.",
+ "Every crisp in this coat is older than some countries.",
+ "One day I'll stop. Not today. Today we go again.",
+ "I'm on a first-name basis with a raccoon and it's not going well.",
+ "The doctor said I have the heart of a much younger man. I put it back.",
+ "If I vanish, check the ostrich. Just check the ostrich, Wesley."
+];
+var CHOMP_LINES=["Come here.","MINE.","I'm having that.","Gerroff.","SNACK.",
+  "Been after this all week.","Got you, you little worm.","Hello dinner.","Don't struggle.",
+  "This is the best day of my life."];
+var HOLD_LINES=["Nope. Nope. NOPE.","Put me DOWN.","This is too high, Wesley!",
+  "I can see my house! I can see my OTHER house!","My arms are coming off!","I've made a terrible error.",
+  "Tell Terry I said something clever!","I regret every decision that led here.","WHEEEE. No. NOT WHEEE."];
+var FALL_LINES=["OOF.","Ow. My everything.","I meant to do that.","Ground. Hello, ground.",
+  "That's coming out of your wages.","Something snapped and I'm choosing not to investigate.",
+  "Still got it.","I'm fine. Nothing is fine, but I'm fine.","Do that again.","Right. Different plan."];
+
+
+/* ── his business advice, which is uniformly catastrophic ── */
+var ADVICE=[
+ "Business tip: buy high, sell low. Volume makes up for it.",
+ "Never write anything down. Also never remember anything. That's how you stay clean.",
+ "If a man offers you a deal too good to be true, that's just a good deal, Wesley. Take it twice.",
+ "Advertise. I've got flyers. My face is on them. My real face.",
+ "Diversify: I put everything into one drug and one city. That's two things.",
+ "Always tell the police your real name. They can check anyway, so you look honest.",
+ "Price your product by how you're feeling that day. Customers respect a moody market.",
+ "Bank everything in cash under one mattress. Interest is a scam but so is a mattress.",
+ "The trick to smuggling is confidence and a really big coat. That's the whole trick.",
+ "If you're being followed, lead them home. Get it over with.",
+ "Undercut everyone until you're losing money. Then you've won the market. Then you starve.",
+ "Never buy a vehicle. Just borrow one and keep borrowing it forever.",
+ "Ask your customers for reviews. Out loud. In public. By name.",
+ "Hire family. They can't quit and they can't be trusted, so it evens out.",
+ "Best time to sell is when the price is lowest, because that's when I have the most.",
+ "Keep all your product in one warehouse with a sign on it saying what's inside.",
+ "If the shark asks for his money, offer him a smaller amount more often. Forever.",
+ "Expand into a new city before you've made any money in the old one. Momentum.",
+ "I don't do maths. Maths is just opinions with numbers on.",
+ "Always carry more than you can run with. Shows commitment.",
+ "Trust everyone once. Then trust them again, because the first time was probably a fluke.",
+ "Corner the market on the cheapest thing available. You'll own an enormous amount of nothing.",
+ "Never take a profit. A profit is just a loss you haven't held long enough.",
+ "If a deal goes wrong, do exactly the same deal immediately. Odds even out.",
+ "My accountant is a man I met once who said he was good with numbers.",
+ "Buy a boat. You don't need one. Buy a boat.",
+ "The market is a living thing, Wesley, and it hates you specifically.",
+ "Set your prices in a currency nobody uses. Keeps buyers guessing.",
+ "If you can't sell it, eat it. Reduces stock, boosts morale.",
+ "Sign everything. Contracts, receipts, confessions. Paperwork shows professionalism.",
+ "Rule one: never panic. Rule two: panic constantly, but quietly.",
+ "Reinvest one hundred percent of your money. Leave nothing for food. Food is a want."
+];
+var MISS_LINES=["Missed.","Slippery little thing.","It moved! It's a cheat!","One of these days.",
+  "I'll get it. I've got all day. I've got NOTHING but day.","Come back.","Right, that's personal now."];
+var TAUNT_LINES=["Stand still.","I only want to hold it.","I'm not going to eat it. I am going to eat it.",
+  "Here, mouse mouse mouse.","Don't make this weird.","Just let me have this one thing."];
+
+var SMOKE_LINES=["Doctor said one a day. He didn't say how long the day was.",
+ "This is the only thing keeping my ribs together.","I'm not addicted, I'm consistent.",
+ "Lungs are a luxury item, Wesley.","Every one of these is a little appointment with the future.",
+ "I've quit loads of times. This is one of them."];
+
+/* ── he has opinions about everything you do, none of them supportive ── */
+var REMARKS={
+ buyCheap:["Oh good, more of that.","Bargain. Suspiciously so. Probably fine.",
+   "Cheap for a reason, but that reason is tomorrow's problem.",
+   "Buying low. Look at you, doing capitalism."],
+ buyDear:["Paying that? Bold.","At that price it had better cure something.",
+   "That's a lot of money for a bag of consequences.","Hope you enjoy it, because that's the rent gone."],
+ buyBig:["That's not a purchase, that's a lifestyle.",
+   "Carrying all that? Great. Nice and inconspicuous.",
+   "If we get stopped now I'm telling them it's yours."],
+ sellWin:["Profit. Don't get used to it.","We're rich. For about nine minutes.",
+   "Look at that. Almost like you know what you're doing.",
+   "Money in. Now watch me find a way to lose it."],
+ sellLoss:["Sold at a loss. Bold strategy.","We lost money on that. Actively. On purpose, apparently.",
+   "That's the sound of value leaving the building.",
+   "I'd say we've learned something but we clearly haven't."],
+ travel:["New city, same problems, worse weather.","Off we go. Somebody here will want to fight me.",
+   "I liked the last place. Nobody had recognised me yet.",
+   "Ah, a fresh start. Those always go well for us."],
+ border:["Crossing a border with this coat on. Superb.",
+   "If they open the coat I'm going to pretend I don't know you.",
+   "Nothing suspicious about a man sweating in a big coat, no."],
+ borrow:["Borrowing from the shark. That always ends softly.",
+   "More debt. My favourite kind of money.",
+   "He's not lending you that, he's renting you."],
+ payDebt:["Paying him back. He'll be so disappointed.","There goes the money. Briefly ours. We hardly knew it."],
+ bust:["Told you.","Well that's the coat empty again.",
+   "I want it on record that I said nothing at the time.",
+   "They took everything. Rude, but efficient."],
+ heal:["Patched up by a man with no medical qualifications and a torch.",
+   "That'll hold until roughly Thursday.","I can feel the stitches thinking."],
+ weapon:["Oh good. Now we're the problem.","This will absolutely not escalate anything.",
+   "I feel safer already, which is statistically incorrect."],
+ vehicle:["A vehicle. Now we can get somewhere dangerous faster.",
+   "Lovely. Something else to have taken off us."],
+ property:["Property. Something they can raid at their leisure.",
+   "Congratulations, you now have somewhere to lose things."],
+ upkeep:["Everything we own is quietly eating us.","This is what they mean by assets."],
+ milestone:["Look at us. Briefly successful.","Money. It'll be gone by Tuesday but well done.",
+   "We've made it. We've made it to the next bit of trouble."],
+ wait:["Standing still. My specialist subject.","Doing nothing, expensively."],
+ heat:["They're definitely watching now.","I can feel a policeman thinking about me."]
+};
+function remark(kind){
+  var pool=REMARKS[kind];
+  if(!pool) return;
+  /* he doesn't comment on everything, or he'd never shut up */
+  if(Math.random()>0.55) return;
+  speak(pool[ri(0,pool.length-1)], 4200);
+}
+
+var bubbleTimer=null, bubbleHide=null;
+function speak(text,ms){
+  var el=document.getElementById("bubble"), tx=document.getElementById("bubbletext");
+  var man=document.getElementById("man");
+  if(!el||!tx||!man) return;
+  var b=man.getBoundingClientRect();
+  el.style.left=Math.round(b.left+b.width*0.5)+"px";
+  el.style.top =Math.round(b.top - 22)+"px";
+  tx.textContent=text;
+  el.classList.add("on");
+  clearTimeout(bubbleHide);
+  bubbleHide=setTimeout(function(){el.classList.remove("on");}, ms||4200);
+}
+function scheduleChat(){
+  clearTimeout(bubbleTimer);
+  bubbleTimer=setTimeout(function(){
+    if(!S.over && phys.state==="idle" && !document.getElementById("phonewrap").classList.contains("on")){
+      /* roughly half the time he offers advice, all of it ruinous */
+      var pool = Math.random()<0.5 ? ADVICE : SAYINGS;
+      speak(pool[ri(0,pool.length-1)], pool===ADVICE?5600:4400);
+    }
+    scheduleChat();
+  }, 11000+Math.random()*16000);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PHYSICS  v2
+   Two-bone arms solved with inverse kinematics, driven by critically
+   damped springs. Nothing snaps to a position; everything accelerates
+   toward it and settles. He notices, watches, reaches, and only lunges
+   when he thinks he can reach — then has to recover before trying again.
+   ══════════════════════════════════════════════════════════════ */
+var G=0.58, AIR=0.994, BOUNCE=0.44, FRICTION=0.85;
+var ROPE=98, MAXLIFT=210, REACH_R=250;
+var UPPER=44, FORE=42, ARMSPAN=UPPER+FORE-3;
+
+var phys={
+  state:"idle",            /* idle | notice | track | lunge | recover | grabbed | flying | down */
+  phoneOut:false, smoking:false, smokeT:0, smokeEnd:0, smokeCool:0, puffed:false,
+  t:0, x:0, y:0, vx:0, vy:0, rot:0, vrot:0, rotV:0,
+  lean:0, leanV:0,
+  th:0, om:0,
+  cool:0, chomp:false, armsUp:false,
+  side:1, lungeT:0, caught:false
+};
+/* each hand is a little mass on a spring, in viewBox coordinates */
+var hands={
+  L:{x:52,y:182,vx:0,vy:0,tx:52,ty:182},
+  R:{x:148,y:182,vx:0,vy:0,tx:148,ty:182}
+};
+var REST={L:{x:52,y:182},R:{x:148,y:182}};
+var ptr={x:-9999,y:-9999,vx:0,vy:0,ax:0,lvx:0,idle:0};
+var lastT=0;
+
+function figRect(){var m=document.getElementById("man");return m?m.getBoundingClientRect():null;}
+function vbToScreen(vx,vy){
+  var b=figRect(); if(!b) return {x:0,y:0};
+  return {x:b.left+vx*(b.width/200), y:b.top+vy*(b.height/330)};
+}
+function screenToVb(sx,sy){
+  var b=figRect(); if(!b) return {x:100,y:165};
+  return {x:(sx-b.left)/(b.width/200), y:(sy-b.top)/(b.height/330)};
+}
+function mouthPt(){return vbToScreen(100,52);}
+var restPt=null;
+function restMouth(){
+  if(phys.state==="idle" && phys.x===0 && phys.y===0 && Math.abs(phys.rot)<0.4){
+    var m=mouthPt(); if(m&&m.x) restPt={x:m.x,y:m.y};
+  }
+  if(!restPt){ var b=figRect(); if(b) restPt={x:b.left+b.width*0.5-phys.x, y:b.top+b.height*(52/330)-phys.y}; }
+  return restPt||{x:0,y:0};
+}
+function shoulder(side){return side>0?{x:130,y:96}:{x:70,y:96};}
+
+/* ── two-bone IK: given a hand position, work out where the elbow goes ── */
+function armPath(side){
+  var sh=shoulder(side), h=side>0?hands.R:hands.L;
+  var dx=h.x-sh.x, dy=h.y-sh.y;
+  var d=Math.sqrt(dx*dx+dy*dy)||0.001;
+  if(d>ARMSPAN){ dx*=ARMSPAN/d; dy*=ARMSPAN/d; d=ARMSPAN; }
+  var hx=sh.x+dx, hy=sh.y+dy;
+  /* elbow sits off the shoulder-hand line by however much the bones demand */
+  var a=(UPPER*UPPER-FORE*FORE+d*d)/(2*d);
+  var hgt=Math.sqrt(Math.max(0,UPPER*UPPER-a*a));
+  var mx=sh.x+dx*(a/d), my=sh.y+dy*(a/d);
+  /* elbows bend outward, away from the body */
+  var ex=mx+(-dy/d)*hgt*side, ey=my+(dx/d)*hgt*side;
+  return {d:"M"+sh.x+","+sh.y+" Q"+ex.toFixed(1)+","+ey.toFixed(1)+" "+hx.toFixed(1)+","+hy.toFixed(1),
+          hx:hx, hy:hy};
+}
+function paintArms(){
+  var man=document.getElementById("man"); if(!man) return;
+  var rp=null;
+  ["L","R"].forEach(function(k){
+    var side=k==="R"?1:-1;
+    var p=armPath(side);
+    if(side>0) rp=p;
+    var path=man.querySelector("#arm"+k), hand=man.querySelector("#hand"+k);
+    if(path) path.setAttribute("d",p.d);
+    if(hand){ hand.setAttribute("cx",p.hx.toFixed(1)); hand.setAttribute("cy",p.hy.toFixed(1)); }
+  });
+  var lp=armPath(-1);
+  var cg=man.querySelector("#ciggfx");
+  if(cg){
+    if(phys.smoking&&rp){
+      cg.setAttribute("opacity","1");
+      cg.setAttribute("transform","translate("+rp.hx.toFixed(1)+","+rp.hy.toFixed(1)+")");
+    }else cg.setAttribute("opacity","0");
+  }
+  var g=man.querySelector("#phonegfx");
+  if(g){
+    if(phys.phoneOut){
+      /* left hand while he's smoking, right hand otherwise */
+      var hp = phys.smoking ? lp : rp;
+      if(hp){
+        g.setAttribute("opacity","1");
+        g.setAttribute("transform","translate("+hp.hx.toFixed(1)+","+hp.hy.toFixed(1)+") rotate("+(phys.smoking?12:-14)+")");
+      }
+    }else g.setAttribute("opacity","0");
+  }
+}
+/* critically damped spring: reaches the target and stops, never twitches */
+/* Everything here is in viewBox units per second, integrated against real time,
+   so it behaves identically at any frame rate. */
+function spring(h,stiff,damp,dt,maxSpeed){
+  var ax=(h.tx-h.x)*stiff, ay=(h.ty-h.y)*stiff;
+  h.vx=(h.vx+ax*dt)*Math.pow(damp,dt*60);
+  h.vy=(h.vy+ay*dt)*Math.pow(damp,dt*60);
+  var sp=Math.hypot(h.vx,h.vy), lim=maxSpeed||300;
+  if(sp>lim){ h.vx*=lim/sp; h.vy*=lim/sp; }
+  h.x+=h.vx*dt; h.y+=h.vy*dt;
+}
+function handScreen(side){
+  var p=armPath(side);
+  return vbToScreen(p.hx,p.hy);
+}
+/* ── the phone he actually holds ── */
+/* A big cartoon cigarette: paper barrel, seam, gold band, cork filter,
+   burnt ash cone and a live ember that pulses. */
+function cigSVG(col){
+  return '<g id="ciggfx" opacity="0">'+
+    '<defs>'+
+      '<linearGradient id="cigPaper" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.5" stop-color="#F2EEE4"/>'+
+        '<stop offset="1" stop-color="#CFC7B6"/></linearGradient>'+
+      '<linearGradient id="cigFilt" x1="0" y1="0" x2="0" y2="1">'+      '<linearGradient id="cigFilt" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="#E2A75C"/>'+
+        '<stop offset="0.5" stop-color="#C98A3E"/><stop offset="1" stop-color="#9A6428"/></linearGradient>'+
+      '<radialGradient id="ember" cx="0.5" cy="0.5" r="0.5">'+
+        '<stop offset="0" stop-color="#FFF3B0"/><stop offset="0.35" stop-color="#FF9A2E"/>'+
+        '<stop offset="0.75" stop-color="#D8321E"/><stop offset="1" stop-color="#5A1608"/></radialGradient>'+
+    '</defs>'+
+    '<g transform="rotate(-18)">'+
+      /* cork filter */
+      '<rect x="-4" y="-7" width="26" height="14" rx="3" fill="url(#cigFilt)" stroke="'+col+'" stroke-width="2"/>'+
+      '<path d="M2,-7 l0,14 M9,-7 l0,14 M16,-7 l0,14" stroke="rgba(90,50,10,.45)" stroke-width="1.4"/>'+
+      /* gold band */
+      '<rect x="21" y="-7.5" width="5" height="15" fill="#E8C25A" stroke="'+col+'" stroke-width="1.6"/>'+
+      /* paper barrel */
+      '<rect x="25" y="-7.5" width="46" height="15" rx="2" fill="url(#cigPaper)" stroke="'+col+'" stroke-width="2"/>'+
+      '<path d="M27,-3.5 L69,-3.5" stroke="rgba(0,0,0,.10)" stroke-width="1.6"/>'+
+      /* burnt end and ash */
+      '<path d="M71,-7.5 l9,2 l0,11 l-9,2 z" fill="#6E6A66" stroke="'+col+'" stroke-width="1.6"/>'+
+      '<path d="M74,-5 l4,1.5 M74,0 l5,0.5 M74,4 l4,-1" stroke="#9A9690" stroke-width="1.2"/>'+
+      /* the lit end */
+      '<ellipse id="cigember" cx="81" cy="0" rx="5.5" ry="6" fill="url(#ember)"/>'+
+      '<ellipse cx="81" cy="0" rx="2.4" ry="2.8" fill="#FFE9A8" opacity=".9"/>'+
+    '</g></g>';
+}
+function phoneSVG(col){
+  return '<g id="phonegfx" opacity="0">'+
+    '<g transform="translate(-9,-16)">'+
+      '<rect x="0" y="0" width="18" height="32" rx="3" fill="#14121A" stroke="'+col+'" stroke-width="2"/>'+
+      '<rect x="2.5" y="4" width="13" height="22" rx="1" fill="#2A2438"/>'+
+      '<rect x="3.5" y="5.5" width="11" height="4" fill="#E8912A" opacity=".85"/>'+
+      '<rect x="3.5" y="11" width="7" height="2.4" fill="#6D6779"/>'+
+      '<rect x="3.5" y="15" width="10" height="2.4" fill="#6D6779"/>'+
+      '<rect x="3.5" y="19" width="6" height="2.4" fill="#6D6779"/>'+
+      '<circle cx="9" cy="29" r="1.6" fill="#4A4458"/>'+
+    '</g></g>';
+}
+function throwPhone(){
+  var man=document.getElementById("man"), stage=document.querySelector(".stage");
+  if(!man||!stage) return;
+  var p=armPath(1);
+  var pt=vbToScreen(p.hx,p.hy);
+  var d=document.createElement("div");
+  d.className="flyphone";
+  d.style.left=pt.x+"px"; d.style.top=pt.y+"px";
+  d.innerHTML='<svg viewBox="-14 -20 28 40" width="26" height="40">'+
+    '<rect x="-9" y="-16" width="18" height="32" rx="3" fill="#14121A" stroke="#1C1A24" stroke-width="2"/>'+
+    '<rect x="-6.5" y="-12" width="13" height="22" rx="1" fill="#2A2438"/>'+
+    '<rect x="-5.5" y="-10.5" width="11" height="4" fill="#E8912A"/></svg>';
+  document.body.appendChild(d);
+  /* thrown to whichever side has more room */
+  var dir=(pt.x < window.innerWidth/2) ? -1 : 1;
+  d.style.setProperty("--fx",(dir*(window.innerWidth*0.75))+"px");
+  d.style.setProperty("--fr",(dir*900)+"deg");
+  requestAnimationFrame(function(){ d.classList.add("go"); });
+  setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, 1000);
+  oof(3);
+}
+/* ── smoking ── */
+function puff(){
+  var man=document.getElementById("man"); if(!man) return;
+  var g=man.querySelector("#ciggfx"); if(!g||g.getAttribute("opacity")!=="1") return;
+  var p=armPath(1);
+  /* the ember sits out past the hand along the cigarette */
+  var pt=vbToScreen(p.hx+26, p.hy-14);
+  for(var i=0;i<3;i++){
+    (function(n){
+      setTimeout(function(){
+        var d=document.createElement("div");
+        d.className="smoke";
+        d.style.left=(pt.x+(Math.random()*14-7))+"px";
+        d.style.top=(pt.y+(Math.random()*8-4))+"px";
+        var sz=16+Math.random()*22;
+        d.style.width=sz+"px"; d.style.height=sz+"px";
+        d.style.setProperty("--dx",(Math.random()*70-20)+"px");
+        d.style.setProperty("--sc",(2.2+Math.random()*1.6).toFixed(2));
+        document.body.appendChild(d);
+        requestAnimationFrame(function(){d.classList.add("go");});
+        setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},2600);
+      }, n*130);
+    })(i);
+  }
+}
+function startSmoke(){
+  if(phys.smoking||phys.state!=="idle") return;
+  phys.smoking=true; phys.smokeT=0; phys.drag=0; phys.smokeEnd=16+Math.random()*14;
+  var g=document.querySelector("#man #ciggfx"); if(g) g.setAttribute("opacity","1");
+  if(Math.random()<0.7) speak(SMOKE_LINES[ri(0,SMOKE_LINES.length-1)],4200);
+}
+function stopSmoke(){
+  phys.smoking=false;
+  var g=document.querySelector("#man #ciggfx"); if(g) g.setAttribute("opacity","0");
+  phys.smokeCool=45+Math.random()*70;
+}
+function scheduleSmoke(){
+  setTimeout(function(){
+    if(!S.over && !phys.smoking && phys.state==="idle" && (phys.smokeCool||0)<=0) startSmoke();
+    scheduleSmoke();
+  }, 9000+Math.random()*15000);
+}
+scheduleSmoke();
+
+function showPhone(on){
+  if(phys.phoneOut===on) return;
+  phys.phoneOut=on;
+  if(!on) throwPhone();
+  var g=document.querySelector("#man #phonegfx");
+  if(g) g.setAttribute("opacity", on?"1":"0");
+  drawMan();
+}
+function setChomp(on){ if(phys.chomp!==on){phys.chomp=on; drawMan();} }
+
+function grabIt(){
+  if(phys.smoking) stopSmoke();
+  phys.state="grabbed"; phys.caught=true;
+  phys.th=0; phys.om=0;
+  setChomp(true);
+  document.getElementById("figphys").classList.add("grabbing");
+  speak(CHOMP_LINES[ri(0,CHOMP_LINES.length-1)],1700);
+  oof(5);
+}
+function release(reason){
+  if(phys.state!=="grabbed") return;
+  var tang=phys.om*ROPE;
+  phys.vx=clamp(Math.cos(phys.th)*tang*0.85+clamp(ptr.vx,-30,30)*0.55,-26,26);
+  phys.vy=clamp(-Math.sin(phys.th)*tang*0.85+clamp(ptr.vy,-30,30)*0.55,-22,26);
+  phys.vrot=clamp(phys.om*30+clamp(ptr.vx,-30,30)*0.4,-11,11);
+  phys.state="flying"; phys.caught=false;
+  setChomp(false);
+  document.getElementById("figphys").classList.remove("grabbing");
+  if(reason==="high") speak(HOLD_LINES[ri(0,HOLD_LINES.length-1)],2000);
+}
+function land(hard){
+  var w=document.getElementById("figwrap");
+  if(w){w.classList.remove("squash"); void w.offsetWidth; w.classList.add("squash");
+        setTimeout(function(){if(w)w.classList.remove("squash");},600);}
+  oof(hard?15:7);
+  if(hard) speak(FALL_LINES[ri(0,FALL_LINES.length-1)],2600);
+}
+
+function physTick(now){
+  if(!lastT) lastT=now;
+  var dt=Math.min(0.05,(now-lastT)/1000); lastT=now;
+  phys.t+=dt;
+  ptr.idle+=dt;
+
+  var m=mouthPt();
+  var d=(m&&ptr.x>-9000)?Math.hypot(ptr.x-m.x,ptr.y-m.y):99999;
+  var vbTarget=screenToVb(ptr.x,ptr.y);
+
+  /* ── what is he doing ── */
+  if(phys.state==="idle"){
+    if(phys.smoking){
+      phys.smokeT+=dt;
+      /* a slow cycle: hand up to the mouth, a drag, then back down */
+      var cyc=phys.smokeT%5.2;
+      if(cyc<1.5){ hands.R.tx=118; hands.R.ty=150; }          /* resting, held low */
+      else if(cyc<2.6){ hands.R.tx=112; hands.R.ty=66; }      /* raised to his mouth */
+      else if(cyc<3.4){
+        hands.R.tx=112; hands.R.ty=64;                        /* the drag */
+        if(!phys.puffed){ phys.puffed=true; puff(); }
+      }
+      else { hands.R.tx=124; hands.R.ty=132; phys.puffed=false; }  /* lowered, exhaling */
+      /* the phone moves to his other hand so he can do both */
+      if(phys.phoneOut){ hands.L.tx=78; hands.L.ty=78; }
+      else { hands.L.tx=REST.L.x; hands.L.ty=REST.L.y; }
+      if(phys.smokeT>phys.smokeEnd) stopSmoke();
+    }
+    else if(phys.phoneOut){
+      /* held up in front of his face, tilting slightly as he reads */
+      hands.R.tx=124+Math.sin(phys.t*0.9)*2.5;
+      hands.R.ty=74+Math.sin(phys.t*1.3)*2;
+      hands.L.tx=REST.L.x; hands.L.ty=REST.L.y-4;
+    }else{
+      hands.L.tx=REST.L.x; hands.L.ty=REST.L.y+Math.sin(phys.t*1.1)*2.5;
+      hands.R.tx=REST.R.x; hands.R.ty=REST.R.y+Math.sin(phys.t*1.1+1)*2.5;
+      phys.cool-=dt;
+      if(phys.smokeCool>0) phys.smokeCool-=dt;
+      if(d<REACH_R && phys.cool<=0 && ptr.idle<1.2 && !phys.phoneOut){ phys.state="notice"; phys.t=0;
+        phys.side=(ptr.x>=m.x)?1:-1; }
+    }
+  }
+  else if(phys.state==="notice"){
+    /* he raises the near hand slowly, watching it */
+    var k=phys.side>0?"R":"L";
+    hands[k].tx=shoulder(phys.side).x+phys.side*20; hands[k].ty=120;
+    var o=phys.side>0?"L":"R";
+    hands[o].tx=REST[o].x; hands[o].ty=REST[o].y;
+    if(phys.t>0.55) { phys.state="track"; phys.t=0; }
+    if(d>REACH_R*1.25){ phys.state="idle"; phys.t=0; }
+  }
+  else if(phys.state==="track"){
+    /* the hand follows the cursor, but lags: he is stalking it */
+    var k2=phys.side>0?"R":"L";
+    var sh=shoulder(phys.side);
+    var tx=vbTarget.x, ty=vbTarget.y;
+    var dd=Math.hypot(tx-sh.x,ty-sh.y);
+    if(dd>ARMSPAN*1.15){ var f=ARMSPAN*1.15/dd; tx=sh.x+(tx-sh.x)*f; ty=sh.y+(ty-sh.y)*f; }
+    hands[k2].tx=tx; hands[k2].ty=ty;
+    setChomp(d<REACH_R*0.55);
+    if(d>REACH_R*1.25){ phys.state="idle"; phys.t=0; setChomp(false); }
+    /* only commit when it is genuinely within reach and he has watched a moment */
+    else if(phys.t>0.5 && dd<ARMSPAN*0.95 && Math.random()<0.05){
+      phys.state="lunge"; phys.t=0; phys.lungeT=0;
+      if(Math.random()<0.4) speak(TAUNT_LINES[ri(0,TAUNT_LINES.length-1)],1300);
+    }
+  }
+  else if(phys.state==="lunge"){
+    /* a short, committed reach — fast but not a windmill */
+    var k3=phys.side>0?"R":"L", sh3=shoulder(phys.side);
+    var e=Math.min(1,phys.t/0.34), ease=e<0.5?2*e*e:1-Math.pow(-2*e+2,2)/2;
+    var gx=vbTarget.x, gy=vbTarget.y;
+    var dd3=Math.hypot(gx-sh3.x,gy-sh3.y);
+    if(dd3>ARMSPAN){ var f3=ARMSPAN/dd3; gx=sh3.x+(gx-sh3.x)*f3; gy=sh3.y+(gy-sh3.y)*f3; }
+    hands[k3].tx=hands[k3].x+(gx-hands[k3].x)*ease;
+    hands[k3].ty=hands[k3].y+(gy-hands[k3].y)*ease;
+    var hs=handScreen(phys.side);
+    if(Math.hypot(ptr.x-hs.x,ptr.y-hs.y)<44){ grabIt(); }
+    else if(phys.t>0.42){
+      phys.state="recover"; phys.t=0; phys.cool=1.1+Math.random()*1.6;
+      if(Math.random()<0.55) speak(MISS_LINES[ri(0,MISS_LINES.length-1)],1600);
+    }
+  }
+  else if(phys.state==="recover"){
+    hands.L.tx=REST.L.x; hands.L.ty=REST.L.y;
+    hands.R.tx=REST.R.x; hands.R.ty=REST.R.y;
+    setChomp(false);
+    if(phys.t>0.6){ phys.state="idle"; phys.t=0; }
+  }
+  else if(phys.state==="grabbed"){
+    /* he hangs from the cursor by both hands */
+    hands.L.tx=94; hands.L.ty=18; hands.R.tx=106; hands.R.ty=18;
+    var drive=clamp(-ptr.ax*0.0055,-0.035,0.035);
+    var alpha=-(G/(ROPE/60))*Math.sin(phys.th)*0.055-0.085*phys.om+drive;
+    phys.om=clamp(phys.om+alpha,-0.15,0.15);
+    phys.th+=phys.om;
+    if(phys.th> 0.95){phys.th= 0.95; phys.om*=-0.3;}
+    if(phys.th<-0.95){phys.th=-0.95; phys.om*=-0.3;}
+    var rest=restMouth();
+    phys.x=(ptr.x+Math.sin(phys.th)*ROPE)-rest.x;
+    phys.y=(ptr.y+Math.cos(phys.th)*ROPE)-rest.y;
+    if(phys.y>0) phys.y=0;
+    phys.rot=phys.th*38;
+    var cap=Math.min(MAXLIFT,window.innerHeight*0.28);
+    if(-phys.y>cap) release("high");
+  }
+  else if(phys.state==="flying"){
+    hands.L.tx=REST.L.x-8; hands.L.ty=REST.L.y-40;
+    hands.R.tx=REST.R.x+8; hands.R.ty=REST.R.y-40;
+    phys.vy+=G; phys.vx*=AIR; phys.vy*=AIR;
+    phys.x+=phys.vx; phys.y+=phys.vy;
+    phys.rot+=phys.vrot; phys.vrot*=0.99;
+    var lim=Math.max(60,window.innerWidth/2-70);
+    if(phys.x<-lim){phys.x=-lim;phys.vx=-phys.vx*0.5;phys.vrot*=-0.6;oof(6);}
+    if(phys.x> lim){phys.x= lim;phys.vx=-phys.vx*0.5;phys.vrot*=-0.6;oof(6);}
+    if(phys.y>=0){
+      phys.y=0;
+      if(Math.abs(phys.vy)>2.4){
+        land(phys.vy>9);
+        phys.vy=-phys.vy*BOUNCE; phys.vx*=FRICTION; phys.vrot*=0.45;
+      }else{
+        land(Math.abs(phys.vy)>1.2);
+        phys.state="down"; phys.t=0; phys.vx=0; phys.vy=0; phys.vrot=0;
+      }
+    }
+  }
+  else if(phys.state==="down"){
+    hands.L.tx=REST.L.x; hands.L.ty=REST.L.y;
+    hands.R.tx=REST.R.x; hands.R.ty=REST.R.y;
+    if(phys.t>0.55){ phys.state="idle"; phys.t=0; phys.cool=1.0; }
+  }
+
+  /* ── springs: hands ease toward their targets, nothing snaps ── */
+  var stiff = (phys.state==="lunge")?46:(phys.state==="grabbed"?26:11);
+  var damp  = (phys.state==="lunge")?0.90:0.93;
+  var vmax  = (phys.state==="lunge")?620:(phys.state==="grabbed"?300:170);
+  spring(hands.L,stiff,damp,dt,vmax);
+  spring(hands.R,stiff,damp,dt,vmax);
+  paintArms();
+
+  /* body lean and settle, also sprung */
+  var wantLean=0;
+  if(phys.state==="notice"||phys.state==="track"||phys.state==="lunge")
+    wantLean=clamp((ptr.x-m.x)/34,-7,7);
+  if(phys.state!=="grabbed"&&phys.state!=="flying"){
+    phys.leanV=(phys.leanV+(wantLean-phys.lean)*18*dt)*Math.pow(0.86,dt*60);
+    phys.lean+=phys.leanV*dt*60;
+    phys.rot=phys.lean;
+    phys.x*=Math.pow(0.90,dt*60);
+    if(Math.abs(phys.x)<0.2) phys.x=0;
+  }
+  applyPhys();
+  requestAnimationFrame(physTick);
+}
+function applyPhys(){
+  var f=document.getElementById("figphys"); if(!f) return;
+  f.style.transform="translate("+phys.x.toFixed(1)+"px,"+phys.y.toFixed(1)+"px) rotate("+phys.rot.toFixed(2)+"deg)";
+  f.style.transformOrigin="50% 86%";
+
+  var lift=Math.max(0,-phys.y), k=Math.max(0,1-lift/MAXLIFT);
+
+  /* ── the shadow on the wall follows him, but not one-for-one.
+        The light is fixed, so as he moves the shadow slides further and
+        stretches, and as he lifts off the floor it slips down and softens. ── */
+  var sh=document.getElementById("shade");
+  if(sh){
+    var sx=phys.x*1.18;                       /* parallax: it travels further than he does */
+    var sy=phys.y*0.42;                       /* but climbs the wall more slowly */
+    var stretch=1+lift/900;                   /* further from the wall, larger and vaguer */
+    sh.style.transform=
+      "translateX(-50%) translateX(-19%) translate("+sx.toFixed(1)+"px,"+sy.toFixed(1)+"px) "+
+      "rotate("+(phys.rot*0.72).toFixed(2)+"deg) "+
+      "scaleX("+(1.05*stretch).toFixed(3)+") scaleY("+(1.24*stretch).toFixed(3)+") skewX(8deg)";
+    sh.style.opacity=(0.13*Math.max(0.35,1-lift/520)).toFixed(3);
+    sh.style.filter="blur("+(6+lift*0.030).toFixed(1)+"px)";
+  }
+
+  /* ── the shadows on the floor stay beneath him and shrink as he rises ── */
+  var c=document.querySelector(".contact"), g=document.querySelector(".groundshadow");
+  if(c){
+    c.style.opacity=(0.18+0.82*k).toFixed(2);
+    c.style.transform="translateX(-50%) translateX("+(phys.x*0.96).toFixed(1)+"px) scale("+(0.5+0.5*k).toFixed(2)+")";
+  }
+  if(g){
+    g.style.opacity=(0.22+0.78*k).toFixed(2);
+    g.style.transform="translateX(-50%) translateX("+(phys.x*0.92).toFixed(1)+"px) scale("+(0.72+0.5*k).toFixed(2)+","+(0.6+0.4*k).toFixed(2)+")";
+  }
+}
+function setArms(){}
+function pointerAt(cx,cy){
+  var nvx=cx-ptr.x, nvy=cy-ptr.y;
+  if(Math.abs(nvx)>0.5||Math.abs(nvy)>0.5) ptr.idle=0;
+  ptr.ax=nvx-ptr.lvx; ptr.lvx=nvx;
+  ptr.vx=nvx; ptr.vy=nvy; ptr.x=cx; ptr.y=cy;
+  lookAt(cx,cy);
+}
+document.addEventListener("mousemove",function(e){pointerAt(e.clientX,e.clientY);});
+document.addEventListener("mouseup",function(){ if(phys.state==="grabbed") release("let"); });
+document.addEventListener("touchmove",function(e){
+  if(e.touches&&e.touches[0]) pointerAt(e.touches[0].clientX,e.touches[0].clientY);
+},{passive:true});
+document.addEventListener("touchend",function(){ if(phys.state==="grabbed") release("let"); });
+requestAnimationFrame(physTick);
+scheduleChat();
+
 function drawMan(){
   var m=document.getElementById("man"), sh=document.getElementById("shade");
   if(m) m.innerHTML=manSVG(false);
@@ -912,6 +2140,8 @@ function drawMan(){
   if(w){
     if(S.hp>0 && S.hp<25) w.classList.add("hurting"); else w.classList.remove("hurting");
   }
+  applyGaze();
+  if(typeof paintArms==="function") paintArms();
 }
 
 /* ══════════ HUD ══════════ */
@@ -948,17 +2178,37 @@ function toast(t,k){
 
 /* ══════════ PHONE ══════════ */
 var wrap=document.getElementById("phonewrap"), scr=document.getElementById("scr");
-document.getElementById("phonebtn").onclick=function(){audio();wrap.classList.add("on");go(S.over?"end":"home");};
-wrap.onclick=function(e){if(e.target===wrap&&!S.over)wrap.classList.remove("on");};
+document.getElementById("phonebtn").onclick=function(){
+  audio(); wrap.classList.add("on"); navStack=[];
+  showPhone(true);
+  go(S.over?"end":"home");
+};
+wrap.onclick=function(e){if(e.target===wrap&&!S.over){wrap.classList.remove("on");showPhone(false);}};
 /* close controls live in the phone's header and footer, outside the screen area */
 wrap.addEventListener("click",function(e){
   var b=e.target.closest("[data-close]");
   if(!b) return;
   e.stopPropagation();
-  if(!S.over) wrap.classList.remove("on");
+  if(!S.over){ wrap.classList.remove("on"); showPhone(false); }
 });
-function go(v){view=v;render();}
-function head(t,back){return '<div class="scrhead"><button class="back" data-go="'+(back||"home")+'">&#8592;</button><h3>'+t+'</h3></div>';}
+/* Screens you can be sent to but shouldn't be able to go *back* to:
+   one-off interruptions and confirmation screens. */
+var navStack=[], NOPUSH={qty:1,bankqty:1,cops:1,danger:1,opp:1,event:1,end:1,nuke:1};
+function go(v,isBack){
+  if(!isBack && view && view!==v && !NOPUSH[view]){
+    if(navStack[navStack.length-1]!==view) navStack.push(view);
+    if(navStack.length>24) navStack.shift();
+  }
+  view=v; render();
+}
+function goBack(){
+  var prev=null;
+  while(navStack.length){ prev=navStack.pop(); if(prev&&prev!==view) break; prev=null; }
+  go(prev||"home", true);
+}
+function head(t,back){
+  return '<div class="scrhead"><button class="back" data-back="1" title="Back">&#8592;</button><h3>'+t+'</h3></div>';
+}
 var ICON={
  market:'<path d="M3 6h18l-2 12H5z"/><path d="M8 6V4a4 4 0 018 0v2"/>',
  travel:'<path d="M2 12h20"/><path d="M12 2a15 15 0 010 20a15 15 0 010-20z"/><circle cx="12" cy="12" r="10"/>',
@@ -997,6 +2247,8 @@ function render(){
   else if(view==="event")  h=eventHTML();
   else if(view==="nuke")   h=nukeHTML();
   else if(view==="vanish") h=vanishHTML();
+  else if(view==="danger") h=dangerHTML();
+  else if(view==="opp")    h=oppHTML();
   else if(view==="end")    h=endHTML();
   scr.innerHTML=h; scr.scrollTop=0;
   var f=scr.querySelector("input"); if(f&&f.type==="number") f.select();
@@ -1006,7 +2258,7 @@ function homeHTML(){
   var bars="";
   for(var i=0;i<MILES.length;i++) bars+='<i class="'+(i<S.mile?"hit":"")+'"></i>';
   var nx=S.mile<MILES.length
-    ?("Next milestone "+money(MILES[S.mile])+" for +15 days &mdash; you're worth "+money(worth()))
+    ?("Next milestone "+money(MILES[S.mile])+" for +5 days &mdash; you're worth "+money(worth()))
     :"Every milestone taken.";
   var c=city();
   var warn="";
@@ -1071,51 +2323,99 @@ function marketHTML(){
   return h;
 }
 function chartHTML(){
-  var g=good(pend.id), hs=S.hist[g.id].slice(-56);
-  if(hs.length<3) return '<div class="note">Not enough trading days on record yet.</div>';
-  var W=318,H=142,pd=8;
-  var mn=Math.min.apply(null,hs), mx=Math.max.apply(null,hs);
+  var g=good(pend.id), raw=S.hist[g.id].slice(-42);
+  if(raw.length<3) return '<div class="note">Not enough trading days on record yet.</div>';
+  var cs=closes(raw), n=raw.length;
+  var W=318,H=176,padL=6,padR=44,padT=8,padB=16;
+  var mn=Math.min.apply(null,raw.map(function(k){return k.l;}));
+  var mx=Math.max.apply(null,raw.map(function(k){return k.h;}));
   if(mx===mn) mx=mn+1;
-  var X=function(i){return pd+i/(hs.length-1)*(W-pd*2);};
-  var Y=function(v){return pd+(1-(v-mn)/(mx-mn))*(H-pd*2);};
-  var pts=hs.map(function(v,i){return X(i).toFixed(1)+","+Y(v).toFixed(1);}).join(" ");
-  var up=hs[hs.length-1]>=hs[0], col=up?"#3FA85A":"#D8324B";
-  var area="M"+X(0).toFixed(1)+","+(H-pd)+" L"+pts.split(" ").join(" L")+" L"+X(hs.length-1).toFixed(1)+","+(H-pd)+" Z";
-  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="142">';
-  for(var i=1;i<4;i++){var y=pd+(H-pd*2)*i/4;
-    svg+='<line x1="'+pd+'" y1="'+y.toFixed(1)+'" x2="'+(W-pd)+'" y2="'+y.toFixed(1)+'" stroke="#232030" stroke-width="1"/>';}
-  svg+='<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">'+
-       '<stop offset="0" stop-color="'+col+'" stop-opacity=".34"/>'+
-       '<stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>';
-  svg+='<path d="'+area+'" fill="url(#cg)"/>';
-  svg+='<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linejoin="round"/>';
-  svg+='<circle cx="'+X(hs.length-1).toFixed(1)+'" cy="'+Y(hs[hs.length-1]).toFixed(1)+'" r="3.2" fill="'+col+'"/>';
-  svg+='<text x="'+(W-pd)+'" y="'+(pd+9)+'" text-anchor="end" fill="#8C8894" font-family="monospace" font-size="9">'+money(mx)+'</text>';
-  svg+='<text x="'+(W-pd)+'" y="'+(H-pd-2)+'" text-anchor="end" fill="#8C8894" font-family="monospace" font-size="9">'+money(mn)+'</text></svg>';
-  var chg=(hs[hs.length-1]-hs[0])/hs[0]*100, here=S.prices[g.id];
-  var n=hs.length,last=hs[n-1],p3=hs[n-2],p4=hs[n-3];
-  var lo=Math.min.apply(null,hs), hi=Math.max.apply(null,hs), posn=(last-lo)/((hi-lo)||1);
+  var span=mx-mn; mn-=span*0.06; mx+=span*0.06; span=mx-mn;
+  var plotW=W-padL-padR, plotH=H-padT-padB;
+  var step=plotW/n, bw=Math.max(2.2,Math.min(9,step*0.62));
+  var X=function(i){return padL+step*(i+0.5);};
+  var Y=function(v){return padT+(1-(v-mn)/span)*plotH;};
+  var UP="#3FA85A", DN="#D8324B";
+
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="176">';
+  /* grid and the price scale down the right, like a trading screen */
+  for(var gl=0;gl<=4;gl++){
+    var yy=padT+plotH*gl/4, pv=mx-span*gl/4;
+    svg+='<line x1="'+padL+'" y1="'+yy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+yy.toFixed(1)+
+         '" stroke="#211E2C" stroke-width="1"/>';
+    svg+='<text x="'+(W-padR+4)+'" y="'+(yy+3).toFixed(1)+'" fill="#6D6779" font-family="monospace" font-size="8">'+
+         money(pv)+'</text>';
+  }
+  /* a 7-day average, so trends are readable through the noise */
+  if(n>=7){
+    var ma=[];
+    for(var i=0;i<n;i++){
+      if(i<6){ma.push(null);continue;}
+      var t=0; for(var k=i-6;k<=i;k++) t+=cs[k];
+      ma.push(t/7);
+    }
+    var seg=ma.map(function(v,i){return v===null?null:X(i).toFixed(1)+","+Y(v).toFixed(1);})
+             .filter(Boolean).join(" ");
+    svg+='<polyline points="'+seg+'" fill="none" stroke="#E8912A" stroke-width="1.4" opacity=".75"/>';
+  }
+  /* the candles */
+  raw.forEach(function(k,i){
+    var up=k.c>=k.o, col=up?UP:DN, x=X(i);
+    svg+='<line x1="'+x.toFixed(1)+'" y1="'+Y(k.h).toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+Y(k.l).toFixed(1)+
+         '" stroke="'+col+'" stroke-width="1.1"/>';
+    var top=Y(Math.max(k.o,k.c)), bot=Y(Math.min(k.o,k.c));
+    var bh=Math.max(1.2,bot-top);
+    svg+='<rect x="'+(x-bw/2).toFixed(1)+'" y="'+top.toFixed(1)+'" width="'+bw.toFixed(1)+
+         '" height="'+bh.toFixed(1)+'" fill="'+(up?col:"#1A1622")+'" stroke="'+col+'" stroke-width="1.1"/>';
+  });
+  /* the live price line */
+  var last=raw[n-1];
+  svg+='<line x1="'+padL+'" y1="'+Y(last.c).toFixed(1)+'" x2="'+(W-padR)+'" y2="'+Y(last.c).toFixed(1)+
+       '" stroke="#8C8894" stroke-width="0.8" stroke-dasharray="3 3"/>';
+  svg+='<rect x="'+(W-padR+1)+'" y="'+(Y(last.c)-6).toFixed(1)+'" width="42" height="12" fill="'+
+       (last.c>=last.o?UP:DN)+'"/>';
+  svg+='<text x="'+(W-padR+4)+'" y="'+(Y(last.c)+3).toFixed(1)+'" fill="#0E0C14" font-family="monospace" '+
+       'font-size="8" font-weight="700">'+money(last.c)+'</text>';
+  /* where you got in */
+  var myCost=S.cost[g.id]||0, myQty=totalHeld(g.id);
+  if(myQty&&myCost>0&&myCost>mn&&myCost<mx){
+    svg+='<line x1="'+padL+'" y1="'+Y(myCost).toFixed(1)+'" x2="'+(W-padR)+'" y2="'+Y(myCost).toFixed(1)+
+         '" stroke="#4FC3E8" stroke-width="1" stroke-dasharray="5 3"/>';
+    svg+='<text x="'+(padL+3)+'" y="'+(Y(myCost)-3).toFixed(1)+'" fill="#4FC3E8" font-family="monospace" '+
+         'font-size="8">your cost '+money(myCost)+'</text>';
+  }
+  svg+='</svg>';
+
+  var chg=(cs[n-1]-cs[0])/cs[0]*100, here=S.prices[g.id], up=cs[n-1]>=cs[0];
+  var greens=raw.filter(function(k){return k.c>=k.o;}).length;
+  var p3=cs[n-2],p4=cs[n-3];
+  var lo=Math.min.apply(null,cs), hi=Math.max.apply(null,cs);
+  var posn=(cs[n-1]-lo)/((hi-lo)||1);
   var read;
-  if(p4>p3&&last>p3) read="Turned up off a low. Often the start of a climb.";
-  else if(p4<p3&&last<p3) read="Turned down off a high. It usually keeps falling a while.";
-  else if(last>p3) read="Still climbing."; else if(last<p3) read="Still falling."; else read="Flat.";
+  if(p4>p3&&cs[n-1]>p3) read="Turned up off a low. Often the start of a climb.";
+  else if(p4<p3&&cs[n-1]<p3) read="Turned down off a high. It usually keeps falling a while.";
+  else if(cs[n-1]>p3) read="Still climbing."; else if(cs[n-1]<p3) read="Still falling."; else read="Flat.";
   read += posn>0.78?" Near the top of its recent range — a selling window."
         : posn<0.22?" Near the bottom of its recent range — a buying window."
         : " Middle of its range.";
   if(S.dev[g.id]) read=(S.dev[g.id]>0?"It spiked hard today. ":"It crashed hard today. ")+read;
-  var h='<div class="cstat"><div><span style="color:'+g.c+'">STREET AVERAGE</span><br><b>'+money(hs[n-1])+'</b></div>'+
+
+  var h='<div class="cstat"><div><span style="color:'+g.c+'">STREET AVERAGE</span><br><b>'+money(cs[n-1])+'</b></div>'+
     '<div style="text-align:right"><span class="'+(up?"u":"d")+'">'+(chg>=0?"+":"")+chg.toFixed(1)+'%</span><br>'+
-    '<span style="color:var(--dim)">last '+n+' days</span></div></div>';
+    '<span style="color:var(--dim)">'+n+' days &middot; '+greens+' up / '+(n-greens)+' down</span></div></div>';
   h+='<div class="chartbox">'+svg+'</div>';
+  h+='<div class="note" style="font-size:9.5px">'+
+     '<span style="color:'+UP+'">&#9632;</span> closed up &nbsp; '+
+     '<span style="color:'+DN+'">&#9632;</span> closed down &nbsp; '+
+     '<span style="color:#E8912A">&#9472;</span> 7-day average'+
+     (myQty&&myCost>0?' &nbsp; <span style="color:#4FC3E8">&#9472;</span> your cost':'')+'</div>';
   h+='<div class="note" style="color:var(--chalk)">'+read+'</div>';
   h+='<div class="note">Here in '+esc(city().n)+': <b style="color:'+(here?"var(--chalk)":"var(--dim)")+'">'+
      (here?money(here):"not sold today")+'</b></div>';
-  var myCost=S.cost[g.id]||0, myQty=totalHeld(g.id);
   if(myQty&&myCost>0){
-    var pl=(here?here-myCost:hs[n-1]-myCost)*myQty;
+    var pl=((here?here:cs[n-1])-myCost)*myQty;
     h+='<div class="note">You hold '+myQty.toLocaleString()+' bought at '+money(myCost)+
-       ' each. At '+(here?"today's local price":"the street average")+' that is <b style="color:'+
-       (pl>=0?"var(--cash)":"var(--heat)")+'">'+(pl>=0?"+":"")+money(pl)+'</b> on the position.</div>';
+       ' each &mdash; <b style="color:'+(pl>=0?"var(--cash)":"var(--heat)")+'">'+(pl>=0?"+":"")+money(pl)+'</b> on the position.</div>';
   }
   h+='<div class="mbtns" style="gap:7px">'+
      '<button data-buy="'+g.id+'"'+((here&&S.cash>=here&&space()>0)?"":" disabled")+' style="flex:1;padding:11px">BUY</button>'+
@@ -1123,8 +2423,11 @@ function chartHTML(){
   return h;
 }
 
+
 /* ── travel: you move your load with a vehicle, or you fly commercial ── */
 function dist(a,b){var dx=a.x-b.x, dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy);}
+function isHot(id){return !!S.hot[id||S.ride];}
+function hotCount(){var n=0;for(var k in S.hot) if(S.hot[k]) n++; return n;}
 function legRisk(to){
   var from=city(), t=city(to), r=ride();
   var far=dist(from,t)/100;                       /* 0 .. ~1.2 */
@@ -1133,6 +2436,7 @@ function legRisk(to){
   var base = 0.035 + load*0.30*far + 0.02*far;
   base *= r.risk * t.heat * border;
   base *= (1 + S.heat/55);
+  if(isHot()) base *= 1.65;              /* driving something that's on a list */
   if(hasCrew("driver")) base*=0.80;
   return clamp(base,0.01,0.92);
 }
@@ -1142,6 +2446,9 @@ function travelHTML(){
     '. Moving product means moving it <b>in something</b>. You currently travel by <b style="color:var(--sodium)">'+
     esc(r.n)+'</b>'+(S.ride==="foot"?' &mdash; no vehicle, so you queue through the airport like everyone else, and the dogs are right there.':'')+
     ' Buy vehicles in the Store.</div>';
+  if(isHot())
+    h+='<div class="note" style="color:var(--heat)">The '+esc(r.n).toLowerCase()+' you are driving is stolen. '+
+       'Every journey is 65% more likely to end in a stop until you get it resprayed at the Store.</div>';
   if(S.ride==="foot"&&used()>0)
     h+='<div class="note" style="color:var(--heat)">You are carrying '+used()+' units through airport security. This is a terrible idea.</div>';
   CITIES.forEach(function(c){
@@ -1224,7 +2531,13 @@ function storeHTML(){
       '<em>'+(act?"IN USE":own?(fits?"USE":"TOO SMALL"):money(r.p))+'</em>'+r.n+
       '<small>+'+r.cap.toLocaleString()+' load &middot; risk &times;'+r.risk.toFixed(2)+
       (r.up?' &middot; '+money(r.up)+'/day to run':' &middot; free, and awful')+
-      ' &middot; '+esc(r.d)+(own&&!fits?' &middot; <b style="color:var(--heat)">won\'t hold your load</b>':'')+'</small></button>';
+      ' &middot; '+esc(r.d)+(own&&!fits?' &middot; <b style="color:var(--heat)">won\'t hold your load</b>':'')+
+      (own&&isHot(r.id)?' &middot; <b style="color:var(--heat)">STOLEN &mdash; 65% more likely to be stopped</b>':'')+
+      '</small></button>';
+    if(own&&isHot(r.id))
+      h+='<button class="opt" data-respray="'+r.id+'" style="margin-top:-4px;font-size:11px;padding:7px 13px">'+
+         '<em>'+money(Math.round(r.p*0.18+4000))+'</em>Respray and replate the '+r.n.toLowerCase()+
+         '<small>clears the stolen flag and drops 6 heat</small></button>';
     if(own&&r.p>0)
       h+='<button class="opt" data-sellride="'+r.id+'" style="margin-top:-4px;font-size:11px;padding:7px 13px">'+
          '<em>+'+money(Math.round(r.p*0.60))+'</em>Sell the '+r.n.toLowerCase()+
@@ -1359,6 +2672,7 @@ scr.addEventListener("click",function(e){
   var b=e.target.closest("button"); if(!b||b.disabled)return;
   var d=b.dataset;
   if(d.close){ if(!S.over) wrap.classList.remove("on"); return; }
+  if(d.back) return goBack();
   if(d.go) return go(d.go);
   if(d.chart){ pend={id:d.chart}; return go("chart"); }
   if(d.buy) return openQty(d.buy,"buy");
@@ -1386,12 +2700,15 @@ scr.addEventListener("click",function(e){
     var c=Math.round((100-S.hp)*90*(1+S.mile*0.35));
     S.cash-=c; S.hp=100; S.bandage=0;
     say("Doctor patched you up for "+money(c)+".","good");
-    toast("Stitched up. Good as new.","good"); flashMood("rich");
+    toast("Stitched up. Good as new.","good"); flashMood("rich"); remark("heal");
     go("home"); paint(); return;
   }
   if(d.qok) return confirmQty();
   if(d.bqok) return confirmBank();
   if(d.cop) return copChoice(d.cop);
+  if(d.dgr) return dangerChoice(d.dgr);
+  if(d.opp) return oppChoice(d.opp);
+  if(d.respray) return respray(d.respray);
   if(d.ev) return evChoice(d.ev);
   if(d.again){ wrap.classList.remove("on"); askName(); return; }
   if(d.copy) return copyCode();
@@ -1546,7 +2863,8 @@ function confirmQty(){
     }
     else{S.inv[pend.g.id]+=v; addCost(pend.g.id,v,cost/v);
       say("Bought "+v.toLocaleString()+" "+pend.g.n+" for "+money(cost)+".");
-      toast("Pockets filling up.");}
+      toast("Pockets filling up.");
+      remark(v>400?"buyBig":(pend.pr>(pend.g.lo+pend.g.hi)/2?"buyDear":"buyCheap"));}
   }else{
     var take=Math.round(v*sellUnit(pend.g,pend.pr,v));
     var basis=Math.round(v*(S.cost[pend.g.id]||0));
@@ -1560,6 +2878,7 @@ function confirmQty(){
         (toStore?" out of storage.":"."), profit>=0?"good":"bad");
     toast("Sold "+v.toLocaleString()+" "+pend.g.n+" for "+money(take)+
         (basis?" — "+(profit>=0?"profit ":"loss ")+money(Math.abs(profit)):""), profit>=0?"good":"bad");
+    remark(profit>=0?"sellWin":"sellLoss");
     if(take>500000){animate("happy");flashMood("rich");}
   }
   go("market"); paint();
@@ -1607,11 +2926,11 @@ function bankQtyHTML(){
 function confirmBank(){
   var v=Math.min(Math.floor(+document.getElementById("qin").value)||0,pend.max);
   if(v>0){
-    if(pend.bank==="pay"){S.cash-=v;S.debt-=v;say("Paid the shark "+money(v)+".","good");toast("Paid "+money(v)+" off the debt.","good");}
+    if(pend.bank==="pay"){S.cash-=v;S.debt-=v;remark("payDebt");say("Paid the shark "+money(v)+".","good");toast("Paid "+money(v)+" off the debt.","good");}
     if(pend.bank==="dep"){S.cash-=v;S.bank+=v;say("Banked "+money(v)+".");toast("Banked "+money(v)+".");}
     if(pend.bank==="wd"){S.bank-=v;S.cash+=v;say("Withdrew "+money(v)+".");toast("Withdrew "+money(v)+".");}
     if(pend.bank==="borrow"){S.cash+=v;S.debt+=v;S.borrowedToday+=v;
-      say("Borrowed "+money(v)+" from the shark.","bad");
+      say("Borrowed "+money(v)+" from the shark.","bad"); remark("borrow");
       toast("Borrowed "+money(v)+". He smiled, which is worse.");}
   }
   go("bank"); paint();
@@ -1621,7 +2940,7 @@ function buyWeapon(id){
   var w=WEAPONS.filter(function(x){return x.id===id;})[0];
   S.cash-=w.p; S.wep[w.id]=1;
   say("Bought a "+w.n.toLowerCase()+".","bad");
-  toast("You are now carrying a "+w.n.toLowerCase()+".");
+  toast("You are now carrying a "+w.n.toLowerCase()+"."); remark("weapon");
   animate("happy"); go("store"); paint();
 }
 function buyVest(id){
@@ -1629,6 +2948,15 @@ function buyVest(id){
   S.cash-=v.p; S.vestT=v.t;
   say("Bought a "+v.n.toLowerCase()+".");
   toast(v.n+" on. Beatings hurt "+Math.round(v.r*100)+"% less.","good");
+  go("store"); paint();
+}
+function respray(id){
+  var r=RIDES.filter(function(x){return x.id===id;})[0];
+  var cost=Math.round(r.p*0.18+4000);
+  if(S.cash<cost){ toast("You can't afford the respray.","bad"); return; }
+  S.cash-=cost; S.hot[id]=0; coolHeat(6);
+  say("Resprayed and replated the "+r.n.toLowerCase()+" for "+money(cost)+".","good");
+  toast("The "+r.n.toLowerCase()+" is clean now. Different colour, different plates.","good");
   go("store"); paint();
 }
 function buyRide(id){
@@ -1641,6 +2969,7 @@ function buyRide(id){
     go("store"); paint(); return;
   }
   S.ride=id;
+  remark("vehicle");
   toast("Travelling by "+r.n.toLowerCase()+". Capacity "+cap().toLocaleString()+
     (r.up?", "+money(r.up)+" a day to run.":"."),"good");
   go("store"); paint();
@@ -1649,7 +2978,7 @@ function buyProp(id){
   var p=PROPS.filter(function(x){return x.id===id;})[0], c=city(p.loc);
   S.cash-=p.p; S.props[id]=1;
   say("Bought the "+p.n.toLowerCase()+" in "+c.n+".","good");
-  toast(p.n+" in "+c.n+" is yours. "+money(p.up)+" a day to keep.","good");
+  toast(p.n+" in "+c.n+" is yours. "+money(p.up)+" a day to keep.","good"); remark("property");
   animate("happy"); go("store"); paint();
 }
 function buyCrew(id){
@@ -1777,6 +3106,11 @@ function endDay(){
   /* being conspicuous costs you */
   if(worth()>1e7) addHeat(0.5);
   if(worth()>1e8) addHeat(0.7);
+  if(isHot() && Math.random()<0.05){
+    addHeat(4);
+    say("Someone ran the plates on the "+ride().n.toLowerCase()+". It came back stolen.","bad");
+    toast("The plates on your "+ride().n.toLowerCase()+" got run. Heat up.","bad");
+  }
   raidCheck();
   roll(); planNextDay(); paint();
   return S.day>S.days;
@@ -1802,19 +3136,142 @@ function raidCheck(){
     }
   });
 }
-function hazard(to){
-  if(Math.random()<legRisk(to)){ go("cops"); return true; }
+function pickDanger(){
+  var d=DANGERS[ri(0,DANGERS.length-1)];
+  var scale=1+S.mile*0.55;
+  return {d:d, bribe:Math.round(d.bribe*scale)};
+}
+function pickOpp(){
+  for(var i=0;i<8;i++){
+    var o=OPPS[ri(0,OPPS.length-1)];
+    if(o.ride){
+      if(S.owned[o.ride]) continue;          /* no point offering one you own */
+      return o;
+    }
+    return o;
+  }
+  return null;
+}
+/* One roll decides what happens, so a high chance of being stopped no longer
+   crowds out everything else. Something happens on most journeys. */
+function hazard(to,moving){
+  var cop = moving ? legRisk(to) : 0.02;
+  var r=Math.random();
+  if(r<cop){ go("cops"); return true; }
+  if(r<cop+0.26){ pend=pickDanger(); go("danger"); return true; }
+  var o=pickOpp();
+  if(o && r<cop+0.44){ pend={o:o}; go("opp"); return true; }
   var ev=pickEvent();
-  if(Math.random()<0.28 && ev){ pend=ev; go("event"); return true; }
+  if(ev && r<cop+0.66){ pend=ev; go("event"); return true; }
   return false;
+}
+function nm(t){return String(t).replace(/\{N\}/g, esc(S.name));}
+
+function dangerHTML(){
+  var d=pend.d, W=wep(), bribe=pend.bribe;
+  var runOdds=Math.round(clamp(d.runOdds-S.heat/400,0.15,0.95)*100);
+  var fightOdds=W?Math.round(W.w*100):0;
+  return '<div class="scrhead"><h3 style="color:var(--heat)">'+esc(d.t).toUpperCase()+'</h3></div>'+
+    '<div class="note" style="color:var(--chalk);font-size:13px;line-height:1.6">'+nm(d.b)+'</div>'+
+    '<button class="opt" data-dgr="fight"'+(W?"":" disabled")+'>Use the '+(W?esc(W.n).toLowerCase():"weapon you haven\'t got")+
+      '<small>'+(W?("about "+fightOdds+"% to win &middot; losing hurts"):"Buy something from the Store first")+'</small></button>'+
+    '<button class="opt" data-dgr="run">Run</button>'.replace('</button>',
+      '<small>about '+runOdds+'% to get away'+(S.heat>40?" &middot; your heat makes this harder":"")+'</small></button>')+
+    '<button class="opt" data-dgr="bribe"'+(S.cash>=bribe?"":" disabled")+'>Pay them '+money(bribe)+
+      '<small>'+(S.cash>=bribe?"about 90% to make it go away":"you don\'t have it")+'</small></button>';
+}
+function dangerChoice(k){
+  var d=pend.d, bribe=pend.bribe, dead=false;
+  if(k==="fight"){
+    var W=wep();
+    if(Math.random()<W.w){
+      say(W.k,"good"); toast(d.win,"good"); animate("happy"); addHeat(5);
+    }else{
+      say(d.lose,"bad"); toast(d.lose,"bad");
+      var loss=Math.round(S.cash*0.15); S.cash-=loss;
+      dead=hurt(ri(12,26));
+    }
+  }else if(k==="run"){
+    if(Math.random()<clamp(d.runOdds-S.heat/400,0.15,0.95)){
+      say("Got away from "+d.t.toLowerCase()+".","good"); toast("You got away.","good");
+    }else{
+      say("Couldn't get away from "+d.t.toLowerCase()+".","bad");
+      toast(d.lose,"bad"); dead=hurt(ri(8,20));
+    }
+  }else{
+    S.cash-=bribe;
+    if(Math.random()<0.90){ say(d.paid,"good"); toast(d.paid,"good"); }
+    else{ say("They took the money and had a go anyway.","bad");
+          toast("They took the money and had a go anyway.","bad"); dead=hurt(ri(6,14)); }
+  }
+  pend=null; paint();
+  if(dead) return finish(true);
+  go("home");
+}
+
+function oppHTML(){
+  var o=pend.o;
+  var extra="";
+  if(o.ride){
+    var r=RIDES.filter(function(x){return x.id===o.ride;})[0];
+    extra='<div class="note">A free '+r.n.toLowerCase()+' holds '+r.cap.toLocaleString()+
+      ' units. But it will be reported, so it raises your risk of being stopped by 65% until you '+
+      'get it resprayed and replated at the Store.</div>';
+  }
+  return '<div class="scrhead"><h3 style="color:var(--sodium)">'+esc(o.t).toUpperCase()+'</h3></div>'+
+    '<div class="note" style="color:var(--chalk);font-size:13px;line-height:1.6">'+nm(o.b)+'</div>'+
+    extra+
+    '<button class="opt nuke" data-opp="take">'+esc(o.take)+'<small>'+esc(o.note)+' &middot; +'+o.heat+' heat</small></button>'+
+    '<button class="opt" data-opp="skip">'+esc(o.skip)+'<small>Nothing happens. Nothing ever happens.</small></button>';
+}
+function oppChoice(k){
+  var o=pend.o;
+  if(k==="skip"){
+    say("Left the "+o.t.toLowerCase()+" well alone.");
+    toast("Probably wise.");
+    pend=null; go("home"); paint(); return;
+  }
+  addHeat(o.heat);
+  if(o.ride){
+    var r=RIDES.filter(function(x){return x.id===o.ride;})[0];
+    S.owned[o.ride]=1; S.hot[o.ride]=1;
+    if(used()<=S.coat+r.cap) S.ride=o.ride;
+    say("Stole a "+r.n.toLowerCase()+". It is extremely stolen.","bad");
+    toast("The "+r.n.toLowerCase()+" is yours. It is also on a list. Get it resprayed.","bad");
+    animate("happy");
+  }else if(o.drugs){
+    var g=GOODS[ri(0,9)], q=ri(6,40), room=space();
+    if(room<=0){ toast("Your load is full. You had to leave it.","bad"); }
+    else{
+      q=Math.min(q,room); S.inv[g.id]+=q; addCost(g.id,q,0);
+      say("The suitcase had "+q+" "+g.n+" in it.","good");
+      toast("The suitcase had "+q+" "+g.n+" inside.","good"); animate("happy");
+    }
+  }else{
+    if(Math.random()<0.78){
+      var amt=ri(o.bagLo,o.bagHi)*(1+S.mile*0.5);
+      amt=Math.round(amt); S.cash+=amt;
+      say("Took "+money(amt)+" from the "+o.t.toLowerCase()+".","good");
+      toast("+"+money(amt),"good"); animate("happy");
+    }else{
+      say("It was a setup. Somebody was waiting.","bad");
+      toast("It was a setup.","bad");
+      var d2=hurt(ri(10,22));
+      pend=null; paint();
+      if(d2) return finish(true);
+      go("home"); return;
+    }
+  }
+  pend=null; paint(); go("home");
 }
 function travel(to){
   var from=S.loc;
   S.loc=to;
   addHeat(city(to).cc!==city(from).cc ? 3.5 : 1.4);
   if(endDay()) return finish(false);
-  if(hazard(to)) return;
+  if(hazard(to,true)) return;
   go("home"); toast("Arrived in "+city().n+".");
+  remark(city(to).cc!==city(from).cc?"border":"travel");
 }
 function waitDays(n){
   var d=0;
@@ -1822,7 +3279,7 @@ function waitDays(n){
     d++;
     coolHeat(4);
     if(endDay()) return finish(false);
-    if(Math.random()<0.10){ var ev=pickEvent(); if(ev){pend=ev;go("event");return;} }
+    if(Math.random()<0.34 && hazard(S.loc,false)) return;
   }
   go("home");
   toast(d===1?("Day "+S.day+". Heat down a little."):(d+" days indoors. Heat down "+(d*4+d*1.2|0)+"."));
@@ -1903,6 +3360,7 @@ function bust(dmg){
   addHeat(12);
   say("Busted. They took "+lost.toLocaleString()+" units and "+money(take)+".","bad");
   toast(stashUsed()?"Busted — but your storage is untouched.":"Busted. They took everything on you.","bad");
+  remark("bust");
   return hurt(dmg);
 }
 var EVENTS=[
@@ -2060,17 +3518,20 @@ function askName(){
   S.over=false; wrap.classList.add("on");
   scr.innerHTML='<div class="scrhead"><h3>Who\'s playing?</h3></div>'+
     '<div class="note">Ten cities across three countries. Thirty days to start, and every money '+
-    'milestone buys fifteen more. Buy cheap in Tijuana, sell dear in New York &mdash; but you can only '+
+    'milestone buys five more. Buy cheap in Tijuana, sell dear in New York &mdash; but you can only '+
     'move product in a vehicle you own, and without one you\'re queuing through airport security '+
     'with your coat full.</div>'+
     '<div class="note">Everything you own costs you money every day. The police get more interested '+
     'the richer and louder you get. Watch the heat bar.</div>'+
+    '<div class="note">On the road people will start trouble with you. Every time, you can fight them, '+
+    'run, or pay them off &mdash; and the game tells you the odds before you choose. You will also be '+
+    'offered things that are not yours. Taking them is often worth it. It is never free.</div>'+
     '<input class="qty" id="nm" maxlength="18" value="Wesley">'+
     '<button class="opt" data-start="1">Start hustling</button>';
   var nm=document.getElementById("nm"); nm.focus(); nm.select();
 }
 document.addEventListener("keydown",function(e){
-  if(e.key==="Escape" && !S.over && wrap.classList.contains("on")) wrap.classList.remove("on");
+  if(e.key==="Escape" && !S.over && wrap.classList.contains("on")){ wrap.classList.remove("on"); showPhone(false); }
 });
 reset("Wesley"); paint(); askName();
 window.__wdgStarted=true;
