@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wesley's Drug Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14121A; --wall:#FFFFFF; --floor:#E9E9EE; --grid:#D4D4DC;
+  --sodium:#E8912A; --heat:#D8324B; --cash:#3FA85A; --dim:#8C8894;
+  --screen:#14121A; --scr2:#232030; --edge:#3A3548; --chalk:#EFEDE6;
+  --disp:'Bungee',Impact,sans-serif; --body:'Archivo',-apple-system,Segoe UI,sans-serif;
+  --mono:'Space Mono',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--wall);color:var(--ink);font-family:var(--body);overflow:hidden}
+button{font-family:var(--body);cursor:pointer;border-radius:0;border:none}
+button:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
+.stage{position:fixed;inset:0;background:var(--wall);overflow:hidden}
+.floor{position:absolute;left:-60%;right:-60%;bottom:0;height:46%;
+  background:repeating-linear-gradient(90deg,transparent 0 78px,var(--grid) 78px 79px),
+    repeating-linear-gradient(0deg,transparent 0 78px,var(--grid) 78px 79px),
+    linear-gradient(#F6F6F9,var(--floor));
+  transform:perspective(560px) rotateX(64deg);transform-origin:bottom center}
+.horizon{position:absolute;left:0;right:0;bottom:46%;height:130px;
+  background:linear-gradient(transparent,rgba(20,18,26,.07));pointer-events:none}
+.figwrap{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);z-index:3;
+  height:min(62vh,470px);transform-origin:bottom center}
+.figure{height:100%;width:auto;display:block}
+.castshadow{position:absolute;left:50%;bottom:16%;
+  transform:translateX(-50%) translateX(-30%) scaleX(1.28) scaleY(1.46) skewX(12deg);
+  transform-origin:bottom center;height:min(62vh,470px);width:auto;opacity:.19;
+  filter:blur(8px);z-index:1;pointer-events:none}
+.groundshadow{position:absolute;left:50%;bottom:15%;transform:translateX(-50%);
+  width:min(30vh,230px);height:min(6vh,44px);border-radius:50%;
+  background:radial-gradient(ellipse,rgba(20,18,26,.34),transparent 68%);z-index:2;pointer-events:none}
+.spot{position:absolute;left:50%;top:-14%;transform:translateX(-50%);
+  width:min(74vh,560px);height:min(74vh,560px);pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(232,145,42,.11),transparent 66%)}
+/* ── he reacts physically ── */
+@keyframes hitshake{
+  0%{transform:translateX(0) rotate(0)} 12%{transform:translateX(-13px) rotate(-6deg)}
+  26%{transform:translateX(11px) rotate(5deg)} 40%{transform:translateX(-8px) rotate(-4deg)}
+  56%{transform:translateX(6px) rotate(3deg)} 72%{transform:translateX(-3px) rotate(-1deg)}
+  100%{transform:translateX(0) rotate(0)} }
+@keyframes stagger{
+  0%{transform:translateX(0) rotate(0)} 30%{transform:translateX(-26px) rotate(-13deg)}
+  60%{transform:translateX(16px) rotate(8deg)} 100%{transform:translateX(0) rotate(0)} }
+@keyframes celebrate{
+  0%,100%{transform:translateY(0)} 30%{transform:translateY(-26px)} 55%{transform:translateY(0)}
+  72%{transform:translateY(-13px)} }
+@keyframes shiver{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-2.5px)}
+  75%{transform:translateX(2.5px)} }
+@keyframes collapse{ 0%{transform:rotate(0) translateY(0)} 100%{transform:rotate(-84deg) translateY(46px)} }
+@keyframes flash{ 0%{opacity:0} 6%{opacity:1} 100%{opacity:0} }
+.figwrap.hit{animation:hitshake .55s ease-out}
+.figwrap.stagger{animation:stagger .8s ease-out}
+.figwrap.happy{animation:celebrate .85s ease-out}
+.figwrap.hurting{animation:shiver .4s ease-in-out infinite}
+.figwrap.down{animation:collapse 1.1s ease-in forwards}
+.nukeflash{position:fixed;inset:0;background:#fff;z-index:200;pointer-events:none;opacity:0}
+.nukeflash.go{animation:flash 2.6s ease-out forwards}
+.top{position:absolute;top:0;left:0;right:0;padding:14px 16px;z-index:12;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.brand{font-family:var(--disp);font-size:clamp(13px,2.6vw,19px);line-height:1.15}
+.brand i{font-style:normal;color:var(--sodium)}
+.vitals{min-width:210px;flex:0 1 320px}
+.bars{display:flex;flex-direction:column;gap:5px}
+.bwrap{display:flex;align-items:center;gap:8px}
+.blab{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--dim);min-width:30px}
+.bar2{flex:1;height:13px;background:#E4E2E8;border:2px solid var(--ink);overflow:hidden}
+.bar2 i{display:block;height:100%;width:100%;transition:width .45s ease,background .45s}
+.bar2 i.hp{background:var(--cash)} .bar2 i.hp.mid{background:var(--sodium)} .bar2 i.hp.low{background:var(--heat)}
+.bar2 i.ht{background:var(--dim)} .bar2 i.ht.warm{background:var(--sodium)} .bar2 i.ht.hot{background:var(--heat)}
+.bnum{font-family:var(--mono);font-size:9.5px;font-weight:700;min-width:34px;text-align:right}
+.pills{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.pill{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;
+  border:1.5px solid var(--ink);padding:3px 7px;background:#fff;white-space:nowrap}
+.pill b{color:var(--cash)} .pill b.neg{color:var(--heat)} .pill span{color:var(--dim);font-weight:400}
+.toast{position:absolute;left:50%;top:20%;transform:translate(-50%,-12px);z-index:20;
+  background:var(--ink);color:var(--chalk);padding:10px 18px;max-width:min(88vw,420px);
+  font-family:var(--mono);font-size:12px;line-height:1.5;text-align:center;
+  opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;box-shadow:6px 6px 0 rgba(20,18,26,.16)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.bad{background:var(--heat)} .toast.good{background:var(--cash)}
+.toast.mile{background:var(--sodium);color:var(--ink);font-weight:700}
+.phonebtn{position:fixed;right:20px;bottom:20px;width:66px;height:66px;z-index:30;
+  background:var(--ink);color:var(--sodium);display:grid;place-items:center;
+  box-shadow:5px 5px 0 rgba(20,18,26,.22);transition:transform .14s}
+.phonebtn:hover{transform:translateY(-3px)}
+.phonebtn::after{content:'';position:absolute;inset:-7px;border:2px solid var(--sodium);
+  opacity:0;animation:ring 2.6s ease-out infinite}
+@keyframes ring{0%{opacity:.55;transform:scale(.9)}70%,100%{opacity:0;transform:scale(1.2)}}
+.badge{position:absolute;top:-7px;left:-7px;background:var(--heat);color:#fff;
+  font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 6px;letter-spacing:.06em}
+.phonewrap{position:fixed;inset:0;z-index:40;background:rgba(20,18,26,.5);
+  display:none;align-items:flex-end;justify-content:flex-end;padding:16px}
+.phonewrap.on{display:flex}
+.phone{width:min(380px,100%);max-height:min(90vh,780px);background:var(--ink);
+  border:3px solid #000;box-shadow:0 20px 60px rgba(20,18,26,.55);display:flex;flex-direction:column}
+.phonetop{display:flex;justify-content:space-between;padding:8px 14px;font-family:var(--mono);
+  font-size:9.5px;letter-spacing:.16em;color:#7A7488;border-bottom:1px solid var(--edge)}
+.scr{background:var(--screen);color:var(--chalk);padding:14px;overflow-y:auto;flex:1;min-height:290px}
+.scrhead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.back{background:var(--scr2);color:var(--chalk);font-family:var(--mono);font-size:14px;padding:5px 11px;border:1px solid var(--edge)}
+.back:hover{background:var(--sodium);color:var(--ink)}
+.scrhead h3{font-family:var(--disp);font-size:15px;margin:0;color:var(--sodium)}
+.phonefoot{padding:9px;border-top:1px solid var(--edge);display:flex;justify-content:center}
+.hangup{width:52px;height:8px;background:var(--edge)}
+.apps{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.app{position:relative;background:var(--scr2);border:1px solid var(--edge);color:var(--chalk);
+  padding:13px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.app:hover:not(:disabled){background:var(--sodium);color:var(--ink)}
+.app:disabled{opacity:.26;cursor:not-allowed}
+.app span{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.08em}
+.app svg{width:22px;height:22px}
+.appdot{position:absolute;top:5px;right:5px;width:8px;height:8px;background:var(--heat)}
+.mrow{display:grid;grid-template-columns:1fr auto auto;gap:7px;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--scr2)}
+.mrow.r-up{box-shadow:inset 3px 0 0 var(--cash);padding-left:8px}
+.mrow.r-dn{box-shadow:inset 3px 0 0 var(--heat);padding-left:8px}
+.mname{background:none;border:none;color:var(--chalk);text-align:left;padding:0;
+  font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+.mname:hover{color:var(--sodium)}
+.mname i{width:9px;height:9px;flex:none;display:inline-block}
+.mname small{display:block;font-family:var(--mono);font-size:9.5px;color:var(--dim);font-weight:400}
+.tag{display:inline-block;font-family:var(--mono);font-size:9.5px;font-weight:700;
+  letter-spacing:.06em;padding:2px 5px;margin-left:6px;vertical-align:middle}
+.tag.up{background:var(--cash);color:var(--ink)} .tag.dn{background:var(--heat);color:#fff}
+.mprice{font-family:var(--mono);font-weight:700;font-size:13px;text-align:right;
+  display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:86px}
+.arw{font-size:11px;line-height:1}
+.arw.up{color:var(--cash)} .arw.dn{color:var(--heat)} .arw.fl{color:var(--dim)}
+.mbtns{display:flex;gap:4px}
+.mbtns button{background:var(--scr2);border:1px solid var(--edge);color:var(--chalk);
+  font-family:var(--mono);font-size:10px;font-weight:700;padding:6px 7px}
+.mbtns button:hover:not(:disabled){background:var(--sodium);color:var(--ink)}
+.mbtns button:disabled{opacity:.24;cursor:not-allowed}
+.none{font-family:var(--mono);font-size:9.5px;color:var(--dim);text-align:right;min-width:86px}
+.opt{display:block;width:100%;background:var(--scr2);border:1px solid var(--edge);
+  color:var(--chalk);padding:11px 13px;text-align:left;margin-bottom:7px;font-size:13.5px;font-weight:600}
+.opt:hover:not(:disabled){background:var(--sodium);color:var(--ink)}
+.opt:disabled{opacity:.26;cursor:not-allowed}
+.opt small{display:block;font-family:var(--mono);font-size:9.5px;font-weight:400;opacity:.72;margin-top:2px}
+.opt em{font-style:normal;float:right;font-family:var(--mono);font-size:11px;color:var(--sodium)}
+.opt.owned{border-color:var(--cash)} .opt.owned em{color:var(--cash)}
+.opt.active{background:#1B3A26;border-color:var(--cash)}
+.opt.nuke{border-color:var(--heat);background:#2A1218}
+.opt.nuke em{color:var(--heat)}
+.note{font-family:var(--mono);font-size:10.5px;color:var(--dim);line-height:1.55;margin-bottom:11px}
+.qty{width:100%;background:#000;border:1px solid var(--edge);color:var(--chalk);
+  font-family:var(--mono);font-size:16px;padding:9px 11px;margin-bottom:9px}
+.destrow{display:flex;gap:6px;margin-bottom:11px}
+.dest{flex:1;background:var(--scr2);border:1px solid var(--edge);color:var(--chalk);
+  padding:9px 8px;font-size:12px;font-weight:600;text-align:left;line-height:1.25}
+.dest small{display:block;font-family:var(--mono);font-size:9.5px;font-weight:400;color:var(--dim);margin-top:2px}
+.dest.on{background:var(--sodium);color:var(--ink);border-color:var(--sodium)}
+.dest.on small{color:rgba(20,18,26,.7)}
+.newsbar{border:1px solid var(--edge);background:#0E0C14;margin-bottom:12px}
+.newsbar.quiet{padding:9px 11px;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.newshead{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--sodium);
+  padding:7px 10px 5px;border-bottom:1px solid var(--edge)}
+.newsfoot{font-family:var(--mono);font-size:9.5px;color:var(--dim);padding:5px 10px 7px;border-top:1px solid var(--edge)}
+.newsline{display:flex;align-items:center;gap:7px;width:100%;background:none;border:none;
+  border-bottom:1px solid #191622;padding:8px 10px;text-align:left;color:var(--chalk)}
+.newsline:last-of-type{border-bottom:none}
+.newsline:hover{background:var(--scr2)}
+.ndot{width:8px;height:8px;flex:none} .narw{font-size:10px;flex:none}
+.newsline.up .narw{color:var(--cash)} .newsline.dn .narw{color:var(--heat)}
+.ntxt{flex:1;font-size:11.5px;line-height:1.4}
+.lbrow{display:flex;gap:9px;align-items:center;padding:7px 0;border-bottom:1px solid var(--scr2)}
+.lbrow .rk{font-family:var(--disp);font-size:13px;color:var(--sodium);min-width:22px}
+.lbrow .who{flex:1;font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbrow .who small{display:block;font-family:var(--mono);font-size:9.5px;color:var(--dim);font-weight:400}
+.lbrow .sc{font-family:var(--mono);font-weight:700;font-size:12.5px;color:var(--cash)}
+.lbrow .sc.neg{color:var(--heat)}
+.codebox{display:flex;gap:5px;margin-top:10px}
+.codebox input{flex:1;min-width:0;background:#000;border:1px solid var(--edge);color:var(--chalk);
+  font-family:var(--mono);font-size:16px;padding:8px}
+.codebox button{background:var(--sodium);color:var(--ink);font-family:var(--mono);font-weight:700;font-size:10px;padding:8px 12px}
+.share{background:#000;border:1px dashed var(--sodium);padding:9px;font-family:var(--mono);
+  font-size:10px;word-break:break-all;color:var(--sodium);margin:10px 0;max-height:82px;overflow-y:auto}
+.big{font-family:var(--mono);font-weight:700;font-size:32px;color:var(--cash);line-height:1;margin:6px 0}
+.big.neg{color:var(--heat)}
+.rank{font-family:var(--disp);font-size:16px;color:var(--sodium);margin-bottom:10px}
+.mid{text-align:center}
+.logline{font-family:var(--mono);font-size:10.5px;line-height:1.55;padding:5px 0;
+  border-bottom:1px dotted var(--scr2);display:flex;gap:7px}
+.logline b{color:var(--dim);font-weight:400;flex:none}
+.lg{color:var(--cash)} .lb2{color:var(--heat)} .lm{color:var(--sodium)}
+.ledger{border:1px solid var(--edge);background:#0E0C14;margin-bottom:12px}
+.lrow{display:flex;justify-content:space-between;align-items:baseline;padding:7px 11px;
+  border-bottom:1px solid #191622;font-family:var(--mono);font-size:11px;color:var(--dim)}
+.lrow:last-child{border-bottom:none}
+.lrow b{font-weight:700;color:var(--chalk)}
+.lrow b.cg{color:var(--cash)} .lrow b.ch{color:var(--heat)}
+.lrow.tot{background:var(--scr2);font-size:12.5px}
+.milebar{display:flex;gap:3px;margin:9px 0 12px}
+.milebar i{flex:1;height:6px;background:var(--scr2);border:1px solid var(--edge)}
+.milebar i.hit{background:var(--sodium);border-color:var(--sodium)}
+.chartbox{background:#0A0810;border:1px solid var(--edge);padding:6px;margin-bottom:10px}
+.cstat{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:9px;gap:10px}
+.cstat b{font-family:var(--mono);font-size:23px;font-weight:700;line-height:1}
+.cstat span{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em}
+.cstat .u{color:var(--cash)} .cstat .d{color:var(--heat)}
+.flag{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;padding:2px 5px;
+  border:1px solid var(--edge);color:var(--dim);margin-left:6px}
+.sec{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--sodium);
+  margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+
+/* ══════════ TOUCH & SMALL SCREENS ══════════ */
+html{-webkit-text-size-adjust:100%}
+body{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+/* dynamic viewport units where supported: mobile address bars change vh mid-scroll */
+@supports (height:100dvh){
+  .phone{max-height:min(90dvh,780px)}
+  .figwrap,.castshadow{height:min(62dvh,470px)}
+  @media(max-width:520px){ .figwrap,.castshadow{height:min(40dvh,300px)} }
+  @media(max-height:540px){ .figwrap,.castshadow{height:min(46dvh,190px)} }
+}
+/* on a touch screen a tapped button keeps its hover colour, which looks broken */
+@media(hover:none){
+  .app:hover:not(:disabled),.opt:hover:not(:disabled),.dest:hover:not(.on),
+  .mbtns button:hover:not(:disabled),.back:hover,.newsline:hover,.rgo:hover,
+  .boro:hover:not(:disabled),.codebox button:hover{background:inherit;color:inherit}
+  .app:hover:not(:disabled){background:var(--scr2);color:var(--chalk)}
+  .opt:hover:not(:disabled){background:var(--scr2);color:var(--chalk)}
+  .mbtns button:hover:not(:disabled){background:var(--scr2);color:var(--chalk)}
+  .back:hover{background:var(--scr2);color:var(--chalk)}
+  .newsline:hover{background:none}
+  .codebox button:hover{background:var(--sodium);color:var(--ink)}
+  .phonebtn:hover{transform:none}
+  /* but make it obvious a tap registered */
+  .app:active,.opt:active,.mbtns button:active,.dest:active,.back:active,.newsline:active{
+    background:var(--sodium);color:var(--ink)}
+  .phonebtn:active{transform:scale(.94)}
+}
+@media(max-width:560px),(max-height:540px){
+  .wrap,.top{padding:10px 11px}
+  .phonewrap{padding:0}
+  .phone{width:100%;max-height:100%;height:100%;border-width:0;border-top:3px solid #000}
+  .scr{padding:13px 12px}
+  /* thumbs are not mouse pointers: everything tappable gets real height */
+  .mbtns button{padding:13px 12px;font-size:12px;min-height:44px}
+  .back{padding:11px 15px;font-size:16px;min-height:44px;min-width:46px}
+  .opt{padding:14px 14px;min-height:48px}
+  .dest{padding:12px 10px;min-height:48px}
+  .app{padding:16px 6px 13px;min-height:74px}
+  .app svg{width:25px;height:25px}
+  .newsline{padding:12px 10px;min-height:46px}
+  .codebox button{padding:12px 15px;min-height:44px}
+  .mname{padding:6px 0;min-height:40px}
+  .mrow{grid-template-columns:1fr auto;grid-template-areas:"name price" "btns btns";gap:6px}
+  .mname{grid-area:name} .mprice,.none{grid-area:price}
+  .mbtns{grid-area:btns;gap:8px}
+  .mbtns button{flex:1}
+  .phonebtn{width:62px;height:62px;right:14px;bottom:14px}
+  .pills{gap:4px}
+  .pill{font-size:9.5px;padding:3px 6px}
+  .toast{top:16%;font-size:11.5px;padding:9px 14px}
+  .big{font-size:28px}
+  .brand{font-size:12px}
+}
+/* landscape phones: very little vertical room, and the HUD was sitting on his head */
+@media(max-height:540px) and (orientation:landscape){
+  .figwrap,.castshadow{height:min(46dvh,190px);bottom:8%}
+  .groundshadow{bottom:7%}
+  .top{padding:5px 9px;gap:8px}
+  .brand{font-size:11px;line-height:1.05}
+  .vitals{flex:0 1 240px;min-width:180px}
+  .pills{margin-top:4px;gap:3px}
+  .pill{font-size:9px;padding:2px 5px}
+  .bar2{height:10px}
+  .phone{max-height:100%}
+  .scr{min-height:0}
+  .toast{top:auto;bottom:12px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:520px){.figwrap,.castshadow{height:min(44vh,320px)}}
+</style>
+</head>
+<body>
+<div id="bootmsg" style="position:fixed;inset:0;z-index:9998;background:#14121A;color:#EFEDE6;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:auto">
+  <div style="max-width:470px;border:2px solid #E8912A;background:#1B1824;padding:24px 22px">
+    <div style="font-family:Impact,sans-serif;font-size:23px;color:#E8912A;letter-spacing:.02em;margin-bottom:6px">
+      WESLEY'S DRUG GAME</div>
+    <div id="bootspin" style="display:none;font-size:14px;color:#8C8894;margin-bottom:16px">Starting&hellip;</div>
+    <div id="bootfail">
+      <h2 style="font-size:18px;color:#E8912A;margin:0 0 12px">This window can't run the game</h2>
+      <p style="font-size:14.5px;line-height:1.55;margin:0 0 12px">
+        The file is fine &mdash; but this window isn't running it. That usually means you're looking at a
+        <b style="color:#E8912A">file preview</b> rather than a browser.</p>
+      <p style="font-size:14.5px;line-height:1.55;margin:0 0 8px"><b>Open it in a real browser:</b></p>
+      <ul style="font-size:14px;line-height:1.75;margin:0 0 12px;padding-left:20px">
+        <li><b>iPhone:</b> tap <b>Share</b> &rarr; <b>Open in Safari</b>. If it came by message, save it to
+            <b>Files</b> first, then open it from there.</li>
+        <li><b>Android:</b> tap the three dots &rarr; <b>Open with</b> &rarr; Chrome</li>
+        <li><b>Mac:</b> right-click the file &rarr; <b>Open With</b> &rarr; Safari or Chrome</li>
+        <li><b>Windows:</b> right-click &rarr; <b>Open with</b> &rarr; Edge or Chrome</li>
+      </ul>
+      <p style="font-size:13px;color:#8C8894;line-height:1.5;margin:0">
+        If you're already in a browser, check that JavaScript is switched on for this page.</p>
+      <p id="booterr" style="font-size:11.5px;color:#D8324B;margin-top:12px;word-break:break-word"></p>
+      <p style="font-size:11px;color:#5A5566;margin-top:14px">build 2026-08-01-b12</p>
+    </div>
+  </div>
+</div>
+<script>
+/* If the game hasn't started within a couple of seconds, explain why. */
+(function(){
+  window.__wdgBuild='2026-08-01-b12';
+  /* JavaScript is alive, so hide the warning while the game loads */
+  var s0=document.getElementById('bootspin'), f0=document.getElementById('bootfail');
+  if(s0) s0.style.display='block';
+  if(f0) f0.style.display='none';
+  setTimeout(function(){
+    if(window.__wdgStarted) return;
+    var s=document.getElementById('bootspin'), f=document.getElementById('bootfail');
+    if(s) s.style.display='none';
+    if(f) f.style.display='block';
+  },1800);
+  window.addEventListener('error',function(e){
+    if(window.__wdgStarted) return;
+    var s=document.getElementById('bootspin'), f=document.getElementById('bootfail'),
+        p=document.getElementById('booterr');
+    if(s) s.style.display='none';
+    if(f) f.style.display='block';
+    if(p) p.textContent=String(e.message||'').slice(0,200);
+  });
+})();
+</script>
+<div class="stage">
+  <div class="spot"></div><div class="floor"></div><div class="horizon"></div>
+  <svg class="castshadow" id="shade" viewBox="0 0 200 330" aria-hidden="true"></svg>
+  <div class="groundshadow"></div>
+  <div class="figwrap" id="figwrap"><svg class="figure" id="man" viewBox="0 0 200 330" role="img" aria-label="Your dealer"></svg></div>
+</div>
+<div class="nukeflash" id="nukeflash"></div>
+<div class="top">
+  <div class="brand">Wesley's<br><i>Drug Game</i></div>
+  <div class="vitals">
+    <div class="bars">
+      <div class="bwrap"><span class="blab">BODY</span><div class="bar2"><i class="hp" id="hpbar"></i></div><span class="bnum" id="hplab">100%</span></div>
+      <div class="bwrap"><span class="blab">HEAT</span><div class="bar2"><i class="ht" id="htbar"></i></div><span class="bnum" id="htlab">0%</span></div>
+    </div>
+    <div class="pills">
+      <span class="pill"><span>DAY</span> <b id="p-day">1/30</b></span>
+      <span class="pill"><span>IN</span> <b id="p-loc">&mdash;</b></span>
+      <span class="pill"><span>CASH</span> <b id="p-cash">$0</b></span>
+      <span class="pill"><span>DEBT</span> <b class="neg" id="p-debt">$0</b></span>
+      <span class="pill"><span>LOAD</span> <b id="p-coat">0/100</b></span>
+      <span class="pill"><span>UPKEEP</span> <b class="neg" id="p-up">$0</b></span>
+      <span class="pill"><span>WORTH</span> <b id="p-net">$0</b></span>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<button class="phonebtn" id="phonebtn" aria-label="Open phone">
+  <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2">
+    <rect x="6" y="2" width="12" height="20" rx="1"/><line x1="9" y1="6" x2="15" y2="6"/>
+    <line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="17" y1="2" x2="19" y2="0"/>
+  </svg>
+  <span class="badge" id="badge" style="display:none">!</span>
+</button>
+<div class="phonewrap" id="phonewrap">
+  <div class="phone">
+    <div class="phonetop"><span>BURNER</span><span>2026-08-01-b12 &#9646;&#9646;&#9646;</span></div>
+    <div class="scr" id="scr"></div>
+    <div class="phonefoot"><div class="hangup"></div></div>
+  </div>
+</div>
+<script>
+(function(){
+"use strict";
+
+/* ══════════ DATA ══════════ */
+var GOODS=[
+ {id:"ludes", n:"Ludes",       lo:10,    hi:60,     v:.22, c:"#8E7BE8"},
+ {id:"speed", n:"Speed",       lo:70,    hi:250,    v:.18, c:"#F5A63C"},
+ {id:"weed",  n:"Weed",        lo:300,   hi:900,    v:.10, c:"#5FBF6A"},
+ {id:"hash",  n:"Hash",        lo:450,   hi:1300,   v:.13, c:"#A8763E"},
+ {id:"shroom",n:"Shrooms",     lo:600,   hi:1500,   v:.16, c:"#E36B8A"},
+ {id:"mdma",  n:"MDMA",        lo:900,   hi:2700,   v:.20, c:"#F06BD0"},
+ {id:"acid",  n:"Acid",        lo:1000,  hi:4400,   v:.24, c:"#4FC3E8"},
+ {id:"ket",   n:"Ketamine",    lo:1800,  hi:4900,   v:.19, c:"#EDD84F"},
+ {id:"oxy",   n:"Oxy",         lo:2200,  hi:6000,   v:.15, c:"#9FE86B"},
+ {id:"pcp",   n:"PCP",         lo:2500,  hi:7200,   v:.26, c:"#6BE8C4"},
+ {id:"meth",  n:"Meth",        lo:3000,  hi:8500,   v:.21, c:"#C9D6E8"},
+ {id:"smack", n:"Heroin",      lo:5000,  hi:13000,  v:.17, c:"#C2413A"},
+ {id:"crack", n:"Crack",       lo:8000,  hi:18000,  v:.23, c:"#E8944F"},
+ {id:"coke",  n:"Cocaine",     lo:15000, hi:29000,  v:.14, c:"#E4EAF2"},
+ {id:"fent",  n:"Fentanyl",    lo:20000, hi:52000,  v:.30, c:"#B03BE8"},
+ {id:"carf",  n:"Carfentanil", lo:40000, hi:110000, v:.34, c:"#FF5470"}
+];
+
+/* 10 cities. x/y are rough map positions used for travel distance. */
+var CITIES=[
+ {id:"nyc",  n:"New York",     cc:"USA", m:1.22, heat:1.25, x:88, y:34, d:"Rich buyers, heavy policing"},
+ {id:"mia",  n:"Miami",        cc:"USA", m:1.14, heat:1.40, x:84, y:76, d:"Ports, powder, patrol boats"},
+ {id:"chi",  n:"Chicago",      cc:"USA", m:1.00, heat:1.05, x:66, y:36, d:"Steady, central, unremarkable"},
+ {id:"det",  n:"Detroit",      cc:"USA", m:0.88, heat:0.85, x:72, y:32, d:"Cheap, quiet, cold"},
+ {id:"lax",  n:"Los Angeles",  cc:"USA", m:1.10, heat:1.15, x:14, y:58, d:"Everything, all the time"},
+ {id:"tij",  n:"Tijuana",      cc:"MEX", m:0.74, heat:1.30, x:16, y:66, d:"Cheapest supply anywhere"},
+ {id:"cjz",  n:"Ciudad Juarez",cc:"MEX", m:0.70, heat:1.45, x:34, y:72, d:"Cheap and genuinely dangerous"},
+ {id:"mex",  n:"Mexico City",  cc:"MEX", m:0.80, heat:1.10, x:46, y:92, d:"Huge market, cheap product"},
+ {id:"van",  n:"Vancouver",    cc:"CAN", m:1.06, heat:0.80, x:12, y:12, d:"Relaxed, damp, profitable"},
+ {id:"tor",  n:"Toronto",      cc:"CAN", m:1.12, heat:0.90, x:76, y:22, d:"Money, and nobody looking"}
+];
+
+var MILES=[1e4,1e5,1e6,5e6,1e7,2.5e7,5e7,1e8,2.5e8,5e8,1e9,5e9,2.5e10,1e11];
+
+/* ── 20 weapons, all ridiculous, plus the bomb ── */
+var WEAPONS=[
+ {id:"sock",   n:"Sock full of nickels", p:40,        w:.30, k:"You swing a sock full of nickels. It connects with a sound like a dropped piano."},
+ {id:"baguette",n:"Week-old baguette",   p:120,       w:.33, k:"You club him with a baguette so stale it chips. He goes down. The bread does not."},
+ {id:"trout",  n:"Frozen trout",         p:400,       w:.37, k:"You slap him with a frozen trout. He slips on the meltwater and knocks himself out."},
+ {id:"bowling",n:"Bowling ball",         p:1200,      w:.41, k:"You roll a bowling ball at his ankles. Strike. He does not get up."},
+ {id:"garden", n:"Angry garden gnome",   p:3000,      w:.44, k:"You hurl a ceramic gnome. Its little painted face is the last thing he sees."},
+ {id:"nailbat",n:"Bat with a nail in it",p:7000,      w:.48, k:"The bat has one nail. One nail is enough. He rethinks his career."},
+ {id:"fire",   n:"Fire extinguisher",    p:15000,     w:.52, k:"You extinguish him. Thoroughly. The foam is a nice touch."},
+ {id:"chain",  n:"Chainsaw (no chain)",  p:32000,     w:.55, k:"The chainsaw has no chain but it makes the noise. He faints from the noise alone."},
+ {id:"bees",   n:"Jar of angry bees",    p:60000,     w:.58, k:"You open the jar. The bees have been waiting for this. They are not gentle."},
+ {id:"tuba",   n:"Tuba",                 p:110000,    w:.61, k:"You play one catastrophic note directly into his ear. He is never the same."},
+ {id:"vending",n:"Vending machine",      p:200000,    w:.64, k:"You tip a vending machine onto him. Ironically it still refuses to dispense."},
+ {id:"catapult",n:"Desk catapult",       p:380000,    w:.67, k:"You launch a stapler at 200mph. It staples him to the wall. All of him."},
+ {id:"lawn",   n:"Weaponised lawnmower", p:700000,    w:.70, k:"You push the mower at him. It has been modified. Grass is not what it cuts."},
+ {id:"cannon", n:"Confetti cannon",      p:1300000,   w:.73, k:"You fire the confetti cannon. Turns out at close range confetti is shrapnel."},
+ {id:"anvil",  n:"Cartoon anvil",        p:2500000,   w:.76, k:"An anvil falls from somewhere. Physics declines to explain it. He is flat."},
+ {id:"pigeon", n:"Trained attack pigeon",p:4800000,   w:.79, k:"You release the pigeon. It has been trained by someone with real problems."},
+ {id:"jetski", n:"Airborne jet ski",     p:9000000,   w:.82, k:"You ride a jet ski off a ramp into him. Neither of you understand how. He understands less."},
+ {id:"piano",  n:"Grand piano on a rope",p:18000000,  w:.85, k:"You cut the rope. The piano plays one final chord on impact. It is in D minor."},
+ {id:"whale",  n:"Catapulted whale",     p:40000000,  w:.89, k:"A whale arrives from directly above. Nobody asks where it came from. Nobody survives asking."},
+ {id:"blackhole",n:"Pocket black hole",  p:90000000,  w:.94, k:"You open the little jar. He, his car, and one confused seagull cease to exist."}
+];
+var NUKE={id:"nuke", n:"Suitcase atomic bomb", p:250000000};
+
+var VESTS=[
+ {id:"kevlar",n:"Kevlar vest",    p:8000,   t:1, r:.25},
+ {id:"heavy", n:"Heavy vest",     p:60000,  t:2, r:.45},
+ {id:"plate", n:"Military plate", p:400000, t:3, r:.65}
+];
+
+/* transport. "foot" means no vehicle at all — you fly commercial, which is worst. */
+var RIDES=[
+ {id:"foot",  n:"Commercial flight", p:0,         cap:60,    risk:2.40, up:0,      d:"Queues, scanners, dogs. The worst way to move product."},
+ {id:"sedan", n:"Old sedan",         p:15000,     cap:220,   risk:0.95, up:60,     d:"A trunk and a bad muffler"},
+ {id:"van",   n:"Panel van",         p:90000,     cap:800,   risk:1.10, up:300,    d:"Roomy, and very obvious"},
+ {id:"truck", n:"Freight truck",     p:450000,    cap:3000,  risk:0.85, up:1600,   d:"Hides in plain sight on the interstate"},
+ {id:"speed", n:"Speedboat",         p:900000,    cap:2600,  risk:0.55, up:3200,   d:"Coast guard, not highway patrol"},
+ {id:"cargo", n:"Cargo ship",        p:4000000,   cap:14000, risk:0.60, up:14000,  d:"Carries a warehouse. Slow to search."},
+ {id:"cessna",n:"Cessna",            p:12000000,  cap:3500,  risk:0.22, up:26000,  d:"Nobody pulls over the sky"},
+ {id:"jet",   n:"Private jet",       p:60000000,  cap:9000,  risk:0.14, up:120000, d:"Customs waves you through out of respect"}
+];
+
+var PROPS=[
+ {id:"lockup",n:"Lock-up",     p:30000,   cap:600,   up:220,    loc:"nyc"},
+ {id:"wh",    n:"Warehouse",   p:350000,  cap:4000,  up:2200,   loc:"det"},
+ {id:"stone", n:"Brownstone",  p:2000000, cap:12000, up:11000,  loc:"chi"},
+ {id:"villa", n:"Beach villa", p:9000000, cap:30000, up:46000,  loc:"mia"},
+ {id:"ranch", n:"Desert ranch",p:26000000,cap:80000, up:120000, loc:"cjz"},
+ {id:"comp",  n:"Compound",    p:80000000,cap:220000,up:340000, loc:"mex"}
+];
+
+/* people on the payroll — ongoing cost, ongoing benefit */
+var CREW=[
+ {id:"lawyer", n:"Lawyer on retainer", p:120000,  up:9000,  d:"Bleeds 2 heat a day and halves what cops seize"},
+ {id:"driver", n:"Professional driver",p:60000,   up:4500,  d:"Cuts the risk of being stopped by a fifth"},
+ {id:"guard",  n:"Bodyguard",          p:200000,  up:12000, d:"Takes a third of every beating for you"},
+ {id:"fixer",  n:"Local fixer",        p:900000,  up:40000, d:"Two extra rumours a night, and better ones"},
+ {id:"chemist",n:"Chemist",            p:3500000, up:90000, d:"Cuts product: every sale earns 12% more"}
+];
+
+/* pure money sinks that buy heat relief or comfort */
+var SERVICES=[
+ {id:"bribe",  n:"Bribe the precinct",  p:0,        d:"Costs more the hotter you are. Drops heat hard."},
+ {id:"launder",n:"Launder through a club",p:0,      d:"Turns 10% of your cash into a 6-heat reduction"},
+ {id:"party",  n:"Throw an enormous party",p:2500000,d:"Pure indulgence. He cheers up. Heat goes up too."},
+ {id:"surgeon",n:"Private surgeon",     p:0,        d:"Full patch-up anywhere, at triple the street price"}
+];
+
+var POCKETS=8;
+var S={}, view="home", pend=null, endInfo=null;
+
+/* ══════════ STATE ══════════ */
+function reset(name){
+  S={name:name||"Wesley",day:1,days:30,mile:0,loc:"nyc",cash:2000,bank:0,debt:5500,hp:100,heat:0,
+     coat:100,wep:{},vestT:0,ammo:0,ride:"foot",owned:{foot:1},props:{},crew:{},nuke:0,
+     inv:{},stash:{},nat:{},prices:{},prev:{},flags:{},pat:{},dev:{},plan:{},rumour:[],
+     borrowedToday:0,interest:0,lastInterest:0,cost:{},
+     hist:{},log:[],over:false,mood:"",bandage:0};
+  GOODS.forEach(function(g){S.inv[g.id]=0;S.cost[g.id]=0;S.hist[g.id]=[];});
+  seedHistory(60);
+  S.plan={}; planNextDay(); roll(); planNextDay();
+  say("Two thousand in your pocket and $5,500 owed at 10% a day. No vehicle, so you fly commercial.");
+}
+
+/* ══════════ HELPERS ══════════ */
+function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function money(n){
+  var a=Math.abs(n), s=n<0?"-$":"$";
+  if(a>=1e9) return s+(a/1e9).toFixed(2)+"B";
+  if(a>=1e6) return s+(a/1e6).toFixed(2)+"M";
+  return s+Math.round(a).toLocaleString();
+}
+function good(id){for(var i=0;i<GOODS.length;i++) if(GOODS[i].id===id) return GOODS[i];}
+function city(id){for(var i=0;i<CITIES.length;i++) if(CITIES[i].id===(id||S.loc)) return CITIES[i];}
+function ride(){for(var i=0;i<RIDES.length;i++) if(RIDES[i].id===S.ride) return RIDES[i];return RIDES[0];}
+function used(){var t=0;GOODS.forEach(function(g){t+=S.inv[g.id];});return t;}
+function cap(){return S.coat+ride().cap;}
+function space(){return cap()-used();}
+function bin(pid){ if(!S.stash[pid]){S.stash[pid]={};GOODS.forEach(function(g){S.stash[pid][g.id]=0;});} return S.stash[pid]; }
+function usedAt(pid){var b=bin(pid),t=0;GOODS.forEach(function(g){t+=b[g.id];});return t;}
+function capAt(pid){var p=PROPS.filter(function(x){return x.id===pid;})[0];return (p&&S.props[pid])?p.cap:0;}
+function roomAt(pid){return Math.max(0,capAt(pid)-usedAt(pid));}
+function stashUsed(){var t=0;PROPS.forEach(function(p){if(S.props[p.id])t+=usedAt(p.id);});return t;}
+function stashCap(){var t=0;PROPS.forEach(function(p){if(S.props[p.id])t+=p.cap;});return t;}
+/* how much of one drug is stored in the warehouse you're standing in */
+function heldHere(gid){var pr=hasProp();return pr?bin(pr.id)[gid]:0;}
+/* how many of a drug you own anywhere, and what you paid on average */
+function totalHeld(gid){
+  var t=S.inv[gid];
+  PROPS.forEach(function(p){ if(S.props[p.id]) t+=bin(p.id)[gid]; });
+  return t;
+}
+function addCost(gid,qty,unitPrice){
+  if(qty<=0) return;
+  var had=totalHeld(gid)-qty;               /* called after the stock is added */
+  if(had<0) had=0;
+  var prev=S.cost[gid]||0;
+  S.cost[gid]=(had*prev+qty*unitPrice)/(had+qty);
+}
+function tidyCost(gid){ if(totalHeld(gid)<=0) S.cost[gid]=0; }
+/* what a price means against what you paid: >1 is profit */
+function costRatio(gid){
+  var c=S.cost[gid], pr=S.prices[gid];
+  return (c>0&&pr)?pr/c:0;
+}
+function hasProp(){for(var i=0;i<PROPS.length;i++) if(S.props[PROPS[i].id]&&PROPS[i].loc===S.loc) return PROPS[i];return null;}
+function net(){return S.cash+S.bank-S.debt;}
+function goodsVal(){
+  var v=0;
+  GOODS.forEach(function(g){ v+=S.inv[g.id]*(S.nat[g.id]||0); });
+  PROPS.forEach(function(p){
+    if(!S.props[p.id])return;
+    var b=bin(p.id);
+    GOODS.forEach(function(g){ v+=b[g.id]*(S.nat[g.id]||0); });
+  });
+  return v;
+}
+function worth(){return net()+goodsVal();}
+function say(t,k){S.log.unshift({d:S.day,t:t,k:k||""});}
+function esc(s){return String(s).replace(/[<>&"]/g,function(c){
+  return {"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c];});}
+function wep(){var b=null;WEAPONS.forEach(function(w){if(S.wep[w.id]&&(!b||w.w>b.w))b=w;});return b;}
+function hasCrew(id){return !!S.crew[id];}
+
+/* daily bleed: property, vehicles, payroll */
+function upkeep(){
+  var t=0;
+  PROPS.forEach(function(p){if(S.props[p.id])t+=p.up;});
+  RIDES.forEach(function(r){if(S.owned[r.id])t+=r.up;});
+  CREW.forEach(function(c){if(S.crew[c.id])t+=c.up;});
+  return t;
+}
+
+/* ══════════ MARKET ENGINE (patterns + 20% dramatic shocks) ══════════ */
+var REGIMES=["cycle","boom","bust","calm"];
+function newPattern(g){
+  var r=Math.random();
+  var reg = r<0.45?"cycle" : r<0.65?"boom" : r<0.85?"bust" : "calm";
+  return {reg:reg, per:ri(9,26), ph:Math.random()*Math.PI*2,
+          amp:(reg==="calm"?0.10:0.28)+g.v*0.9,
+          drift:reg==="boom"?0.011:reg==="bust"?-0.010:0,
+          lvl:0.7+Math.random()*0.8};
+}
+function stepPattern(g){
+  var p=S.pat[g.id];
+  p.ph += Math.PI*2/p.per;
+  p.lvl = clamp(p.lvl*(1+p.drift),0.35,3.2);
+  var f = p.lvl*(1+p.amp*Math.sin(p.ph));
+  var pl=S.plan[g.id];
+  if(pl){
+    f *= pl.up ? pl.mag : 1/pl.mag;
+    S.dev[g.id]=pl.up?1:-1;
+    if(Math.random()<0.30){
+      p.reg=REGIMES[ri(0,3)];
+      p.drift=p.reg==="boom"?0.011:p.reg==="bust"?-0.010:0;
+      p.per=ri(9,26);
+    }
+  }else{ f *= 1+(Math.random()*2-1)*0.035; S.dev[g.id]=0; }
+  return clamp(f,0.14,5.6);
+}
+function seedHistory(n){
+  GOODS.forEach(function(g){
+    S.pat[g.id]=newPattern(g); S.hist[g.id]=[];
+    var mid=(g.lo+g.hi)/2;
+    for(var i=0;i<n;i++){
+      S.plan={}; if(Math.random()<0.20) S.plan[g.id]={up:Math.random()<0.5,mag:1.9+Math.random()*2.6};
+      S.hist[g.id].push(Math.max(1,Math.round(mid*stepPattern(g))));
+    }
+    S.nat[g.id]=S.hist[g.id][S.hist[g.id].length-1];
+  });
+}
+var SPIKE_LINES=[
+ "A shipment of {D} got seized at the docks. Word is the price goes through the roof tomorrow.",
+ "{D} supplier picked up by the feds last night. Expect it to spike.",
+ "Every dealer in {P} is asking after {D}. Tomorrow it'll cost you.",
+ "There's a drought coming on {D}. Buy tonight if you're buying.",
+ "Big crowd in town looking for {D}. Price is about to jump."
+];
+var CRASH_LINES=[
+ "A boat came in heavy with {D}. The bottom falls out tomorrow.",
+ "Somebody's cousin is dumping {D} cheap all over {P}. Prices will tank.",
+ "Word is {D} is about to flood the street. Sell what you've got tonight.",
+ "A crew got busted and their {D} is going cheap tomorrow.",
+ "Too much {D} in town. It's going to be worthless by morning."
+];
+function rumourLine(g,up,pn){
+  var L=(up?SPIKE_LINES:CRASH_LINES)[ri(0,4)];
+  return {id:g.id, up:up, t:L.replace("{D}",g.n).replace("{P}",pn)};
+}
+function planNextDay(){
+  S.plan={}; S.rumour=[];
+  GOODS.forEach(function(g){
+    if(Math.random()<0.20) S.plan[g.id]={up:Math.random()<0.5, mag:1.9+Math.random()*2.6};
+  });
+  var acc = hasCrew("fixer") ? 0.93 : 0.85;      /* the fixer hears more, and better */
+  var reach = hasCrew("fixer") ? 0.92 : 0.72;
+  GOODS.forEach(function(g){
+    var pl=S.plan[g.id], pn=CITIES[ri(0,CITIES.length-1)].n;
+    if(pl){ if(Math.random()<reach) S.rumour.push(rumourLine(g,Math.random()<acc?pl.up:!pl.up,pn)); }
+    else if(Math.random()<0.05) S.rumour.push(rumourLine(g,Math.random()<0.5,pn));
+  });
+}
+function roll(){
+  var p=city(); S.prev=S.prices; S.prices={}; S.flags={};
+  GOODS.forEach(function(g){
+    var nat=Math.max(1,Math.round((g.lo+g.hi)/2*stepPattern(g)));
+    S.nat[g.id]=nat; S.hist[g.id].push(nat);
+    if(S.hist[g.id].length>200) S.hist[g.id].shift();
+    if(Math.random()<0.12){S.prices[g.id]=0;return;}
+    var b=nat*p.m, r=Math.random();
+    if(r<0.006){                                   /* the bottom falls out completely */
+      b=ri(1,4); S.flags[g.id]="glut";
+    }else if(r<0.012){                             /* somebody desperate, somewhere rich */
+      b*=25+Math.random()*115; S.flags[g.id]="frenzy";
+    }else if(r<0.087){b*=2+Math.random()*4;S.flags[g.id]="spike";}
+    else if(r<0.172){b/=2+Math.random()*3.5;S.flags[g.id]="crash";}
+    S.prices[g.id]=Math.max(1,Math.round(b));
+  });
+  for(var k in S.flags){
+    var g=good(k), f=S.flags[k];
+    if(f==="glut") say("Nobody in "+p.n+" wants "+g.n+". It is going for pocket change.","good");
+    else if(f==="frenzy") say("Somebody in "+p.n+" is paying absurd money for "+g.n+". Absolutely absurd.","good");
+    else if(f==="spike") say("Addicts are paying stupid money for "+g.n+"!","good");
+    else say("The street is flooded with cheap "+g.n+".","good");
+  }
+}
+/* The quoted price is the price, however much you move. Volume never
+   pushes the market against you. */
+function sellUnit(g,pr,q){ return hasCrew("chemist") ? pr*1.12 : pr; }
+function buyUnit(g,pr,q){ return pr; }
+function maxBuy(g,pr,cash,room){
+  if(pr<=0) return 0;
+  return Math.max(0,Math.min(Math.floor(cash/pr),Math.max(0,room)));
+}
+
+/* ══════════ HEAT, HARM, MILESTONES ══════════ */
+function addHeat(n,why){
+  S.heat=clamp(S.heat+n,0,100);
+  if(n>=6) flashMood("worried");
+}
+function coolHeat(n){S.heat=clamp(S.heat-n,0,100);}
+function hurt(n){
+  var v=VESTS.filter(function(x){return x.t===S.vestT;})[0];
+  if(v) n=Math.round(n*(1-v.r));
+  if(hasCrew("guard")) n=Math.round(n*0.67);
+  if(n<=0) return false;
+  S.hp=clamp(S.hp-n,0,100);
+  S.bandage=Math.min(6,S.bandage+1);
+  oof(n);
+  animate(n>=18?"stagger":"hit");
+  flashMood("hurt");
+  return S.hp<=0;
+}
+function checkMiles(){
+  var w=worth();
+  while(S.mile<MILES.length && w>=MILES[S.mile]){
+    S.mile++; S.days+=15;
+    var m=MILES[S.mile-1];
+    say("Passed "+money(m)+". You bought yourself another 15 days.","mile");
+    toast("MILESTONE "+money(m)+" — 15 more days. You now have until day "+S.days+".","mile");
+    animate("happy"); flashMood("rich");
+  }
+}
+
+/* ══════════ SOUND: a synthesised "oof" ══════════ */
+var actx=null;
+function audio(){
+  if(actx===null){
+    try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }
+    catch(e){ actx=false; }
+  }
+  return actx;
+}
+function oof(power){
+  var a=audio(); if(!a) return;
+  try{
+    if(a.state==="suspended") a.resume();
+    var t=a.currentTime, big=clamp((power||10)/34,0.25,1);
+    /* the vowel: a quick downward "oo-uh" */
+    var o=a.createOscillator(), g=a.createGain(), f=a.createBiquadFilter();
+    o.type="sawtooth";
+    o.frequency.setValueAtTime(232-60*big,t);
+    o.frequency.exponentialRampToValueAtTime(88,t+0.20+0.1*big);
+    f.type="lowpass";
+    f.frequency.setValueAtTime(1150,t);
+    f.frequency.exponentialRampToValueAtTime(320,t+0.22);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(0.16+0.14*big,t+0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.30+0.14*big);
+    o.connect(f); f.connect(g); g.connect(a.destination);
+    o.start(t); o.stop(t+0.5+0.2*big);
+    /* the thump of the impact itself */
+    var n=a.createBufferSource(), buf=a.createBuffer(1,1400,a.sampleRate), ch=buf.getChannelData(0);
+    for(var i=0;i<1400;i++) ch[i]=(Math.random()*2-1)*Math.pow(1-i/1400,3);
+    n.buffer=buf;
+    var ng=a.createGain();
+    ng.gain.setValueAtTime(0.20*big,t);
+    ng.gain.exponentialRampToValueAtTime(0.0001,t+0.13);
+    n.connect(ng); ng.connect(a.destination); n.start(t);
+  }catch(e){}
+}
+function boom(){
+  var a=audio(); if(!a) return;
+  try{
+    if(a.state==="suspended") a.resume();
+    var t=a.currentTime;
+    var n=a.createBufferSource(), len=a.sampleRate*3, buf=a.createBuffer(1,len,a.sampleRate), ch=buf.getChannelData(0);
+    for(var i=0;i<len;i++) ch[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.6);
+    n.buffer=buf;
+    var f=a.createBiquadFilter(); f.type="lowpass";
+    f.frequency.setValueAtTime(1800,t); f.frequency.exponentialRampToValueAtTime(90,t+2.6);
+    var g=a.createGain(); g.gain.setValueAtTime(0.62,t);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+3);
+    n.connect(f); f.connect(g); g.connect(a.destination); n.start(t);
+  }catch(e){}
+}
+
+/* ══════════ THE STICK MAN ══════════ */
+function pocketColours(){
+  var out=[], u=used();
+  if(u>0){
+    var filled=Math.min(POCKETS,Math.max(1,Math.round(POCKETS*Math.min(1,u/Math.max(S.coat,1)))));
+    var carried=GOODS.filter(function(g){return S.inv[g.id]>0;})
+                     .sort(function(a,b){return S.inv[b.id]-S.inv[a.id];});
+    var tot=carried.reduce(function(t,g){return t+S.inv[g.id];},0);
+    for(var i=0;i<filled;i++){
+      var want=(i+0.5)/filled*tot, acc=0, pick=carried[0];
+      for(var j=0;j<carried.length;j++){acc+=S.inv[carried[j].id];if(acc>=want){pick=carried[j];break;}}
+      out.push(pick.c);
+    }
+  }
+  while(out.length<POCKETS) out.push(null);
+  return out;
+}
+var POCKET_XY=[[68,120],[66,148],[64,176],[62,202],[108,120],[110,148],[112,176],[114,202]];
+var SCRATCH=["M112,112 l8,12","M74,150 l-7,11","M120,238 l7,13","M96,98 l10,9",
+ "M88,262 l-7,12","M126,168 l8,10","M92,44 l9,10","M108,34 l7,-8"];
+
+var mood="", moodT=null;
+function flashMood(m){
+  mood=m; clearTimeout(moodT);
+  moodT=setTimeout(function(){mood="";drawMan();},2600);
+  drawMan();
+}
+function animate(cls){
+  var el=document.getElementById("figwrap"); if(!el) return;
+  el.classList.remove("hit","stagger","happy");
+  void el.offsetWidth;
+  el.classList.add(cls);
+  setTimeout(function(){el.classList.remove(cls);},1100);
+}
+/* the face changes with what's happening to him */
+function faceSVG(col){
+  var hp=S.hp, s='<g stroke="'+col+'" stroke-width="3.1" stroke-linecap="round" fill="none">';
+  if(hp<=0){                                     /* out cold */
+    s+='<path d="M85,35 l10,10 M95,35 l-10,10" stroke-width="3.4"/>';
+    s+='<path d="M105,35 l10,10 M115,35 l-10,10" stroke-width="3.4"/>';
+    s+='<path d="M88,58 Q100,48 112,58"/>';
+  }else if(mood==="hurt"||hp<30){                /* screwed shut, grimacing */
+    s+='<path d="M85,40 l11,0" stroke-width="3.6"/><path d="M104,38 l11,0" stroke-width="3.6"/>';
+    s+='<path d="M87,58 Q100,49 113,58"/>';
+    s+='<path d="M91,55 l-3,5 M100,54 l0,6 M109,55 l3,5" stroke-width="2.2"/>';
+  }else if(mood==="rich"){                       /* delighted, eyes shut */
+    s+='<path d="M84,40 q7,-7 14,0" stroke-width="3.2"/><path d="M102,40 q7,-7 14,0" stroke-width="3.2"/>';
+    s+='<path d="M84,47 Q100,70 116,45" stroke-width="3.4"/>';
+    s+='<path d="M76,30 l-6,-7 M124,30 l6,-7 M100,22 l0,-8" stroke-width="2.4" stroke="#E8912A"/>';
+  }else if(mood==="worried"||S.heat>70){         /* sweating */
+    s+='<circle cx="91" cy="40" r="4.4" fill="'+col+'" stroke="none"/>';
+    s+='<circle cx="109" cy="40" r="4.4" fill="'+col+'" stroke="none"/>';
+    s+='<path d="M88,58 Q100,50 112,58"/>';
+    s+='<path d="M120,30 q4,7 0,10 q-4,-3 0,-10" fill="#4FC3E8" stroke="none"/>';
+    s+='<path d="M78,36 q4,7 0,10 q-4,-3 0,-10" fill="#4FC3E8" stroke="none"/>';
+  }else if(mood==="dizzy"){
+    s+='<path d="M87,37 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0" stroke-width="2.4"/>';
+    s+='<path d="M105,37 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0" stroke-width="2.4"/>';
+    s+='<path d="M88,57 q6,6 12,0 q6,-6 12,0" stroke-width="2.8"/>';
+  }else{                                          /* the usual unsettling grin */
+    s+='<circle cx="91" cy="41" r="3.1" fill="'+col+'" stroke="none"/>';
+    s+='<circle cx="109" cy="38" r="4.9" fill="'+col+'" stroke="none"/>';
+    s+='<path d="M87,49 Q100,66 113,47"/>';
+    s+='<path d="M87,49 l-3,-4.5"/><path d="M113,47 l3,-4.5"/>';
+  }
+  return s+'</g>';
+}
+function manSVG(sil){
+  var col=sil?"#14121A":"#1C1A24", coat=sil?"#14121A":"#8A5F3A";
+  var lining=sil?"#14121A":"#4A3324";
+  var sw=sil?9:4.5, cw=sil?9:4;
+  var pk=pocketColours(), dmg=Math.round((100-S.hp)/13);
+  var hurtLean = S.hp<40?7:S.hp<70?3:0;
+  var s='<g stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate('+hurtLean+' 100 300)">';
+  /* legs — one buckles as he weakens */
+  var kneeL = S.hp<45 ? 92 : 84, kneeR = S.hp<45 ? 112 : 117;
+  s+='<path d="M100,196 L'+kneeL+',262 L'+(kneeL-3)+',300"/>';
+  s+='<path d="M100,196 L'+kneeR+',262 L'+(kneeR+3)+',300"/>';
+  s+='<path d="M'+(kneeL-3)+',300 L'+(kneeL-16)+',300"/><path d="M'+(kneeR+3)+',300 L'+(kneeR+16)+',300"/>';
+  /* arms — he clutches his ribs when badly hurt */
+  if(S.hp<40){
+    s+='<path d="M70,96 L62,146 L92,162"/><path d="M130,96 L138,146 L110,166"/>';
+  }else{
+    s+='<path d="M70,96 L54,140 L52,180"/><path d="M130,96 L146,140 L148,180"/>';
+  }
+  s+='<path d="M86,84 L114,84 L114,216 L86,216 Z" fill="'+lining+'" stroke="none"/>';
+  s+='<path d="M100,84 L68,92 L58,214 L94,214 L100,126 Z" fill="'+coat+'" stroke-width="'+cw+'"/>';
+  s+='<path d="M100,84 L132,92 L142,214 L106,214 L100,126 Z" fill="'+coat+'" stroke-width="'+cw+'"/>';
+  if(!sil){
+    if(S.vestT) s+='<path d="M84,92 L116,92 L116,150 L84,150 Z" fill="#3C4450" stroke="'+col+'" stroke-width="2.5"/>';
+    for(var i=0;i<POCKETS;i++){
+      var x=POCKET_XY[i][0], y=POCKET_XY[i][1], c=pk[i];
+      s+='<rect x="'+x+'" y="'+y+'" width="26" height="20" rx="2" stroke-width="2.5" fill="'+(c||"#6E4A2C")+'" stroke="'+col+'"/>';
+      if(c) s+='<path d="M'+(x+5)+','+(y+13)+' q8,-9 16,0" stroke="rgba(0,0,0,.34)" stroke-width="2" fill="none"/>';
+    }
+    if(!S.vestT) s+='<path d="M86,80 L100,104 L114,80" stroke-width="4"/>';
+  }
+  s+='<path d="M100,67 L100,84"/>';
+  s+='<circle cx="100" cy="46" r="21" fill="'+(sil?"#14121A":"#FFFFFF")+'" stroke-width="'+sw+'"/>';
+  if(!sil) s+=faceSVG(col);
+  /* whatever he's holding */
+  var W=wep();
+  if(S.nuke){
+    s+='<g transform="translate(140,178)">'+
+       '<rect x="0" y="0" width="34" height="26" rx="2" fill="#3A3548" stroke="'+col+'" stroke-width="2.4"/>'+
+       '<path d="M12,0 L12,-6 L22,-6 L22,0" stroke="'+col+'" stroke-width="2.4" fill="none"/>'+
+       '<circle cx="17" cy="13" r="6" fill="#D8324B" stroke="'+col+'" stroke-width="1.8"/>'+
+       '<path d="M17,9 L17,17 M13,13 L21,13" stroke="#FFF" stroke-width="1.6"/></g>';
+  }else if(W && !sil){
+    var t=WEAPONS.indexOf(W)/WEAPONS.length;
+    var sz=(0.9+t*1.5).toFixed(2);
+    s+='<g transform="translate(146,172) scale('+sz+')" stroke="'+col+'" stroke-width="2.2" fill="#2B2833" stroke-linejoin="round">'+
+       '<rect x="0" y="-6" width="'+(14+Math.round(t*22))+'" height="13" rx="2"/>'+
+       '<path d="M4,7 L4,17" stroke-width="3"/></g>';
+  }
+  if(!sil){
+    for(var k=0;k<Math.min(dmg,SCRATCH.length);k++)
+      s+='<path d="'+SCRATCH[k]+'" stroke="'+(k%2?"#D8324B":"#B02038")+'" stroke-width="3.2"/>';
+    /* plasters accumulate as he takes hits */
+    for(var b=0;b<Math.min(S.bandage,4);b++){
+      var bx=[74,120,90,126][b], by=[128,190,240,96][b];
+      s+='<g transform="translate('+bx+','+by+') rotate('+(b*37-20)+')">'+
+         '<rect x="-9" y="-4" width="18" height="8" rx="2" fill="#E8DCC0" stroke="'+col+'" stroke-width="1.6"/>'+
+         '<rect x="-3" y="-4" width="6" height="8" fill="#D4C4A0"/></g>';
+    }
+    if(S.hp<35) s+='<path d="M82,30 L118,58" stroke="#D8324B" stroke-width="4.5"/>';
+  }
+  return s+'</g>';
+}
+function drawMan(){
+  var m=document.getElementById("man"), sh=document.getElementById("shade");
+  if(m) m.innerHTML=manSVG(false);
+  if(sh) sh.innerHTML=manSVG(true);
+  var w=document.getElementById("figwrap");
+  if(w){
+    if(S.hp>0 && S.hp<25) w.classList.add("hurting"); else w.classList.remove("hurting");
+  }
+}
+
+/* ══════════ HUD ══════════ */
+function paint(){
+  checkMiles();
+  var hb=document.getElementById("hpbar");
+  hb.style.width=S.hp+"%";
+  hb.className="hp"+(S.hp>60?"":(S.hp>30?" mid":" low"));
+  document.getElementById("hplab").textContent=Math.round(S.hp)+"%";
+  var tb=document.getElementById("htbar");
+  tb.style.width=S.heat+"%";
+  tb.className="ht"+(S.heat<40?"":(S.heat<72?" warm":" hot"));
+  document.getElementById("htlab").textContent=Math.round(S.heat)+"%";
+  document.getElementById("p-day").textContent=Math.min(S.day,S.days)+"/"+S.days;
+  document.getElementById("p-loc").textContent=city().n;
+  document.getElementById("p-cash").textContent=money(S.cash);
+  document.getElementById("p-debt").textContent=money(S.debt);
+  document.getElementById("p-coat").textContent=used().toLocaleString()+"/"+cap().toLocaleString();
+  document.getElementById("p-up").textContent=money(upkeep())+"/d";
+  var nw=document.getElementById("p-net"), wv=worth();
+  nw.textContent=money(wv); nw.className=wv<0?"neg":"";
+  var bg=document.getElementById("badge"), n=(S.rumour?S.rumour.length:0);
+  if(n){bg.style.display="block";bg.textContent=n;}
+  else if(S.debt>0){bg.style.display="block";bg.textContent="!";}
+  else bg.style.display="none";
+  drawMan();
+}
+var tmr=null;
+function toast(t,k){
+  var el=document.getElementById("toast");
+  el.textContent=t; el.className="toast on "+(k||"");
+  clearTimeout(tmr); tmr=setTimeout(function(){el.className="toast "+(k||"");},4000);
+}
+
+/* ══════════ PHONE ══════════ */
+var wrap=document.getElementById("phonewrap"), scr=document.getElementById("scr");
+document.getElementById("phonebtn").onclick=function(){audio();wrap.classList.add("on");go(S.over?"end":"home");};
+wrap.onclick=function(e){if(e.target===wrap&&!S.over)wrap.classList.remove("on");};
+function go(v){view=v;render();}
+function head(t,back){return '<div class="scrhead"><button class="back" data-go="'+(back||"home")+'">&#8592;</button><h3>'+t+'</h3></div>';}
+var ICON={
+ market:'<path d="M3 6h18l-2 12H5z"/><path d="M8 6V4a4 4 0 018 0v2"/>',
+ travel:'<path d="M2 12h20"/><path d="M12 2a15 15 0 010 20a15 15 0 010-20z"/><circle cx="12" cy="12" r="10"/>',
+ store:'<path d="M4 8h16l-1 12H5z"/><path d="M4 8l2-4h12l2 4"/>',
+ crew:'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15 20a5 5 0 016-4"/>',
+ bank:'<path d="M3 10l9-6 9 6"/><path d="M5 10v9M12 10v9M19 10v9M3 21h18"/>',
+ doc:'<path d="M12 4v16M4 12h16"/>',
+ stash:'<path d="M4 7h16v13H4z"/><path d="M9 7V4h6v3"/><path d="M4 12h16"/>',
+ wait:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ score:'<path d="M6 20V10M12 20V4M18 20v-7"/>',
+ log:'<path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+};
+function ico(k){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'+ICON[k]+'</svg>';}
+function app(id,label,dis,dot){
+  return '<button class="app" data-go="'+id+'"'+(dis?" disabled":"")+'>'+
+    (dot?'<span class="appdot"></span>':'')+ico(id)+'<span>'+label.toUpperCase()+'</span></button>';
+}
+function render(){
+  if(S.over&&view!=="end"&&view!=="score") view="end";
+  var h="";
+  if(view==="home") h=homeHTML();
+  else if(view==="market") h=head("Market")+marketHTML();
+  else if(view==="chart")  h=head(good(pend.id).n,"market")+chartHTML();
+  else if(view==="travel") h=head("Travel")+travelHTML();
+  else if(view==="store")  h=head("The Store")+storeHTML();
+  else if(view==="crew")   h=head("Payroll")+crewHTML();
+  else if(view==="bank")   h=head("Bank &amp; Shark")+bankHTML();
+  else if(view==="doc")    h=head("Doctor")+docHTML();
+  else if(view==="stash")  h=head("Stash")+stashHTML();
+  else if(view==="wait")   h=head("Lie Low")+waitHTML();
+  else if(view==="score")  h=head("Scores",S.over?"end":"home")+scoreHTML();
+  else if(view==="log")    h=head("Word on the Street")+logHTML();
+  else if(view==="qty")    h=qtyHTML();
+  else if(view==="bankqty")h=bankQtyHTML();
+  else if(view==="cops")   h=copsHTML();
+  else if(view==="event")  h=eventHTML();
+  else if(view==="nuke")   h=nukeHTML();
+  else if(view==="vanish") h=vanishHTML();
+  else if(view==="end")    h=endHTML();
+  scr.innerHTML=h; scr.scrollTop=0;
+  var f=scr.querySelector("input"); if(f&&f.type==="number") f.select();
+  if(view==="qty"){var q=document.getElementById("qin"); if(q){q.oninput=qcalc; qcalc();}}
+}
+function homeHTML(){
+  var bars="";
+  for(var i=0;i<MILES.length;i++) bars+='<i class="'+(i<S.mile?"hit":"")+'"></i>';
+  var nx=S.mile<MILES.length
+    ?("Next milestone "+money(MILES[S.mile])+" for +15 days &mdash; you're worth "+money(worth()))
+    :"Every milestone taken.";
+  var c=city();
+  var warn="";
+  if(S.heat>70) warn+='<div class="note" style="color:var(--heat)">&#9679; You are extremely hot. Lie low or buy your way out.</div>';
+  if(upkeep()>S.cash) warn+='<div class="note" style="color:var(--heat)">&#9679; You can\'t cover tomorrow\'s '+money(upkeep())+' upkeep.</div>';
+  if(S.rumour.length) warn+='<div class="note" style="color:var(--sodium)">&#9679; '+S.rumour.length+' rumour'+(S.rumour.length>1?"s":"")+' about tomorrow &mdash; see the market.</div>';
+  return '<div class="note">'+esc(c.n).toUpperCase()+', '+c.cc+' &middot; DAY '+Math.min(S.day,S.days)+' OF '+S.days+
+    ' &middot; travelling by '+esc(ride().n).toLowerCase()+'</div>'+
+    '<div class="milebar">'+bars+'</div><div class="note">'+nx+'</div>'+warn+'<div class="apps">'+
+    app("market","Market",false,S.rumour.length>0)+app("travel","Travel")+app("store","Store")+
+    app("crew","Payroll")+app("stash","Stash")+app("bank","Bank")+
+    app("doc","Doctor")+app("wait","Lie Low")+app("log","Word")+app("score","Scores")+'</div>';
+}
+
+/* ── market ── */
+function arrow(id){
+  var now=S.prices[id], was=S.prev?S.prev[id]:0;
+  if(!now||!was) return '<span class="arw fl">&middot;</span>';
+  var d=(now-was)/was;
+  if(d>0.04) return '<span class="arw up">&#9650;</span>';
+  if(d<-0.04) return '<span class="arw dn">&#9660;</span>';
+  return '<span class="arw fl">&middot;</span>';
+}
+function marketHTML(){
+  var prop=hasProp(), sroom=stashCap()-stashUsed();
+  var h='';
+  if(S.rumour.length){
+    h+='<div class="newsbar"><div class="newshead">WORD ON THE STREET &mdash; ABOUT TOMORROW</div>';
+    S.rumour.forEach(function(r){
+      var g=good(r.id);
+      h+='<button class="newsline '+(r.up?"up":"dn")+'" data-chart="'+r.id+'">'+
+         '<span class="ndot" style="background:'+g.c+'"></span>'+
+         '<span class="narw">'+(r.up?"&#9650;":"&#9660;")+'</span>'+
+         '<span class="ntxt">'+esc(r.t)+'</span></button>';
+    });
+    h+='<div class="newsfoot">Usually right, not always, and it misses things.</div></div>';
+  }else h+='<div class="newsbar quiet">Nobody\'s talking tonight. Looks like a quiet day coming.</div>';
+  h+='<div class="note">Tap a name for its chart. Load '+space().toLocaleString()+' free of '+cap().toLocaleString()+
+    (prop?(' &middot; '+prop.n+' here has room for '+roomAt(prop.id).toLocaleString()):'')+'.</div>';
+  GOODS.forEach(function(g){
+    var pr=S.prices[g.id], have=S.inv[g.id], held=heldHere(g.id);
+    var rum=S.rumour.filter(function(r){return r.id===g.id;})[0];
+    var bits=[], cst=S.cost[g.id]||0, tot=totalHeld(g.id);
+    if(have) bits.push("holding "+have.toLocaleString());
+    if(held) bits.push(held.toLocaleString()+" stored");
+    if(tot&&cst>0) bits.push('paid <b style="color:var(--chalk)">'+money(cst)+'</b> ea');
+    var sub=bits.length?bits.join(" &middot; "):"chart";
+    h+='<div class="mrow'+(rum?(rum.up?" r-up":" r-dn"):"")+'"><button class="mname" data-chart="'+g.id+'">'+
+       '<i style="background:'+g.c+'"></i><span>'+g.n+
+       (rum?'<b class="tag '+(rum.up?"up":"dn")+'">'+(rum.up?"&#9650; SPIKE?":"&#9660; CRASH?")+'</b>':'')+
+       '<small>'+sub+'</small></span></button>';
+    var rat=costRatio(g.id);
+    var pcol = (tot&&rat) ? (rat>1.02?"var(--cash)":rat<0.98?"var(--heat)":"") : "";
+    h+= pr ? '<div class="mprice">'+arrow(g.id)+'<span'+(pcol?' style="color:'+pcol+'"':'')+'>'+money(pr)+'</span>'+
+             ((tot&&rat)?'<br>':'')+'</div>'
+           : '<div class="none">NONE TODAY</div>';
+    var canSell = pr && (have || (prop && held));
+    h+='<div class="mbtns"><button data-buy="'+g.id+'"'+
+       ((pr&&S.cash>=pr&&(space()>0||stashCap()-stashUsed()>0))?"":" disabled")+'>BUY</button>'+
+       '<button data-sell="'+g.id+'"'+(canSell?"":" disabled")+'>SELL</button></div></div>';
+  });
+  return h;
+}
+function chartHTML(){
+  var g=good(pend.id), hs=S.hist[g.id].slice(-56);
+  if(hs.length<3) return '<div class="note">Not enough trading days on record yet.</div>';
+  var W=318,H=142,pd=8;
+  var mn=Math.min.apply(null,hs), mx=Math.max.apply(null,hs);
+  if(mx===mn) mx=mn+1;
+  var X=function(i){return pd+i/(hs.length-1)*(W-pd*2);};
+  var Y=function(v){return pd+(1-(v-mn)/(mx-mn))*(H-pd*2);};
+  var pts=hs.map(function(v,i){return X(i).toFixed(1)+","+Y(v).toFixed(1);}).join(" ");
+  var up=hs[hs.length-1]>=hs[0], col=up?"#3FA85A":"#D8324B";
+  var area="M"+X(0).toFixed(1)+","+(H-pd)+" L"+pts.split(" ").join(" L")+" L"+X(hs.length-1).toFixed(1)+","+(H-pd)+" Z";
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="142">';
+  for(var i=1;i<4;i++){var y=pd+(H-pd*2)*i/4;
+    svg+='<line x1="'+pd+'" y1="'+y.toFixed(1)+'" x2="'+(W-pd)+'" y2="'+y.toFixed(1)+'" stroke="#232030" stroke-width="1"/>';}
+  svg+='<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">'+
+       '<stop offset="0" stop-color="'+col+'" stop-opacity=".34"/>'+
+       '<stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>';
+  svg+='<path d="'+area+'" fill="url(#cg)"/>';
+  svg+='<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linejoin="round"/>';
+  svg+='<circle cx="'+X(hs.length-1).toFixed(1)+'" cy="'+Y(hs[hs.length-1]).toFixed(1)+'" r="3.2" fill="'+col+'"/>';
+  svg+='<text x="'+(W-pd)+'" y="'+(pd+9)+'" text-anchor="end" fill="#8C8894" font-family="monospace" font-size="9">'+money(mx)+'</text>';
+  svg+='<text x="'+(W-pd)+'" y="'+(H-pd-2)+'" text-anchor="end" fill="#8C8894" font-family="monospace" font-size="9">'+money(mn)+'</text></svg>';
+  var chg=(hs[hs.length-1]-hs[0])/hs[0]*100, here=S.prices[g.id];
+  var n=hs.length,last=hs[n-1],p3=hs[n-2],p4=hs[n-3];
+  var lo=Math.min.apply(null,hs), hi=Math.max.apply(null,hs), posn=(last-lo)/((hi-lo)||1);
+  var read;
+  if(p4>p3&&last>p3) read="Turned up off a low. Often the start of a climb.";
+  else if(p4<p3&&last<p3) read="Turned down off a high. It usually keeps falling a while.";
+  else if(last>p3) read="Still climbing."; else if(last<p3) read="Still falling."; else read="Flat.";
+  read += posn>0.78?" Near the top of its recent range — a selling window."
+        : posn<0.22?" Near the bottom of its recent range — a buying window."
+        : " Middle of its range.";
+  if(S.dev[g.id]) read=(S.dev[g.id]>0?"It spiked hard today. ":"It crashed hard today. ")+read;
+  var h='<div class="cstat"><div><span style="color:'+g.c+'">STREET AVERAGE</span><br><b>'+money(hs[n-1])+'</b></div>'+
+    '<div style="text-align:right"><span class="'+(up?"u":"d")+'">'+(chg>=0?"+":"")+chg.toFixed(1)+'%</span><br>'+
+    '<span style="color:var(--dim)">last '+n+' days</span></div></div>';
+  h+='<div class="chartbox">'+svg+'</div>';
+  h+='<div class="note" style="color:var(--chalk)">'+read+'</div>';
+  h+='<div class="note">Here in '+esc(city().n)+': <b style="color:'+(here?"var(--chalk)":"var(--dim)")+'">'+
+     (here?money(here):"not sold today")+'</b></div>';
+  var myCost=S.cost[g.id]||0, myQty=totalHeld(g.id);
+  if(myQty&&myCost>0){
+    var pl=(here?here-myCost:hs[n-1]-myCost)*myQty;
+    h+='<div class="note">You hold '+myQty.toLocaleString()+' bought at '+money(myCost)+
+       ' each. At '+(here?"today's local price":"the street average")+' that is <b style="color:'+
+       (pl>=0?"var(--cash)":"var(--heat)")+'">'+(pl>=0?"+":"")+money(pl)+'</b> on the position.</div>';
+  }
+  h+='<div class="mbtns" style="gap:7px">'+
+     '<button data-buy="'+g.id+'"'+((here&&S.cash>=here&&space()>0)?"":" disabled")+' style="flex:1;padding:11px">BUY</button>'+
+     '<button data-sell="'+g.id+'"'+((here&&S.inv[g.id])?"":" disabled")+' style="flex:1;padding:11px">SELL</button></div>';
+  return h;
+}
+
+/* ── travel: you move your load with a vehicle, or you fly commercial ── */
+function dist(a,b){var dx=a.x-b.x, dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy);}
+function legRisk(to){
+  var from=city(), t=city(to), r=ride();
+  var far=dist(from,t)/100;                       /* 0 .. ~1.2 */
+  var border = from.cc!==t.cc ? 1.55 : 1;
+  var load = used()/Math.max(cap(),1);
+  var base = 0.035 + load*0.30*far + 0.02*far;
+  base *= r.risk * t.heat * border;
+  base *= (1 + S.heat/55);
+  if(hasCrew("driver")) base*=0.80;
+  return clamp(base,0.01,0.92);
+}
+function travelHTML(){
+  var r=ride(), from=city();
+  var h='<div class="note">You are in '+esc(from.n)+', '+from.cc+
+    '. Moving product means moving it <b>in something</b>. You currently travel by <b style="color:var(--sodium)">'+
+    esc(r.n)+'</b>'+(S.ride==="foot"?' &mdash; no vehicle, so you queue through the airport like everyone else, and the dogs are right there.':'')+
+    ' Buy vehicles in the Store.</div>';
+  if(S.ride==="foot"&&used()>0)
+    h+='<div class="note" style="color:var(--heat)">You are carrying '+used()+' units through airport security. This is a terrible idea.</div>';
+  CITIES.forEach(function(c){
+    if(c.id===S.loc){
+      h+='<button class="opt active" data-wait="1">Stay in '+c.n+'<small>wait one day here</small></button>';
+      return;
+    }
+    var rk=legRisk(c.id), km=Math.round(dist(from,c)*38);
+    var lbl = rk<0.12?"low":rk<0.26?"moderate":rk<0.45?"high":"very high";
+    h+='<button class="opt" data-move="'+c.id+'">'+c.n+
+       '<span class="flag">'+c.cc+'</span>'+
+       '<small>'+esc(c.d)+' &middot; ~'+km.toLocaleString()+'km'+
+       (from.cc!==c.cc?' &middot; border crossing':'')+
+       ' &middot; <b style="color:'+(rk<0.26?"var(--cash)":rk<0.45?"var(--sodium)":"var(--heat)")+'">'+
+       lbl+' risk ('+Math.round(rk*100)+'%)</b></small></button>';
+  });
+  h+='<div class="sec">OR DON\'T COME BACK</div>';
+  h+='<button class="opt nuke" data-go="vanish"><em>'+money(vanishFee())+'</em>Skip town for good'+
+     '<small>End the run here and disappear with what you have. It goes on the board.</small></button>';
+  return h;
+}
+function vanishHTML(){
+  var fee=vanishFee(), w=worth(), after=w-fee;
+  return '<div class="scrhead"><button class="back" data-go="travel">&#8592;</button>'+
+    '<h3 style="color:var(--sodium)">SKIP TOWN</h3></div>'+
+    '<div class="note">A man you half trust can have papers ready by morning. A different name, '+
+    'a different country, and nobody from this life ever finds you again.</div>'+
+    '<div class="ledger">'+
+    '<div class="lrow"><span>Everything you are worth</span><b>'+money(w)+'</b></div>'+
+    '<div class="lrow"><span>Papers and the fixer\'s cut</span><b class="ch">&minus;'+money(fee)+'</b></div>'+
+    '<div class="lrow"><span>Heat right now</span><b class="'+(S.heat>60?"ch":"cg")+'">'+Math.round(S.heat)+'%'+
+      (S.heat>50?" &mdash; expensive to vanish":"")+'</b></div>'+
+    '<div class="lrow tot"><span>You leave with</span><b class="'+(after<0?"ch":"cg")+'">'+money(after)+'</b></div>'+
+    '</div>'+
+    '<div class="note">The run ends the moment you go, on day '+S.day+' of '+S.days+
+    '. Whatever days you had left, and every milestone you hadn\'t reached, go with them. '+
+    'Your score goes on the leaderboard either way.</div>'+
+    '<button class="opt nuke" data-vanish="1">Take the papers and go<small>There is no coming back</small></button>'+
+    '<button class="opt" data-go="travel">Stay and keep working<small>The run continues</small></button>';
+}
+function waitHTML(){
+  return '<div class="note">Lying low bleeds off heat but the days still pass, the shark still charges, '+
+    'and upkeep is still due. Prices reroll where you stand.</div>'+
+    '<button class="opt" data-wait="1">Sit tight for a day<small>&minus;4 heat</small></button>'+
+    '<button class="opt" data-wait="3">Three days indoors<small>&minus;12 heat</small></button>'+
+    '<button class="opt" data-wait="7">A week off the radar<small>&minus;28 heat &middot; costs '+money(upkeep()*7)+' in upkeep</small></button>';
+}
+
+/* ── store ── */
+function storeHTML(){
+  var h='<div class="note">A man who can get anything. Cash only. Everything you own costs you '+
+    money(upkeep())+' a day to keep.</div>';
+  h+='<div class="sec">WEAPONS &mdash; FOR WHEN RUNNING ISN\'T WORKING</div>';
+  WEAPONS.forEach(function(w){
+    var own=S.wep[w.id];
+    h+='<button class="opt'+(own?" owned":"")+'" data-wep="'+w.id+'"'+((own||S.cash<w.p)?" disabled":"")+'>'+
+      '<em>'+(own?"OWNED":money(w.p))+'</em>'+w.n+
+      '<small>wins about '+Math.round(w.w*10)+' fights in 10</small></button>';
+  });
+  if(S.nuke){
+    h+='<button class="opt nuke" data-gonuke="1"><em>ARMED</em>Suitcase atomic bomb'+
+       '<small>You are carrying a live atomic weapon. There is a button.</small></button>';
+  }else{
+    h+='<button class="opt nuke" data-nuke="1"'+(S.cash<NUKE.p?" disabled":"")+'>'+
+       '<em>'+money(NUKE.p)+'</em>'+NUKE.n+
+       '<small>Do not buy this. There is no version of this that ends well.</small></button>';
+  }
+  h+='<div class="sec">BODY ARMOUR</div>';
+  VESTS.forEach(function(v){
+    var own=S.vestT>=v.t;
+    h+='<button class="opt'+(own?" owned":"")+'" data-vest="'+v.id+'"'+((own||S.cash<v.p)?" disabled":"")+'>'+
+      '<em>'+(own?"WORN":money(v.p))+'</em>'+v.n+
+      '<small>takes '+Math.round(v.r*100)+'% off every beating</small></button>';
+  });
+  h+='<div class="sec">TRANSPORT &mdash; YOU CANNOT MOVE PRODUCT WITHOUT IT</div>';
+  RIDES.forEach(function(r){
+    var own=S.owned[r.id], act=S.ride===r.id, fits=used()<=S.coat+r.cap;
+    var lock=act||(!own&&S.cash<r.p)||(own&&!fits);
+    h+='<button class="opt'+(act?" active":own?" owned":"")+'" data-ride="'+r.id+'"'+(lock?" disabled":"")+'>'+
+      '<em>'+(act?"IN USE":own?(fits?"USE":"TOO SMALL"):money(r.p))+'</em>'+r.n+
+      '<small>+'+r.cap.toLocaleString()+' load &middot; risk &times;'+r.risk.toFixed(2)+
+      (r.up?' &middot; '+money(r.up)+'/day to run':' &middot; free, and awful')+
+      ' &middot; '+esc(r.d)+(own&&!fits?' &middot; <b style="color:var(--heat)">won\'t hold your load</b>':'')+'</small></button>';
+    if(own&&r.p>0)
+      h+='<button class="opt" data-sellride="'+r.id+'" style="margin-top:-4px;font-size:11px;padding:7px 13px">'+
+         '<em>+'+money(Math.round(r.p*0.60))+'</em>Sell the '+r.n.toLowerCase()+
+         '<small>drops '+money(r.up)+'/day of upkeep</small></button>';
+  });
+  h+='<div class="sec">PROPERTY &mdash; STORAGE THEY MOSTLY CAN\'T REACH</div>';
+  PROPS.forEach(function(p){
+    var own=S.props[p.id], c=city(p.loc);
+    h+='<button class="opt'+(own?" owned":"")+'" data-prop="'+p.id+'"'+((own||S.cash<p.p)?" disabled":"")+'>'+
+      '<em>'+(own?"OWNED":money(p.p))+'</em>'+p.n+' in '+c.n+
+      '<small>holds '+p.cap.toLocaleString()+' &middot; '+money(p.up)+'/day &middot; small chance of a raid</small></button>';
+    if(own)
+      h+='<button class="opt" data-sellprop="'+p.id+'" style="margin-top:-4px;font-size:11px;padding:7px 13px">'+
+         '<em>+'+money(Math.round(p.p*0.60))+'</em>Sell the '+p.n.toLowerCase()+
+         '<small>drops '+money(p.up)+'/day &middot; contents sold at 75%</small></button>';
+  });
+  h+='<div class="sec">SERVICES</div>';
+  var bribe=Math.round(40000+S.heat*S.heat*180+worth()*0.004);
+  h+='<button class="opt" data-svc="bribe"'+((S.cash<bribe||S.heat<5)?" disabled":"")+'>'+
+     '<em>'+money(bribe)+'</em>Bribe the precinct<small>Drops 30 heat. Costs more the hotter and richer you are.</small></button>';
+  var lm=Math.round(S.cash*0.10);
+  h+='<button class="opt" data-svc="launder"'+((S.cash<50000||S.heat<3)?" disabled":"")+'>'+
+     '<em>'+money(lm)+'</em>Launder through a nightclub<small>Burns 10% of your cash to lose 8 heat</small></button>';
+  h+='<button class="opt" data-svc="party"'+(S.cash<2500000?" disabled":"")+'>'+
+     '<em>'+money(2500000)+'</em>Throw an enormous party<small>Pure indulgence. Full health, +10 heat, and he enjoys it.</small></button>';
+  return h;
+}
+function crewHTML(){
+  var h='<div class="note">People cost money every single day, whether you use them or not. '+
+    'Current payroll and upkeep: '+money(upkeep())+' a day.</div>';
+  CREW.forEach(function(c){
+    var own=S.crew[c.id];
+    h+='<button class="opt'+(own?" owned":"")+'" data-crew="'+c.id+'"'+((own||S.cash<c.p)?" disabled":"")+'>'+
+      '<em>'+(own?"ON PAYROLL":money(c.p))+'</em>'+c.n+
+      '<small>'+esc(c.d)+' &middot; '+money(c.up)+'/day</small></button>';
+    if(own)
+      h+='<button class="opt" data-fire="'+c.id+'" style="margin-top:-4px;font-size:11px;padding:7px 13px">'+
+         '<em>FREE</em>Let the '+c.n.toLowerCase()+' go<small>saves '+money(c.up)+'/day</small></button>';
+  });
+  h+='<div class="sec">WHAT YOU\'RE PAYING FOR</div>';
+  var lines=[];
+  PROPS.forEach(function(p){if(S.props[p.id])lines.push(p.n+" &mdash; "+money(p.up));});
+  RIDES.forEach(function(r){if(S.owned[r.id]&&r.up)lines.push(r.n+" &mdash; "+money(r.up));});
+  CREW.forEach(function(c){if(S.crew[c.id])lines.push(c.n+" &mdash; "+money(c.up));});
+  h+= lines.length?('<div class="note">'+lines.join("<br>")+'<br><b style="color:var(--heat)">Total '+money(upkeep())+' a day</b></div>')
+                  :'<div class="note">You own nothing that costs you anything. Enjoy it while it lasts.</div>';
+  return h;
+}
+function bankHTML(){
+  var daily=Math.round(S.bank*0.005), owedDaily=Math.round(S.debt*0.10);
+  var h='<div class="ledger">'+
+    '<div class="lrow"><span>Cash in hand</span><b>'+money(S.cash)+'</b></div>'+
+    '<div class="lrow"><span>On deposit</span><b class="cg">'+money(S.bank)+'</b></div>'+
+    '<div class="lrow"><span>Interest earning</span><b class="cg">+'+money(daily)+' / day</b></div>'+
+    '<div class="lrow"><span>Interest earned so far</span><b class="cg">'+money(S.interest)+'</b></div>'+
+    '<div class="lrow"><span>Owed to the shark</span><b class="ch">'+money(S.debt)+'</b></div>'+
+    '<div class="lrow"><span>Interest accruing</span><b class="ch">&minus;'+money(owedDaily)+' / day</b></div>'+
+    '<div class="lrow"><span>Credit limit (on '+money(Math.max(0,worth()))+' of worth)</span><b>'+money(creditLimit())+'</b></div>'+
+    '<div class="lrow"><span>Still available to borrow</span><b class="'+(borrowLeft()>0?"cg":"ch")+'">'+money(borrowLeft())+'</b></div>'+
+    '<div class="lrow tot"><span>Net position</span><b class="'+(net()<0?"ch":"cg")+'">'+money(net())+'</b></div>'+
+    '</div>';
+  if(S.lastInterest>0) h+='<div class="note" style="color:var(--cash)">Yesterday the deposit earned you '+money(S.lastInterest)+'.</div>';
+  h+='<div class="note">The bank pays 0.5% a day and cops can\'t touch it. The shark charges 10%. '+
+     'Upkeep comes out of cash first, then the bank, then it goes on the tab.</div>';
+  h+='<button class="opt" data-bank="pay"'+(S.cash&&S.debt?"":" disabled")+'>Pay the shark<small>Do it early or it eats you</small></button>'+
+    '<button class="opt" data-bank="borrow"'+(borrowLeft()>0?"":" disabled")+'>Borrow<small>'+
+      (borrowLeft()>0
+        ? ("up to "+money(borrowLeft())+" right now")
+        : (S.borrowedToday>=1000000
+            ? "you've taken today's $1M maximum"
+            : "you're already borrowed up to your limit &mdash; get richer or pay some back"))+
+      '</small></button>'+
+    '<button class="opt" data-bank="dep"'+(S.cash?"":" disabled")+'>Deposit<small>Cop-proof, and it earns</small></button>'+
+    '<button class="opt" data-bank="wd"'+(S.bank?"":" disabled")+'>Withdraw<small>Available: '+money(S.bank)+'</small></button>';
+  return h;
+}
+function docHTML(){
+  var missing=100-S.hp, cost=Math.round(missing*90*(1+S.mile*0.35));
+  if(!missing) return '<div class="note">Not a scratch on you. Come back bleeding.</div>';
+  return '<div class="note">A back room with a bare bulb. No questions, no records.</div>'+
+    '<button class="opt" data-doc="1"'+(S.cash>=cost?"":" disabled")+'>Patch me up<small>'+money(cost)+
+    ' to go from '+Math.round(S.hp)+'% to 100%'+(S.cash<cost?" &mdash; you can\'t afford it":"")+'</small></button>';
+}
+function stashHTML(){
+  var prop=hasProp();
+  var W=wep();
+  var h='<div class="note">On you: '+used().toLocaleString()+' of '+cap().toLocaleString()+
+    ' &middot; weapon: '+(W?W.n:"none")+(S.nuke?" + an atomic bomb":"")+'</div>';
+  var any=false;
+  GOODS.forEach(function(g){
+    if(!S.inv[g.id])return; any=true;
+    h+='<div class="mrow"><button class="mname" data-chart="'+g.id+'"><i style="background:'+g.c+'"></i>'+
+       '<span>'+g.n+'<small>&times;'+S.inv[g.id].toLocaleString()+'</small></span></button>'+
+       '<div class="none">'+(S.prices[g.id]?money(S.inv[g.id]*S.prices[g.id]):"no market")+
+       ((S.cost[g.id]||0)?'<br>paid '+money(S.cost[g.id])+' ea':'')+'</div>'+
+       '<div class="mbtns"><button data-put="'+g.id+'"'+((prop&&roomAt(prop.id)>0)?"":" disabled")+'>STORE</button></div></div>';
+  });
+  if(!any) h+='<div class="note">You\'re carrying nothing.</div>';
+  if(stashCap()){
+    h+='<div class="sec">WAREHOUSES &mdash; '+stashUsed().toLocaleString()+' OF '+stashCap().toLocaleString()+' TOTAL</div>';
+    PROPS.forEach(function(pr2){
+      if(!S.props[pr2.id])return;
+      var here=pr2.loc===S.loc, b=bin(pr2.id);
+      h+='<div class="note" style="color:'+(here?"var(--cash)":"var(--sodium)")+';margin-bottom:5px">'+
+         pr2.n+' &middot; '+city(pr2.loc).n+' &middot; '+usedAt(pr2.id).toLocaleString()+'/'+pr2.cap.toLocaleString()+
+         (here?" &middot; you're here":" &middot; you'd have to travel there")+'</div>';
+      var any2=false;
+      GOODS.forEach(function(g){
+        if(!b[g.id])return; any2=true;
+        h+='<div class="mrow"><button class="mname" data-chart="'+g.id+'"><i style="background:'+g.c+'"></i>'+
+           '<span>'+g.n+'<small>&times;'+b[g.id].toLocaleString()+'</small></span></button>'+
+           '<div class="none">'+money(b[g.id]*(S.nat[g.id]||0))+
+           ((S.cost[g.id]||0)?'<br>paid '+money(S.cost[g.id])+' ea':'')+'</div>'+
+           '<div class="mbtns"><button data-take="'+g.id+'"'+((here&&space()>0)?"":" disabled")+'>TAKE</button></div></div>';
+      });
+      if(!any2) h+='<div class="note" style="opacity:.6">empty</div>';
+    });
+  }
+  return h+'<div class="note" style="margin-top:12px">Net worth '+money(worth())+
+    ' &mdash; cash '+money(net())+' plus '+money(goodsVal())+' in goods</div>';
+}
+function logHTML(){
+  if(!S.log.length) return '<div class="note">Nothing yet.</div>';
+  return S.log.slice(0,40).map(function(e){
+    return '<div class="logline"><b>D'+e.d+'</b><span class="'+
+      (e.k==="good"?"lg":e.k==="bad"?"lb2":e.k==="mile"?"lm":"")+'">'+esc(e.t)+'</span></div>';
+  }).join("");
+}
+
+/* ══════════ ACTIONS ══════════ */
+scr.addEventListener("click",function(e){
+  var b=e.target.closest("button"); if(!b||b.disabled)return;
+  var d=b.dataset;
+  if(d.go) return go(d.go);
+  if(d.chart){ pend={id:d.chart}; return go("chart"); }
+  if(d.buy) return openQty(d.buy,"buy");
+  if(d.sell) return openQty(d.sell,"sell");
+  if(d.put) return openMove(d.put,"put");
+  if(d.take) return openMove(d.take,"take");
+  if(d.dest){ pend.dest=d.dest; qtyMax(); return go("qty"); }
+  if(d.move) return travel(d.move);
+  if(d.wait) return waitDays(+d.wait);
+  if(d.bank) return bankAct(d.bank);
+  if(d.wep) return buyWeapon(d.wep);
+  if(d.vest) return buyVest(d.vest);
+  if(d.ride) return buyRide(d.ride);
+  if(d.prop) return buyProp(d.prop);
+  if(d.crew) return buyCrew(d.crew);
+  if(d.svc) return service(d.svc);
+  if(d.sellride) return sellRide(d.sellride);
+  if(d.sellprop) return sellProp(d.sellprop);
+  if(d.fire) return fireCrew(d.fire);
+  if(d.nuke) return buyNuke();
+  if(d.gonuke) return go("nuke");
+  if(d.vanish) return finish(false,"vanish");
+  if(d.detonate) return detonate();
+  if(d.doc){
+    var c=Math.round((100-S.hp)*90*(1+S.mile*0.35));
+    S.cash-=c; S.hp=100; S.bandage=0;
+    say("Doctor patched you up for "+money(c)+".","good");
+    toast("Stitched up. Good as new.","good"); flashMood("rich");
+    go("home"); paint(); return;
+  }
+  if(d.qok) return confirmQty();
+  if(d.bqok) return confirmBank();
+  if(d.cop) return copChoice(d.cop);
+  if(d.ev) return evChoice(d.ev);
+  if(d.again){ wrap.classList.remove("on"); askName(); return; }
+  if(d.copy) return copyCode();
+  if(d.addcode) return addCode();
+  if(d.start) return startGame();
+});
+scr.addEventListener("keydown",function(e){
+  if(e.key!=="Enter")return;
+  if(e.target.id==="qin") return view==="bankqty"?confirmBank():confirmQty();
+  if(e.target.id==="nm") return startGame();
+  if(e.target.id==="codein") return addCode();
+});
+
+/* ── trading ── */
+function ownedProps(){return PROPS.filter(function(p){return S.props[p.id];});}
+/* risk of a shipment going missing on the way to a warehouse in another city */
+function deliveryRisk(pid){
+  var p=PROPS.filter(function(x){return x.id===pid;})[0];
+  if(!p || p.loc===S.loc) return 0;
+  var far=dist(city(),city(p.loc))/100;
+  var border=city().cc!==city(p.loc).cc?1.5:1;
+  var r=(0.05+far*0.14)*border*(1+S.heat/140);
+  if(hasCrew("driver")) r*=0.78;
+  if(hasCrew("fixer")) r*=0.85;
+  return clamp(r,0.02,0.55);
+}
+function openQty(id,mode){
+  var g=good(id), pr=S.prices[id], prop=hasProp(), dest="load";
+  if(mode==="buy"  && prop && space()<=0 && roomAt(prop.id)>0) dest="p:"+prop.id;
+  if(mode==="sell" && prop && !S.inv[id] && heldHere(id)) dest="p:"+prop.id;
+  pend={g:g,pr:pr,mode:mode,dest:dest,kind:"trade"};
+  qtyMax(); go("qty");
+}
+function destRoom(dest,mode,g){
+  if(dest==="load") return mode==="buy"?space():S.inv[g.id];
+  var pid=dest.slice(2), p=PROPS.filter(function(x){return x.id===pid;})[0];
+  if(!p||!S.props[pid]) return 0;
+  if(mode==="buy") return roomAt(pid);
+  return (p.loc===S.loc)?bin(pid)[g.id]:0;   /* you can only sell out of a warehouse you're standing in */
+}
+function qtyMax(){
+  var p=pend, g=p.g;
+  if(p.kind==="move"){
+    var pr=hasProp();
+    p.max = !pr?0:(p.dir==="put"?Math.min(S.inv[g.id],roomAt(pr.id)):Math.min(bin(pr.id)[g.id],space()));
+    return;
+  }
+  var room=destRoom(p.dest,p.mode,g);
+  p.max = p.mode==="buy" ? maxBuy(g,p.pr,S.cash,room) : room;
+}
+function openMove(id,dir){
+  pend={g:good(id),dir:dir,kind:"move"};
+  qtyMax(); go("qty");
+}
+function qtyHTML(){
+  var p=pend, prop=hasProp(), h="";
+  if(p.kind==="move"){
+    h+=head((p.dir==="put"?"Store ":"Collect ")+p.g.n,"stash");
+    h+='<div class="note">'+(p.dir==="put"?"Into safe storage.":"Back into your load.")+' Max '+p.max.toLocaleString()+'.</div>';
+  }else{
+    h+=head((p.mode==="buy"?"Buy ":"Sell ")+p.g.n,"market");
+    var props=ownedProps();
+    if(props.length){
+      h+='<div class="destrow" style="flex-wrap:wrap">';
+      h+='<button class="dest'+(p.dest==="load"?" on":"")+'" data-dest="load" style="flex:1 1 100%">'+
+         (p.mode==="buy"?"Into your load":"From your load")+
+         '<small>'+destRoom("load",p.mode,p.g).toLocaleString()+(p.mode==="buy"?" space":" held")+'</small></button>';
+      props.forEach(function(pr2){
+        var key="p:"+pr2.id, here=pr2.loc===S.loc, room=destRoom(key,p.mode,p.g);
+        var rk=Math.round(deliveryRisk(pr2.id)*100);
+        var lab = p.mode==="buy"
+          ? (here?"Straight to the "+pr2.n.toLowerCase():"Ship to the "+pr2.n.toLowerCase()+" in "+city(pr2.loc).n)
+          : (here?"From the "+pr2.n.toLowerCase():pr2.n+" is in "+city(pr2.loc).n);
+        var sub = p.mode==="buy"
+          ? (room.toLocaleString()+" space"+(here?" &middot; no journey":" &middot; "+rk+"% risk in transit"))
+          : (here?(room.toLocaleString()+" stored"):"you'd have to be there");
+        h+='<button class="dest'+(p.dest===key?" on":"")+'" data-dest="'+key+'"'+
+           ((room<=0)?" disabled":"")+' style="flex:1 1 100%">'+lab+'<small>'+sub+'</small></button>';
+      });
+      h+='</div>';
+    }
+    var cst0=S.cost[p.g.id]||0;
+    h+='<div class="note">Quoted at '+money(p.pr)+' each, however many you move. Max '+
+      p.max.toLocaleString()+'.'+
+      (cst0>0?(' You paid <b style="color:var(--chalk)">'+money(cst0)+'</b> each on average, so '+
+        (p.pr>cst0?'this is <b style="color:var(--cash)">'+((p.pr/cst0-1)*100).toFixed(0)+'% up</b> on your cost.'
+                  :'this is <b style="color:var(--heat)">'+((1-p.pr/cst0)*100).toFixed(0)+'% down</b> on your cost.')):'')+
+      '</div>';
+  }
+  h+='<input class="qty" id="qin" type="number" min="1" max="'+p.max+'" value="'+p.max+'">'+
+     '<div class="note" id="qcalc"></div>'+
+     '<button class="opt" data-qok="1"'+(p.max>0?"":" disabled")+'>Confirm</button>';
+  return h;
+}
+function qcalc(){
+  var el=document.getElementById("qcalc"); if(!el||!pend||!pend.g)return;
+  if(pend.kind==="move"){el.textContent="";return;}
+  var q=clamp(Math.floor(+document.getElementById("qin").value)||0,0,pend.max);
+  if(!q){el.innerHTML="Enter a number.";return;}
+  var u=pend.mode==="buy"?buyUnit(pend.g,pend.pr,q):sellUnit(pend.g,pend.pr,q);
+  var slip=(u-pend.pr)/pend.pr*100;
+  var line=(pend.mode==="buy"?"You pay ":"You get ")+
+    '<b style="color:var(--chalk)">'+money(u*q)+'</b> for '+q.toLocaleString()+
+    ' &mdash; '+money(u)+' each';
+  var cst=S.cost[pend.g.id]||0;
+  if(pend.mode==="sell"&&cst>0){
+    var basis=q*cst, prof=u*q-basis;
+    line+='<br>Cost '+money(basis)+' &middot; <b style="color:'+(prof>=0?"var(--cash)":"var(--heat)")+'">'+
+      (prof>=0?"profit ":"loss ")+money(Math.abs(prof))+'</b>';
+  }
+  if(pend.mode==="buy"&&cst>0&&totalHeld(pend.g.id)>0){
+    var blended=(totalHeld(pend.g.id)*cst+q*u)/(totalHeld(pend.g.id)+q);
+    line+='<br>Average cost becomes '+money(blended)+' each';
+  }
+  el.innerHTML=line;
+}
+function confirmQty(){
+  var v=Math.floor(+document.getElementById("qin").value);
+  if(!(v>0)){ go(pend.kind==="move"?"stash":"market"); return; }
+  v=Math.min(v,pend.max);
+  if(pend.kind==="move"){
+    var pr0=hasProp();
+    if(pend.dir==="put"){S.inv[pend.g.id]-=v;bin(pr0.id)[pend.g.id]+=v;
+      say("Stored "+v.toLocaleString()+" "+pend.g.n+".");toast("Stored safely.","good");}
+    else{bin(pr0.id)[pend.g.id]-=v;S.inv[pend.g.id]+=v;
+      say("Collected "+v.toLocaleString()+" "+pend.g.n+".");toast("Collected.");}
+    go("stash"); paint(); return;
+  }
+  var toStore=pend.dest!=="load";
+  var pid=toStore?pend.dest.slice(2):null;
+  var pobj=pid?PROPS.filter(function(x){return x.id===pid;})[0]:null;
+  if(pend.mode==="buy"){
+    var cost=Math.round(v*buyUnit(pend.g,pend.pr,v));
+    S.cash-=cost;
+    if(toStore){
+      var remote=pobj.loc!==S.loc;
+      var lost=0;
+      if(remote && Math.random()<deliveryRisk(pid)){
+        lost=Math.round(v*(0.35+Math.random()*0.65));
+        addHeat(4);
+      }
+      bin(pid)[pend.g.id]+=(v-lost);
+      if(v-lost>0) addCost(pend.g.id,v-lost,cost/v);   /* the lost portion still cost you */
+      if(lost){
+        say("Shipment to the "+pobj.n.toLowerCase()+" in "+city(pobj.loc).n+" was intercepted. Lost "+lost.toLocaleString()+" of "+v.toLocaleString()+".","bad");
+        toast("The run went bad. "+lost.toLocaleString()+" of "+v.toLocaleString()+" "+pend.g.n+" never arrived.","bad");
+        flashMood("worried");
+      }else{
+        say("Bought "+v.toLocaleString()+" "+pend.g.n+" for "+money(cost)+", delivered to the "+pobj.n.toLowerCase()+".");
+        toast(v.toLocaleString()+" "+pend.g.n+(remote?" arrived safely in "+city(pobj.loc).n+".":" straight into storage."),"good");
+      }
+    }
+    else{S.inv[pend.g.id]+=v; addCost(pend.g.id,v,cost/v);
+      say("Bought "+v.toLocaleString()+" "+pend.g.n+" for "+money(cost)+".");
+      toast("Pockets filling up.");}
+  }else{
+    var take=Math.round(v*sellUnit(pend.g,pend.pr,v));
+    var basis=Math.round(v*(S.cost[pend.g.id]||0));
+    var profit=take-basis;
+    S.cash+=take;
+    if(toStore) bin(pid)[pend.g.id]-=v; else S.inv[pend.g.id]-=v;
+    tidyCost(pend.g.id);
+    addHeat(clamp(take/2500000,0.4,9));            /* big sales get noticed */
+    say("Sold "+v.toLocaleString()+" "+pend.g.n+" for "+money(take)+
+        (basis?" (cost "+money(basis)+", "+(profit>=0?"made ":"lost ")+money(Math.abs(profit))+")":"")+
+        (toStore?" out of storage.":"."), profit>=0?"good":"bad");
+    toast("Sold "+v.toLocaleString()+" "+pend.g.n+" for "+money(take)+
+        (basis?" — "+(profit>=0?"profit ":"loss ")+money(Math.abs(profit)):""), profit>=0?"good":"bad");
+    if(take>500000){animate("happy");flashMood("rich");}
+  }
+  go("market"); paint();
+}
+/* He lends against what you could actually cover. Cash, deposits and product all
+   count as collateral; what you already owe comes off the top. Borrowing itself
+   doesn't move the needle — it adds cash and debt in equal measure. */
+/* Vanishing costs money. A clean identity is dearer when half the continent is
+   looking for you, and the fixer knows people who make it cheaper. */
+function vanishFee(){
+  var w=Math.max(0,worth());
+  var rate=0.08+S.heat/500;                 /* 8% cold, 28% at maximum heat */
+  if(hasCrew("fixer")) rate*=0.7;
+  if(hasCrew("lawyer")) rate*=0.85;
+  return Math.round(w*rate);
+}
+function creditLimit(){ return Math.round(10000 + Math.max(0,worth())*0.6); }
+function borrowLeft(){
+  var headroom = creditLimit() - S.debt;                 /* total exposure he'll accept */
+  var today    = 1000000 - S.borrowedToday;              /* and never more than 1M a day */
+  return Math.max(0, Math.min(headroom, today));
+}
+function bankAct(k){
+  pend={bank:k,max:k==="pay"?Math.min(S.cash,S.debt)
+                :k==="dep"?S.cash
+                :k==="wd"?S.bank
+                :borrowLeft()};
+  go("bankqty");
+}
+function bankQtyHTML(){
+  var t=pend.bank==="pay"?"Pay the shark":pend.bank==="dep"?"Deposit":
+        pend.bank==="borrow"?"Borrow from the shark":"Withdraw";
+  var note;
+  if(pend.bank==="borrow"){
+    var lim=creditLimit();
+    note = 'He lends against what you are worth. On '+money(Math.max(0,worth()))+
+      ' that is a limit of '+money(lim)+', and you already owe '+money(S.debt)+'. '+
+      (S.borrowedToday>0?('You have taken '+money(S.borrowedToday)+' today. '):'')+
+      'That leaves '+money(pend.max)+'. It compounds at 10% a day from the moment you take it.';
+  }else note='Up to '+money(pend.max)+'.';
+  return head(t,"bank")+'<div class="note">'+note+'</div>'+
+    '<input class="qty" id="qin" type="number" min="1" max="'+Math.round(pend.max)+'" value="'+Math.round(pend.max)+'">'+
+    '<button class="opt" data-bqok="1"'+(pend.max>0?"":" disabled")+'>Confirm</button>';
+}
+function confirmBank(){
+  var v=Math.min(Math.floor(+document.getElementById("qin").value)||0,pend.max);
+  if(v>0){
+    if(pend.bank==="pay"){S.cash-=v;S.debt-=v;say("Paid the shark "+money(v)+".","good");toast("Paid "+money(v)+" off the debt.","good");}
+    if(pend.bank==="dep"){S.cash-=v;S.bank+=v;say("Banked "+money(v)+".");toast("Banked "+money(v)+".");}
+    if(pend.bank==="wd"){S.bank-=v;S.cash+=v;say("Withdrew "+money(v)+".");toast("Withdrew "+money(v)+".");}
+    if(pend.bank==="borrow"){S.cash+=v;S.debt+=v;S.borrowedToday+=v;
+      say("Borrowed "+money(v)+" from the shark.","bad");
+      toast("Borrowed "+money(v)+". He smiled, which is worse.");}
+  }
+  go("bank"); paint();
+}
+/* ── purchases ── */
+function buyWeapon(id){
+  var w=WEAPONS.filter(function(x){return x.id===id;})[0];
+  S.cash-=w.p; S.wep[w.id]=1;
+  say("Bought a "+w.n.toLowerCase()+".","bad");
+  toast("You are now carrying a "+w.n.toLowerCase()+".");
+  animate("happy"); go("store"); paint();
+}
+function buyVest(id){
+  var v=VESTS.filter(function(x){return x.id===id;})[0];
+  S.cash-=v.p; S.vestT=v.t;
+  say("Bought a "+v.n.toLowerCase()+".");
+  toast(v.n+" on. Beatings hurt "+Math.round(v.r*100)+"% less.","good");
+  go("store"); paint();
+}
+function buyRide(id){
+  var r=RIDES.filter(function(x){return x.id===id;})[0];
+  var buying=!S.owned[id];
+  if(buying){S.cash-=r.p;S.owned[id]=1;say("Bought a "+r.n.toLowerCase()+".","good");}
+  if(used()>S.coat+r.cap){
+    toast("You're carrying "+used().toLocaleString()+" units. The "+r.n.toLowerCase()+
+      " only holds "+(S.coat+r.cap).toLocaleString()+". Sell or store some first.","bad");
+    go("store"); paint(); return;
+  }
+  S.ride=id;
+  toast("Travelling by "+r.n.toLowerCase()+". Capacity "+cap().toLocaleString()+
+    (r.up?", "+money(r.up)+" a day to run.":"."),"good");
+  go("store"); paint();
+}
+function buyProp(id){
+  var p=PROPS.filter(function(x){return x.id===id;})[0], c=city(p.loc);
+  S.cash-=p.p; S.props[id]=1;
+  say("Bought the "+p.n.toLowerCase()+" in "+c.n+".","good");
+  toast(p.n+" in "+c.n+" is yours. "+money(p.up)+" a day to keep.","good");
+  animate("happy"); go("store"); paint();
+}
+function buyCrew(id){
+  var c=CREW.filter(function(x){return x.id===id;})[0];
+  S.cash-=c.p; S.crew[id]=1;
+  say("Put a "+c.n.toLowerCase()+" on the payroll.","good");
+  toast(c.n+" hired. "+money(c.up)+" a day, every day.","good");
+  go("crew"); paint();
+}
+function sellRide(id){
+  var r=RIDES.filter(function(x){return x.id===id;})[0];
+  var back=Math.round(r.p*0.60);
+  S.cash+=back; S.owned[id]=0;
+  if(S.ride===id){ S.ride="foot";
+    /* anything that no longer fits gets dumped at a loss */
+    if(used()>cap()){
+      var over=used()-cap();
+      GOODS.forEach(function(g){
+        if(over<=0||!S.inv[g.id])return;
+        var drop=Math.min(S.inv[g.id],over);
+        S.inv[g.id]-=drop; over-=drop;
+      });
+      toast("Sold the "+r.n.toLowerCase()+" for "+money(back)+". You had to dump what wouldn't fit.","bad");
+    }else toast("Sold the "+r.n.toLowerCase()+" for "+money(back)+". You're flying commercial again.","good");
+  }else toast("Sold the "+r.n.toLowerCase()+" for "+money(back)+".","good");
+  say("Sold the "+r.n.toLowerCase()+" for "+money(back)+". Upkeep down "+money(r.up)+" a day.","good");
+  go("store"); paint();
+}
+function sellProp(id){
+  var p=PROPS.filter(function(x){return x.id===id;})[0];
+  var back=Math.round(p.p*0.60), sold=0, b=bin(id);
+  GOODS.forEach(function(g){
+    if(!b[g.id])return;
+    sold+=Math.round(b[g.id]*(S.nat[g.id]||0)*0.75);
+    b[g.id]=0;
+  });
+  S.cash+=back+sold; S.props[id]=0;
+  say("Sold the "+p.n.toLowerCase()+" for "+money(back)+". Upkeep down "+money(p.up)+" a day.","good");
+  toast("Sold the "+p.n.toLowerCase()+" for "+money(back)+
+    (sold?", plus "+money(sold)+" for the stock inside.":"."),"good");
+  go("store"); paint();
+}
+function fireCrew(id){
+  var c=CREW.filter(function(x){return x.id===id;})[0];
+  S.crew[id]=0;
+  say("Let the "+c.n.toLowerCase()+" go. Upkeep down "+money(c.up)+" a day.","good");
+  toast(c.n+" is off the payroll.","good");
+  go("crew"); paint();
+}
+function service(k){
+  if(k==="bribe"){
+    var cost=Math.round(40000+S.heat*S.heat*180+worth()*0.004);
+    S.cash-=cost; coolHeat(30);
+    say("Paid "+money(cost)+" into the right pockets.","good");
+    toast("Heat down 30. Money well spent.","good");
+  }
+  if(k==="launder"){
+    var lm=Math.round(S.cash*0.10);
+    S.cash-=lm; coolHeat(8);
+    say("Ran "+money(lm)+" through the club.","good");
+    toast("Cleaner than it was. Heat down 8.","good");
+  }
+  if(k==="party"){
+    S.cash-=2500000; S.hp=100; S.bandage=0; addHeat(10);
+    say("Threw a party the neighbours will describe to police.","good");
+    toast("Enormous party. Full health, and everyone knows your name now.","good");
+    animate("happy"); flashMood("rich");
+  }
+  go("store"); paint();
+}
+function buyNuke(){
+  S.cash-=NUKE.p; S.nuke=1;
+  say("Bought a suitcase atomic bomb. This was a choice you made.","bad");
+  toast("You are carrying an atomic bomb. Nobody made you do this.","bad");
+  flashMood("worried"); go("store"); paint();
+}
+function nukeHTML(){
+  return '<div class="scrhead"><h3 style="color:var(--heat)">THE SUITCASE</h3></div>'+
+    '<div class="note">It sits open on the bed. Two keys, one switch, and a little screen counting '+
+    'nothing yet. '+esc(city().n)+' is going about its evening outside the window.</div>'+
+    '<div class="note" style="color:var(--heat)">If you do this, everyone in '+esc(city().n)+
+    ' dies. That includes you. The run ends. There is no score to salvage and no leaderboard '+
+    'entry worth having. You already knew that.</div>'+
+    '<button class="opt nuke" data-detonate="1">Turn both keys<small>There is no undo</small></button>'+
+    '<button class="opt" data-go="store">Close the case and walk away<small>The sensible option</small></button>';
+}
+function detonate(){
+  wrap.classList.remove("on");
+  var f=document.getElementById("nukeflash");
+  f.classList.add("go"); boom();
+  var w=document.getElementById("figwrap");
+  if(w) w.classList.add("down");
+  S.over=true;
+  setTimeout(function(){
+    var stamp=new Date().toLocaleDateString();
+    endInfo={score:0,rank:"Vaporised",dead:true,nuked:true,stash:0,carry:0,lost:0,
+      code:encode({n:S.name,s:0,t:stamp,d:Math.min(S.day,S.days),dead:true,nuke:1})};
+    addScore({n:S.name,s:0,t:stamp,d:Math.min(S.day,S.days),dead:true,nuke:1});
+    wrap.classList.add("on"); go("end");
+  },2700);
+}
+
+/* ══════════ DAYS, UPKEEP, RAIDS, COPS ══════════ */
+function endDay(){
+  S.day++;
+  S.debt=Math.round(S.debt*1.10);
+  var gained=Math.round(S.bank*0.005);
+  S.bank+=gained; S.interest+=gained; S.lastInterest=gained;
+  S.borrowedToday=0;
+  /* the daily bleed */
+  var due=upkeep();
+  if(due>0){
+    var short=due;
+    var fromCash=Math.min(S.cash,short); S.cash-=fromCash; short-=fromCash;
+    if(short>0){var fromBank=Math.min(S.bank,short);S.bank-=fromBank;short-=fromBank;}
+    if(short>0){
+      S.debt+=Math.round(short);
+      say("Couldn't cover upkeep. "+money(short)+" went on the shark's tab.","bad");
+      toast("You can't pay your upkeep — "+money(short)+" went on the tab. Sell something.","bad");
+      flashMood("worried");
+    }
+  }
+  /* heat cools slowly by itself, faster with a lawyer */
+  coolHeat(hasCrew("lawyer")?3.2:1.2);
+  /* being conspicuous costs you */
+  if(worth()>1e7) addHeat(0.5);
+  if(worth()>1e8) addHeat(0.7);
+  raidCheck();
+  roll(); planNextDay(); paint();
+  return S.day>S.days;
+}
+function raidCheck(){
+  if(!stashUsed()) return;
+  PROPS.forEach(function(p){
+    if(!S.props[p.id]) return;
+    var chance=0.014*(1+S.heat/70);
+    if(hasCrew("lawyer")) chance*=0.6;
+    if(Math.random()<chance){
+      var frac=0.25+Math.random()*0.45, lost=0, b=bin(p.id);
+      if(!usedAt(p.id)) return;
+      GOODS.forEach(function(g){
+        if(!b[g.id])return;
+        var take=Math.round(b[g.id]*frac);
+        b[g.id]-=take; lost+=take*(S.nat[g.id]||0); tidyCost(g.id);
+      });
+      addHeat(6);
+      say("They raided the "+p.n.toLowerCase()+" in "+city(p.loc).n+". "+money(lost)+" gone.","bad");
+      toast("RAID on your "+p.n.toLowerCase()+". They took "+money(lost)+" worth.","bad");
+      flashMood("worried");
+    }
+  });
+}
+function hazard(to){
+  if(Math.random()<legRisk(to)){ go("cops"); return true; }
+  var ev=pickEvent();
+  if(Math.random()<0.28 && ev){ pend=ev; go("event"); return true; }
+  return false;
+}
+function travel(to){
+  var from=S.loc;
+  S.loc=to;
+  addHeat(city(to).cc!==city(from).cc ? 3.5 : 1.4);
+  if(endDay()) return finish(false);
+  if(hazard(to)) return;
+  go("home"); toast("Arrived in "+city().n+".");
+}
+function waitDays(n){
+  var d=0;
+  while(d<n){
+    d++;
+    coolHeat(4);
+    if(endDay()) return finish(false);
+    if(Math.random()<0.10){ var ev=pickEvent(); if(ev){pend=ev;go("event");return;} }
+  }
+  go("home");
+  toast(d===1?("Day "+S.day+". Heat down a little."):(d+" days indoors. Heat down "+(d*4+d*1.2|0)+"."));
+}
+function stopName(){
+  var r=ride();
+  return S.ride==="foot" ? "AIRPORT SECURITY"
+       : (r.id==="speed"||r.id==="cargo") ? "THE COAST GUARD"
+       : (r.id==="cessna"||r.id==="jet") ? "CUSTOMS ON THE TARMAC" : "STATE TROOPERS";
+}
+function copsHTML(){
+  var W=wep(), who=stopName();
+  /* Nothing in your coat means nothing to find. They waste your time and let you go. */
+  if(used()===0){
+    var lines = S.ride==="foot"
+      ? ["They swab your hands, empty your bag onto a tray and pull your shoes apart. The dog sits down next to somebody else's suitcase.",
+         "You go through the scanner twice. A man in gloves checks the lining of your coat, finds nothing but lining, and looks disappointed.",
+         "They ask where you're flying and why, three times, in slightly different words. Then they wave you through."]
+      : ["They walk you through the questions and go over the vehicle with a torch. There's nothing to find, and after twenty minutes they admit it.",
+         "A dog goes over everything you own and loses interest. The officer keeps you talking a while longer out of principle.",
+         "They search you thoroughly, find an empty coat, and hand your papers back without a word."];
+    return '<div class="scrhead"><h3 style="color:var(--sodium)">'+who+'</h3></div>'+
+      '<div class="note">'+esc(lines[ri(0,lines.length-1)])+'</div>'+
+      '<div class="note" style="color:var(--cash)">You\'re carrying nothing. There is nothing they can do to you.</div>'+
+      '<button class="opt" data-cop="clean">Wait it out<small>Costs you nothing but your afternoon</small></button>';
+  }
+  return '<div class="scrhead"><h3 style="color:var(--heat)">'+who+'</h3></div>'+
+    '<div class="note">They pull you aside in '+esc(city().n)+'. You are carrying '+
+    used().toLocaleString()+' units and your heat is '+Math.round(S.heat)+'%.</div>'+
+    '<button class="opt" data-cop="run">Run for it<small>Most people get away. Most.</small></button>'+
+    '<button class="opt" data-cop="fight"'+(W?"":" disabled")+'>Use the '+(W?esc(W.n).toLowerCase():"weapon you don\'t have")+
+    '<small>'+(W?("wins about "+Math.round(W.w*10)+" in 10"):"You'd need something from the Store.")+'</small></button>'+
+    '<button class="opt" data-cop="bribe"'+(S.cash>=25000?"":" disabled")+'>Offer them '+money(25000)+
+    '<small>'+(S.cash>=25000?"Works more often than it should":"You don't have the cash")+'</small></button>';
+}
+function copChoice(k){
+  var dead=false;
+  if(k==="clean"){
+    coolHeat(2);
+    say("Searched at "+(S.ride==="foot"?"the airport":"a checkpoint")+" carrying nothing. They let you go.","good");
+    toast("Clean. They found nothing and you walked.","good");
+    go("home"); paint(); return;
+  }
+  if(k==="run"){
+    var odds=0.70-S.heat/300;
+    if(Math.random()<odds){say("Lost them.","good");toast("You lost them.","good");coolHeat(1);}
+    else dead=bust(ri(9,20));
+  }else if(k==="bribe"){
+    S.cash-=25000;
+    if(Math.random()<0.72){say("Paid them off, "+money(25000)+".","good");toast("They took it and looked away.","good");}
+    else{addHeat(8);say("They took the money and searched you anyway.","bad");dead=bust(ri(6,14));}
+  }else{
+    var W=wep();
+    if(Math.random()<W.w){
+      var b=Math.round(ri(3000,12000)*(1+S.mile*0.8));
+      S.cash+=b; addHeat(9);
+      say(W.k,"good");
+      toast(W.k,"good");
+      animate("happy");
+    }else{ dead=bust(ri(18,32)); }
+  }
+  paint();
+  if(dead) return finish(true);
+  go("home");
+}
+function bust(dmg){
+  var lost=used();
+  if(lost===0){
+    /* they had nothing on you, so there is nothing to seize and no reason to hurt you */
+    coolHeat(1);
+    say("Searched and released. They had nothing on you.","good");
+    toast("They found nothing. You walked.","good");
+    return false;
+  }
+  var seizeRate=hasCrew("lawyer")?0.18:0.35;
+  GOODS.forEach(function(g){S.inv[g.id]=0;});
+  var take=Math.round(S.cash*seizeRate); S.cash-=take;
+  addHeat(12);
+  say("Busted. They took "+lost.toLocaleString()+" units and "+money(take)+".","bad");
+  toast(stashUsed()?"Busted — but your storage is untouched.":"Busted. They took everything on you.","bad");
+  return hurt(dmg);
+}
+var EVENTS=[
+ function(){var g=GOODS[ri(0,7)],q=ri(3,12); if(space()<q)return null;
+   return {t:"Lucky find",b:"You find "+q+" "+g.n+" in a locker nobody claimed.",
+     a:[{l:"Pocket it",f:function(){S.inv[g.id]+=q;addCost(g.id,q,0);say("Found "+q+" "+g.n+" for nothing.","good");toast("Found "+q+" "+g.n+".","good");animate("happy");}}]};},
+ function(){var l=Math.round(S.cash*0.22); if(l<50)return null;
+   return {t:"Jumped",b:"Two kids corner you outside the motel. One has a blade.",
+     a:[{l:"Hand it over",s:"Lose "+money(l),f:function(){S.cash-=l;say("Mugged for "+money(l)+".","bad");toast("Mugged for "+money(l)+".","bad");flashMood("worried");}},
+        {l:"Fight them off",s:"Keep the cash, take a beating",f:function(){say("Fought them off, but they cut you up.","bad");toast("You kept the cash. It cost you.","bad");return hurt(ri(10,24));}}]};},
+ function(){var p=Math.round(ri(300,900)*(1+S.mile*0.4)); if(S.cash<p)return null;
+   return {t:"Tailor",b:"A tailor will stitch extra lining into your coat.",
+     a:[{l:"Pay "+money(p),s:"+25 coat space",f:function(){S.cash-=p;S.coat+=25;say("Coat lined. +25 space.","good");toast("Coat lined.","good");}},
+        {l:"Not today",f:function(){}}]};},
+ function(){var f=Math.round(ri(150,600)*(1+S.mile*0.5)); if(S.cash<f)return null;
+   return {t:"Shakedown",b:"A patrol officer wants "+money(f)+" to look somewhere else.",
+     a:[{l:"Pay him",f:function(){S.cash-=f;coolHeat(2);say("Paid off a cop, "+money(f)+".","bad");toast("Paid him off.");}},
+        {l:"Tell him no",s:"He won't like it",f:function(){if(Math.random()<0.5){say("He let it go.","good");toast("He let it go.","good");}
+          else{addHeat(5);say("He put you into the wall.","bad");toast("Bad call.","bad");return hurt(ri(8,18));}}}]};},
+ function(){var w=Math.round(ri(500,2500)*(1+S.mile*0.8));
+   return {t:"Payday",b:"An old customer settles up. "+money(w)+" in a paper bag.",
+     a:[{l:"Take it",f:function(){S.cash+=w;say("Old debt settled, +"+money(w)+".","good");toast("+"+money(w),"good");animate("happy");}}]};},
+ function(){if(S.heat<25)return null;
+   return {t:"Somebody's watching",b:"The same grey sedan has been behind you for three blocks.",
+     a:[{l:"Take the long way round",s:"Costs nothing but nerves",f:function(){coolHeat(5);say("Shook the tail.","good");toast("You shook them. Heat down 5.","good");}},
+        {l:"Ignore it",s:"Probably nothing",f:function(){addHeat(9);say("The sedan is still there.","bad");toast("They're still behind you.","bad");flashMood("worried");}}]};},
+ function(){if(!stashCap())return null;
+   return {t:"A tip-off",b:"Someone says your storage is being watched.",
+     a:[{l:"Pay for a warning",s:money(40000),f:function(){if(S.cash<40000){toast("You can't afford it.","bad");return;}S.cash-=40000;coolHeat(10);say("Paid for a heads-up.","good");toast("Heat down 10.","good");}},
+        {l:"Risk it",f:function(){addHeat(4);}}]};}
+];
+function pickEvent(){for(var i=0;i<8;i++){var e=EVENTS[ri(0,EVENTS.length-1)]();if(e)return e;}return null;}
+function eventHTML(){
+  var h='<div class="scrhead"><h3>'+esc(pend.t)+'</h3></div><div class="note">'+esc(pend.b)+'</div>';
+  pend.a.forEach(function(a,i){
+    h+='<button class="opt" data-ev="'+i+'">'+esc(a.l)+(a.s?'<small>'+esc(a.s)+'</small>':"")+'</button>';
+  });
+  return h;
+}
+function evChoice(i){
+  var dead=pend.a[+i].f(); pend=null; paint();
+  if(dead) return finish(true);
+  go("home");
+}
+
+/* ══════════ SCORES & END ══════════ */
+var mem=[];
+var store={
+  read:function(){try{return JSON.parse(localStorage.getItem("wdg_scores")||"[]");}catch(e){return mem;}},
+  write:function(v){mem=v;try{localStorage.setItem("wdg_scores",JSON.stringify(v));}catch(e){}}
+};
+function encode(o){try{return btoa(unescape(encodeURIComponent(JSON.stringify(o))));}catch(e){return "";}}
+function decode(c){try{var o=JSON.parse(decodeURIComponent(escape(atob(String(c).trim()))));
+  return (o&&typeof o.n==="string"&&typeof o.s==="number")?o:null;}catch(e){return null;}}
+function addScore(o){
+  var all=store.read();
+  if(all.some(function(x){return x.n===o.n&&x.s===o.s&&x.t===o.t;})) return false;
+  all.push(o); all.sort(function(a,b){return b.s-a.s;}); store.write(all.slice(0,25)); return true;
+}
+function scoreHTML(){
+  var all=store.read();
+  var h= all.length ? all.slice(0,10).map(function(e,i){
+    return '<div class="lbrow"><span class="rk">'+(i+1)+'</span><span class="who">'+
+      esc(String(e.n).slice(0,18))+'<small>'+esc(e.t||"")+
+      (e.d?" &middot; "+e.d+" days":"")+
+      (e.nuke?" &middot; detonated the bomb":e.gone?" &middot; skipped town":e.dead?" &middot; didn't make it":"")+
+      '</small></span><span class="sc'+(e.s<0?" neg":"")+'">'+money(e.s)+'</span></div>';}).join("")
+    : '<div class="note">No runs yet.</div>';
+  return h+'<div class="codebox"><input id="codein" placeholder="Paste his score code"><button data-addcode="1">ADD</button></div>'+
+    '<div class="note" style="margin-top:9px">Finish a run to get your own code.</div>';
+}
+function addCode(){
+  var o=decode(document.getElementById("codein").value);
+  if(!o){toast("That code didn't read. Get the whole thing.","bad");return;}
+  var fresh=addScore({n:o.n,s:o.s,t:o.t||"",d:o.d||0,dead:!!o.dead,nuke:!!o.nuke,gone:!!o.gone});
+  toast(fresh?(o.n+" added: "+money(o.s)):"Already on the board.",fresh?"good":"");
+  go("score");
+}
+function copyCode(){
+  var t=document.getElementById("codeout").textContent;
+  if(navigator.clipboard) navigator.clipboard.writeText(t);
+  toast("Code copied. Send it to him.","good");
+}
+function finish(dead,mode){
+  if(S.over) return;
+  S.over=true;
+  var vanished = mode==="vanish";
+  var stashVal=0, carryVal=0;
+  GOODS.forEach(function(g){ carryVal += S.inv[g.id]*(S.nat[g.id]||0); });
+  PROPS.forEach(function(p){
+    if(!S.props[p.id])return;
+    var b=bin(p.id);
+    GOODS.forEach(function(g){ stashVal += b[g.id]*(S.nat[g.id]||0); });
+  });
+  var lostVal=0;
+  if(dead){ lostVal=carryVal; carryVal=0; var w=document.getElementById("figwrap"); if(w)w.classList.add("down"); }
+  var fee = vanished ? vanishFee() : 0;
+  var score=net()+stashVal+carryVal-fee, stamp=new Date().toLocaleDateString();
+  var rank=dead?"Didn't make it":
+    score>=1e9?"Untouchable":score>=1e8?"Cartel":score>=1e7?"Kingpin":score>=1e6?"Made it":
+    score>=1e5?"Doing alright":score>=1e4?"Scraping by":score>=0?"Broke even":"In the hole";
+  if(vanished) rank = score>=1e7?"Gone, and rich":score>=1e5?"Gone, and comfortable":"Gone, with not much";
+  addScore({n:S.name,s:score,t:stamp,d:Math.min(S.day,S.days),dead:dead,gone:vanished});
+  endInfo={score:score,rank:rank,dead:dead,gone:vanished,fee:fee,
+           stash:stashVal,carry:carryVal,lost:lostVal,
+           code:encode({n:S.name,s:score,t:stamp,d:Math.min(S.day,S.days),dead:dead,gone:vanished})};
+  wrap.classList.add("on"); go("end"); paint();
+}
+function endHTML(){
+  var e=endInfo;
+  if(e.nuked){
+    return '<div class="mid"><div class="note">'+esc(city().n).toUpperCase()+' IS GONE</div>'+
+      '<div class="big neg">$0</div><div class="rank">Vaporised</div>'+
+      '<div class="note">You turned both keys on day '+S.day+'. Everything you built, every dollar, '+
+      'every warehouse, and roughly two million people you never met. The leaderboard will record '+
+      'that you scored nothing.</div></div>'+
+      '<div class="share" id="codeout">'+e.code+'</div>'+
+      '<button class="opt" data-copy="1">Copy code</button>'+
+      '<button class="opt" data-again="1">Start again, differently</button>';
+  }
+  if(e.gone){
+    var where=["a fishing town where nobody asks","a city where the phones don't work well",
+               "somewhere hot with bad roads","a place with one bar and no extradition"];
+    return '<div class="mid"><div class="note">YOU LEFT ON DAY '+S.day+' OF '+S.days+'</div>'+
+      '<div class="big'+(e.score<0?" neg":"")+'">'+money(e.score)+'</div><div class="rank">'+e.rank+'</div>'+
+      '<div class="note">'+S.mile+' of '+MILES.length+' milestones'+
+      (e.fee?' &middot; '+money(e.fee)+' for the papers':"")+'</div></div>'+
+      '<div class="note">The coat went in a bin at the airport. You are in '+
+      where[Math.floor(Math.random()*where.length)]+' now, and your brother is still playing.</div>'+
+      '<div class="note">Send this to him. He pastes it into his copy and you land on his board.</div>'+
+      '<div class="share" id="codeout">'+e.code+'</div>'+
+      '<button class="opt" data-copy="1">Copy code</button>'+
+      '<button class="opt" data-go="score">See the board</button>'+
+      '<button class="opt" data-again="1">Play again</button>';
+  }
+  return '<div class="mid"><div class="note">'+(e.dead?"YOU WENT DOWN ON DAY "+S.day:"DAY "+S.days+". THE RUN IS OVER.")+'</div>'+
+    '<div class="big'+(e.score<0?" neg":"")+'">'+money(e.score)+'</div><div class="rank">'+e.rank+'</div>'+
+    '<div class="note">'+S.mile+' of '+MILES.length+' milestones'+
+    (e.carry?' &middot; '+money(e.carry)+' sold off your load':"")+
+    (e.stash?' &middot; '+money(e.stash)+' out of storage':"")+
+    (e.dead&&e.lost?' &middot; you went down carrying '+money(e.lost)+' worth':"")+'</div></div>'+
+    '<div class="note">Send this to your brother. He pastes it into his copy and you land on his board.</div>'+
+    '<div class="share" id="codeout">'+e.code+'</div>'+
+    '<button class="opt" data-copy="1">Copy code</button>'+
+    '<button class="opt" data-go="score">See the board</button>'+
+    '<button class="opt" data-again="1">Play again</button>';
+}
+function startGame(){
+  var nm=document.getElementById("nm");
+  reset(nm?nm.value.trim()||"Wesley":"Wesley");
+  wrap.classList.remove("on"); paint();
+  toast("New York. Day one. No vehicle, so you fly commercial until you can fix that.");
+}
+function askName(){
+  S.over=false; wrap.classList.add("on");
+  scr.innerHTML='<div class="scrhead"><h3>Who\'s playing?</h3></div>'+
+    '<div class="note">Ten cities across three countries. Thirty days to start, and every money '+
+    'milestone buys fifteen more. Buy cheap in Tijuana, sell dear in New York &mdash; but you can only '+
+    'move product in a vehicle you own, and without one you\'re queuing through airport security '+
+    'with your coat full.</div>'+
+    '<div class="note">Everything you own costs you money every day. The police get more interested '+
+    'the richer and louder you get. Watch the heat bar.</div>'+
+    '<input class="qty" id="nm" maxlength="18" value="Wesley">'+
+    '<button class="opt" data-start="1">Start hustling</button>';
+  var nm=document.getElementById("nm"); nm.focus(); nm.select();
+}
+reset("Wesley"); paint(); askName();
+window.__wdgStarted=true;
+var bm=document.getElementById("bootmsg"); if(bm&&bm.parentNode) bm.parentNode.removeChild(bm);
+})();
+</script>
+</body>
+</html>
