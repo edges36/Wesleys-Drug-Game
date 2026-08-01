@@ -23,8 +23,8 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
 .stage{position:fixed;inset:0;background:var(--wall);overflow:hidden}
 
 .figwrap{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);z-index:3;
-  height:min(62vh,470px);transform-origin:bottom center}
-.figure{height:100%;width:auto;display:block}
+  height:min(62vh,470px);transform-origin:bottom center;overflow:visible}
+.figure{height:100%;width:auto;display:block;overflow:visible}
 .castshadow{position:absolute;left:50%;bottom:15.5%;
   transform:translateX(-50%) translateX(-19%) scaleX(1.05) scaleY(1.24) skewX(8deg);
   transform-origin:bottom center;height:min(62vh,470px);width:auto;opacity:.13;
@@ -264,13 +264,24 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
 
 
 /* ── the layer physics moves, kept separate from his own animations ── */
-.figphys{position:absolute;left:0;right:0;bottom:0;top:0;pointer-events:none;z-index:3}
+.figphys{position:absolute;left:0;right:0;bottom:0;top:0;pointer-events:none;z-index:3;overflow:visible}
 .figphys .figwrap{pointer-events:auto}
 .figphys.grabbing .figwrap{cursor:grabbing}
 /* ── speech ── */
 
 /* the phone, once he's finished with it */
 
+
+/* smoke curling off the cigarette itself */
+@keyframes curl1{0%{opacity:0;transform:translateY(6px) scaleY(.6)}
+  25%{opacity:.8}100%{opacity:0;transform:translateY(-26px) scaleY(1.25)}}
+.curl{transform-box:fill-box;transform-origin:bottom center}
+.curl.c1{animation:curl1 2.6s ease-out infinite}
+.curl.c2{animation:curl1 3.1s ease-out infinite .7s}
+.curl.c3{animation:curl1 2.9s ease-out infinite 1.4s}
+
+.smoke.exhale{background:radial-gradient(circle,rgba(200,200,208,.62),rgba(200,200,208,.20) 55%,transparent 72%)}
+.smoke.exhale.go{transform:translate(calc(-50% + var(--dx)),-120px) scale(var(--sc));opacity:0}
 /* cigarette smoke */
 .smoke{position:fixed;z-index:12;pointer-events:none;border-radius:50%;
   background:radial-gradient(circle,rgba(210,210,215,.55),rgba(210,210,215,.16) 55%,transparent 72%);
@@ -278,16 +289,23 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
   transition:transform 2.4s cubic-bezier(.2,.5,.4,1),opacity 2.4s ease-out}
 .smoke.go{transform:translate(calc(-50% + var(--dx)),-190px) scale(var(--sc));opacity:0}
 .smoke{opacity:.75}
+
+/* something in flight across the room */
+.hurled{position:fixed;z-index:60;pointer-events:none;transform:translate(-50%,-50%)}
 .flyphone{position:fixed;z-index:60;pointer-events:none;transform:translate(-50%,-50%);
   transition:transform .78s cubic-bezier(.25,.6,.5,1),opacity .78s ease-in}
 .flyphone.go{transform:translate(calc(-50% + var(--fx)),calc(-50% - 160px)) rotate(var(--fr));opacity:0}
-.bubble{position:absolute;z-index:46;max-width:min(70vw,300px);
+.bubble{position:fixed;z-index:46;max-width:min(62vw,290px);
   background:#fff;border:3px solid var(--ink);border-radius:16px;
-  padding:11px 14px;font-family:var(--body);font-size:14px;font-weight:600;line-height:1.35;
-  color:var(--ink);opacity:0;transform:translate(-50%,-8px) scale(.85);
-  transition:opacity .18s ease,transform .18s cubic-bezier(.34,1.6,.64,1);
+  padding:10px 13px;font-family:var(--body);font-size:13.5px;font-weight:600;line-height:1.32;
+  color:var(--ink);opacity:0;
+  /* anchored by its BOTTOM edge, so it always sits above whatever it points at */
+  transform:translate(-50%,-100%) translateY(8px) scale(.86);
+  transform-origin:50% 100%;
+  transition:opacity .18s ease,transform .2s cubic-bezier(.34,1.6,.64,1);
   pointer-events:none;box-shadow:4px 4px 0 rgba(20,18,26,.18)}
-.bubble.on{opacity:1;transform:translate(-50%,0) scale(1)}
+.bubble.on{opacity:1;transform:translate(-50%,-100%) scale(1)}
+.bubble.sideways::after,.bubble.sideways::before{display:none}
 .bubble::after{content:'';position:absolute;left:50%;bottom:-15px;margin-left:-10px;
   border:10px solid transparent;border-top-color:var(--ink);border-bottom:0}
 .bubble::before{content:'';position:absolute;left:50%;bottom:-10px;margin-left:-7px;z-index:1;
@@ -367,6 +385,7 @@ button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
   .pills{gap:4px}
   .pill{font-size:9.5px;padding:3px 6px}
   .toast{top:16%;font-size:11.5px;padding:9px 14px}
+  .bubble{max-width:min(74vw,250px);font-size:12.5px;padding:9px 11px;border-width:2.5px}
   .big{font-size:28px}
   .brand{font-size:12px}
 }
@@ -1285,6 +1304,19 @@ function faceSVG(col){
     s+='<path d="M87,37 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0" stroke-width="2.4"/>';
     s+='<path d="M105,37 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0" stroke-width="2.4"/>';
     s+='<path d="M88,57 q6,6 12,0 q6,-6 12,0" stroke-width="2.8"/>';
+  }else if(typeof phys!=="undefined" && phys.mouthOpen){  /* lips wrapped round the cigarette */
+    s+='<g class="eyes">'+
+       '<path d="M85,40 q6,-5 12,-1" stroke="'+col+'" stroke-width="3.2" fill="none"/>'+
+       '<path d="M103,38 q7,-5 13,-1" stroke="'+col+'" stroke-width="3.2" fill="none"/></g>';
+    /* the open mouth, angled to meet the cigarette */
+    s+='<g transform="rotate(-16 97 55)">'+
+       '<ellipse cx="97" cy="55" rx="13" ry="9.5" fill="#5E1A22" stroke="'+col+'" stroke-width="3"/>'+
+       '<ellipse cx="97" cy="55" rx="8.5" ry="5.5" fill="#2A0C10"/>'+
+       /* the lips pursing round it */
+       '<path d="M85,52 q12,-6 24,0" stroke="'+col+'" stroke-width="2.6" fill="none"/>'+
+       '<path d="M85,58 q12,6 24,0" stroke="'+col+'" stroke-width="2.6" fill="none"/></g>';
+    /* a contented cheek line, because he is enjoying this */
+    s+='<path d="M78,62 q4,4 8,3" stroke="'+col+'" stroke-width="2.2" fill="none"/>';
   }else if(typeof phys!=="undefined" && phys.chomp){   /* mouth open, going for it */
     s+='<g class="eyes">'+
        '<g class="pupil"><ellipse class="eye" cx="91" cy="39" rx="4.2" ry="4.6" fill="'+col+'" stroke="none"/>'+
@@ -1363,8 +1395,7 @@ function manSVG(sil){
     s+='<path id="armR" d="M130,96 Q142,140 148,180" stroke="'+limbStroke+'" stroke-width="'+(sw+0.5)+'" fill="none"/>';
     s+='<circle id="handL" cx="52" cy="182" r="7" fill="#1C1A24" stroke="'+col+'" stroke-width="2"/>';
     s+='<circle id="handR" cx="148" cy="182" r="7" fill="#1C1A24" stroke="'+col+'" stroke-width="2"/>';
-    s+=cigSVG(col);
-    s+=phoneSVG(col);
+
   }else{
     s+='<path d="M70,96 Q58,140 52,180" stroke="'+col+'" stroke-width="'+(sw+0.5)+'" fill="none"/>';
     s+='<path d="M130,96 Q142,140 148,180" stroke="'+col+'" stroke-width="'+(sw+0.5)+'" fill="none"/>';
@@ -1447,6 +1478,9 @@ function manSVG(sil){
          '<rect x="-3" y="-4" width="6" height="8" fill="#D4C4A0" stroke="none"/></g>';
     }
     if(S.hp<35) s+='<path d="M82,30 L118,58" stroke="#D8324B" stroke-width="4.5" fill="none"/>';
+    /* held items go on top of everything else */
+    s+=cigSVG(col);
+    s+=phoneSVG(col);
   }
   return s+'</g>';
 }/* ── he looks where the cursor is ── */
@@ -1500,140 +1534,157 @@ scheduleFidget();
    if it gets close enough he will absolutely try to eat it.
    ══════════════════════════════════════════════════════════════ */
 var SAYINGS=[
- "I have eaten a bee. It's still in there. We've come to an arrangement.",
- "Wesley. WESLEY. There's a duck in the van and it's driving.",
- "I've been dead for six minutes before. Nothing. Absolutely nothing. Awful service.",
- "My mother sold me for a caravan. Good caravan, mind.",
- "I don't have bones. I've just got a very confident posture.",
- "Nobody has ever seen me and a horse in the same room. Think about that.",
- "I once won a fight with a swan. The swan disagrees. The swan is not here.",
- "There's a man in Detroit who calls me 'that one' and he's not wrong.",
- "I've got a will. Everything goes to a pigeon I've never met.",
- "Every mirror I look in shows a slightly angrier version of me.",
- "I keep a list of everyone who's wronged me. It's just my own name, forty times.",
- "I'm legally three men in Nevada.",
- "Sometimes I clap and a stranger somewhere falls over. I've tested it.",
- "I put my keys somewhere safe. That was in April. I've since bought a new house.",
- "The bins know. The bins have always known.",
- "I told a hospital I was a doctor. Now I own a boat and I'm not allowed in Ohio.",
- "My blood type is 'probably fine'.",
- "I've never lost a staring contest because I've never blinked on purpose. That's a lie.",
- "Wesley, if I get arrested, my last words are 'the ostrich started it'.",
- "I ate a lightbulb once to see what would happen. What happened was surgery.",
- "There's a version of me in every city and they're all cross with me.",
- "I've been banned from a zoo. Not for what you think. Worse.",
- "I don't sleep. I just stand somewhere dark and buffer.",
- "My teeth are fine. All forty of them.",
- "I've made peace with the fact that I'll die owing a man called Terry.",
- "Two men mistook me for a different Wesley. He's had a much better time.",
- "I dreamt I was a helicopter and woke up on the roof. Unrelated, obviously.",
- "I'm not afraid of anything except the specific noise a fridge makes at 3am.",
- "Money's just paper. Bones are just crunchy. Get me more of both.",
- "I've got a plan and the plan is mostly screaming.",
- "Every crisp in this coat is older than some countries.",
- "One day I'll stop. Not today. Today we go again.",
- "I'm on a first-name basis with a raccoon and it's not going well.",
- "The doctor said I have the heart of a much younger man. I put it back.",
- "If I vanish, check the ostrich. Just check the ostrich, Wesley."
+ "I've had an idea, Wesley. It's already going wrong but I've had it.",
+ "You know what the problem with money is? I don't have enough of it. Wait. That's it. I've solved money.",
+ "I'm not lazy. I'm conserving myself for something. I don't know what yet.",
+ "Sandwiches are just food you can carry. Like drugs, but legal, and worse money.",
+ "If I don't look at the debt, the debt can't look at me. That's just science.",
+ "I'm going to make the smart choice this time. ...No. No, the other one.",
+ "My brain and I have an agreement: it stays quiet and I don't ask it anything.",
+ "Why do bad things keep happening to me, a man who does bad things constantly?",
+ "I could stop any time. I've stopped loads of times. I'm stopping right now, look.",
+ "Wesley, do you ever look at a bin and think, that bin's doing better than me?",
+ "I once ate a whole chicken out of spite. Nobody won that.",
+ "Everyone says think before you act. When? There's no time. Things are happening.",
+ "I'm a self-made man, which explains a lot about how I turned out.",
+ "The secret to this business is confidence and product. I've got confidence.",
+ "If I ignore a problem long enough it becomes a different, bigger problem. Variety!",
+ "Sometimes I lie awake thinking about all the sandwiches I'll never eat.",
+ "I don't need a plan. Plans are just guesses that got dressed up.",
+ "That's not a mistake, that's an experiment with a disappointing result.",
+ "I've got a great memory. I just can't get into it.",
+ "Beer is basically bread. I've done the reading. I haven't done the reading.",
+ "Whenever I feel sad I remember there's people worse off, and then I feel great.",
+ "I'm not saying I'm the best at this. I'm saying nobody's proved I'm not.",
+ "My whole life flashed before my eyes once. It was mostly queueing.",
+ "I've never met a wall I didn't eventually walk into.",
+ "Wesley, if I get famous, tell them I was tall.",
+ "You can't fail if you never really try. That's my gift to you.",
+ "I'm not afraid of hard work. I've just never met it.",
+ "I told a man my life story and he left halfway through. Coward.",
+ "Every problem has a solution and every solution has a bigger problem. It's a circle. It's beautiful.",
+ "I'd give you the coat off my back but there's things in it.",
+ "The trick is to believe in yourself, even when you shouldn't. Especially then.",
+ "I've made a lot of mistakes but I've forgotten most of them, so really I'm clean."
 ];
-var CHOMP_LINES=["Come here.","MINE.","I'm having that.","Gerroff.","SNACK.",
-  "Been after this all week.","Got you, you little worm.","Hello dinner.","Don't struggle.",
-  "This is the best day of my life."];
-var HOLD_LINES=["Nope. Nope. NOPE.","Put me DOWN.","This is too high, Wesley!",
-  "I can see my house! I can see my OTHER house!","My arms are coming off!","I've made a terrible error.",
-  "Tell Terry I said something clever!","I regret every decision that led here.","WHEEEE. No. NOT WHEEE."];
-var FALL_LINES=["OOF.","Ow. My everything.","I meant to do that.","Ground. Hello, ground.",
-  "That's coming out of your wages.","Something snapped and I'm choosing not to investigate.",
-  "Still got it.","I'm fine. Nothing is fine, but I'm fine.","Do that again.","Right. Different plan."];
+var CHOMP_LINES=["Got you!","Mine now.","Ha! Look at it. Look at it struggle.",
+ "This is the best day of my life and I've had two.","Come here, you.","I'm having this. I don't know what it is.",
+ "Don't wriggle, it's rude."];
+var HOLD_LINES=["Put me down! Put me DOWN!","This was not the plan! There was no plan!",
+ "I can see my house! I don't have a house!","My arms are coming off and I need those!",
+ "I've made a terrible error and I'm still making it!","Too high! TOO HIGH, WESLEY!",
+ "If I die, eat my share!"];
+var FALL_LINES=["Ow. Every part. Every single part.","I meant that. That was on purpose.",
+ "Hello, floor. My old friend.","Something's broken and I'm choosing not to find out what.",
+ "That's coming out of your wages!","I'm fine! Nothing is fine, but I'm fine!",
+ "Again! Do it again! ...No. No, not again."];
 
 
 /* ── his business advice, which is uniformly catastrophic ── */
 var ADVICE=[
- "Business tip: buy high, sell low. Volume makes up for it.",
- "Never write anything down. Also never remember anything. That's how you stay clean.",
- "If a man offers you a deal too good to be true, that's just a good deal, Wesley. Take it twice.",
- "Advertise. I've got flyers. My face is on them. My real face.",
- "Diversify: I put everything into one drug and one city. That's two things.",
- "Always tell the police your real name. They can check anyway, so you look honest.",
- "Price your product by how you're feeling that day. Customers respect a moody market.",
- "Bank everything in cash under one mattress. Interest is a scam but so is a mattress.",
- "The trick to smuggling is confidence and a really big coat. That's the whole trick.",
- "If you're being followed, lead them home. Get it over with.",
- "Undercut everyone until you're losing money. Then you've won the market. Then you starve.",
- "Never buy a vehicle. Just borrow one and keep borrowing it forever.",
- "Ask your customers for reviews. Out loud. In public. By name.",
- "Hire family. They can't quit and they can't be trusted, so it evens out.",
- "Best time to sell is when the price is lowest, because that's when I have the most.",
- "Keep all your product in one warehouse with a sign on it saying what's inside.",
- "If the shark asks for his money, offer him a smaller amount more often. Forever.",
- "Expand into a new city before you've made any money in the old one. Momentum.",
- "I don't do maths. Maths is just opinions with numbers on.",
- "Always carry more than you can run with. Shows commitment.",
- "Trust everyone once. Then trust them again, because the first time was probably a fluke.",
- "Corner the market on the cheapest thing available. You'll own an enormous amount of nothing.",
- "Never take a profit. A profit is just a loss you haven't held long enough.",
- "If a deal goes wrong, do exactly the same deal immediately. Odds even out.",
- "My accountant is a man I met once who said he was good with numbers.",
- "Buy a boat. You don't need one. Buy a boat.",
- "The market is a living thing, Wesley, and it hates you specifically.",
- "Set your prices in a currency nobody uses. Keeps buyers guessing.",
- "If you can't sell it, eat it. Reduces stock, boosts morale.",
- "Sign everything. Contracts, receipts, confessions. Paperwork shows professionalism.",
- "Rule one: never panic. Rule two: panic constantly, but quietly.",
- "Reinvest one hundred percent of your money. Leave nothing for food. Food is a want."
+ "Business tip: buy high, sell low. The volume makes up for it. Somehow. Trust me.",
+ "Never write anything down. If it's not written down it didn't happen. That's the law.",
+ "Here's the trick: sell everything at once. Then you've got money and no work. Genius.",
+ "If you're losing money, lose it faster. Get it over with. Then you can relax.",
+ "Never trust a man in a suit. Trust a man in a coat. Look at me. I'm doing great.",
+ "Rule one of business: always be the biggest guy in the room. Rule two: don't check.",
+ "Don't diversify. Put everything in one thing. That way you only have to worry once.",
+ "The market's like a woman, Wesley. I don't understand either and I'm not going to start now.",
+ "Best time to sell is when the price is lowest, because that's when I've got the most of it.",
+ "Always carry more than you can run with. It shows the police you're committed.",
+ "Debt isn't real if you keep borrowing. It's like a bridge made of more bridge.",
+ "Tell the police your real name. They can look it up anyway and it makes you look honest.",
+ "Hire your family. They can't quit and they'll steal from you slower.",
+ "If a deal goes wrong, do it again immediately. The odds have to even out. That's maths.",
+ "I don't do maths. Maths is just opinions wearing numbers.",
+ "Put all your product in one place with a big sign on it so you don't forget where.",
+ "Never take a profit. A profit is just a loss you sold too early.",
+ "Expand to a new city before the old one works. Momentum. Look it up. Don't look it up.",
+ "Advertise! I've got flyers. My face is on them. My actual face. It's fine.",
+ "Buy a boat. You don't need a boat. Buy a boat, Wesley.",
+ "Reinvest one hundred percent. Leave nothing for food. Food is a want, not a need.",
+ "The important thing is to look busy. That's ninety percent of any job.",
+ "If you can't sell it, eat it. Clears the stock and you get a free meal. Everybody wins.",
+ "My accountant is a man I met once who said he was good with numbers. Solid guy. Gone now.",
+ "Don't panic. Or do. Panicking is basically thinking, but faster.",
+ "Undercut everyone until you're losing money. Then you've won and you can starve in peace.",
+ "Sign everything. Contracts, receipts, confessions. Paperwork looks professional.",
+ "If a deal seems too good to be true, it's probably just a good deal. Do it twice.",
+ "Never buy a vehicle. Just keep borrowing one. Forever. That's basically owning.",
+ "The customer is always right, which is why I don't talk to them.",
+ "Success is just failure that hasn't caught up yet. So really we're all winning.",
+ "Trust everyone once. Then trust them again, because the first time might've been a fluke."
 ];
-var MISS_LINES=["Missed.","Slippery little thing.","It moved! It's a cheat!","One of these days.",
-  "I'll get it. I've got all day. I've got NOTHING but day.","Come back.","Right, that's personal now."];
-var TAUNT_LINES=["Stand still.","I only want to hold it.","I'm not going to eat it. I am going to eat it.",
-  "Here, mouse mouse mouse.","Don't make this weird.","Just let me have this one thing."];
+var MISS_LINES=["Missed it. That's rigged.","Come back here, you coward!",
+ "It moved! Things aren't supposed to move!","I'll get it. I've got nothing but time and bad ideas.",
+ "Nearly! That was nearly!","Right. Now it's personal."];
+var TAUNT_LINES=["Stand still and this'll be over quickly.","Here, mousey mousey.",
+ "I only want to hold it. I'm going to eat it, but I want to hold it first.",
+ "Don't make this weird.","Just let me have one thing, Wesley. One thing."];
 
-var SMOKE_LINES=["Doctor said one a day. He didn't say how long the day was.",
- "This is the only thing keeping my ribs together.","I'm not addicted, I'm consistent.",
- "Lungs are a luxury item, Wesley.","Every one of these is a little appointment with the future.",
- "I've quit loads of times. This is one of them."];
+
+var CIG_TOSS=["Biodegradable. Probably. Mostly. Look, it's fine.",
+ "The earth can have that one. Call it rent.",
+ "A bin would've just held it. I've cut out the middleman.",
+ "Somewhere a bird is going to build a house out of that. You're welcome, bird.",
+ "That's not litter, that's a gift to the future.",
+ "It'll biodegrade in nine hundred years. I'll be dead. Not my problem.",
+ "I'm giving the street character.",
+ "Ash is basically soil. I've done the reading. I haven't."];
+var PHONE_TOSS=["I'll get another one.","That's the fourth one this week.",
+ "It was full anyway.","Never liked that phone. Too many opinions.",
+ "If it lands, it lives. That's the rule.",
+ "I've said everything I needed to say on it.",
+ "It knew too much.",
+ "Somebody'll find that and have a lovely time."];
+var SMOKE_LINES=["The doctor said one a day. He didn't say how long a day was.",
+ "This is the only thing holding my ribs together.",
+ "I'm not addicted. I'm just very consistent.",
+ "Lungs are a luxury, Wesley. I'm keeping it simple in there.",
+ "I've quit hundreds of times. This is one of them. I'm quitting right now.",
+ "You know what this is? This is a little holiday you can hold."];
 
 /* ── he has opinions about everything you do, none of them supportive ── */
 var REMARKS={
- buyCheap:["Oh good, more of that.","Bargain. Suspiciously so. Probably fine.",
-   "Cheap for a reason, but that reason is tomorrow's problem.",
-   "Buying low. Look at you, doing capitalism."],
- buyDear:["Paying that? Bold.","At that price it had better cure something.",
-   "That's a lot of money for a bag of consequences.","Hope you enjoy it, because that's the rent gone."],
- buyBig:["That's not a purchase, that's a lifestyle.",
-   "Carrying all that? Great. Nice and inconspicuous.",
-   "If we get stopped now I'm telling them it's yours."],
- sellWin:["Profit. Don't get used to it.","We're rich. For about nine minutes.",
-   "Look at that. Almost like you know what you're doing.",
-   "Money in. Now watch me find a way to lose it."],
- sellLoss:["Sold at a loss. Bold strategy.","We lost money on that. Actively. On purpose, apparently.",
-   "That's the sound of value leaving the building.",
-   "I'd say we've learned something but we clearly haven't."],
- travel:["New city, same problems, worse weather.","Off we go. Somebody here will want to fight me.",
-   "I liked the last place. Nobody had recognised me yet.",
-   "Ah, a fresh start. Those always go well for us."],
- border:["Crossing a border with this coat on. Superb.",
-   "If they open the coat I'm going to pretend I don't know you.",
-   "Nothing suspicious about a man sweating in a big coat, no."],
- borrow:["Borrowing from the shark. That always ends softly.",
-   "More debt. My favourite kind of money.",
-   "He's not lending you that, he's renting you."],
- payDebt:["Paying him back. He'll be so disappointed.","There goes the money. Briefly ours. We hardly knew it."],
- bust:["Told you.","Well that's the coat empty again.",
-   "I want it on record that I said nothing at the time.",
-   "They took everything. Rude, but efficient."],
- heal:["Patched up by a man with no medical qualifications and a torch.",
-   "That'll hold until roughly Thursday.","I can feel the stitches thinking."],
- weapon:["Oh good. Now we're the problem.","This will absolutely not escalate anything.",
-   "I feel safer already, which is statistically incorrect."],
- vehicle:["A vehicle. Now we can get somewhere dangerous faster.",
-   "Lovely. Something else to have taken off us."],
- property:["Property. Something they can raid at their leisure.",
-   "Congratulations, you now have somewhere to lose things."],
- upkeep:["Everything we own is quietly eating us.","This is what they mean by assets."],
- milestone:["Look at us. Briefly successful.","Money. It'll be gone by Tuesday but well done.",
-   "We've made it. We've made it to the next bit of trouble."],
+ buyCheap:["Ooh, cheap. That's my favourite price.","Bargain! There's nothing wrong with it that I can see from here.",
+   "Cheap for a reason. The reason is tomorrow. I'll deal with him then.",
+   "Buying low! Look at us, doing a business."],
+ buyDear:["That much?! For that?!","At that price it should come with a sandwich.",
+   "There goes the money. Bye, money. You were my favourite.",
+   "That's a lot of money for a bag of problems."],
+ buyBig:["That's not shopping, that's a lifestyle.","We're carrying all that? Nobody will notice a man this shape.",
+   "If we get stopped, I'm saying it's yours and running."],
+ sellWin:["We're rich! ...We're rich for about nine minutes.","Profit! Don't get used to it. I never do.",
+   "Look at that! Almost like we know what we're doing!",
+   "Money in! Now watch me find a way to lose it."],
+ sellLoss:["We lost money. On purpose, apparently.","That's less money than we started with. That's the opposite of the job.",
+   "I'd say we've learned something, but we clearly haven't.",
+   "Well. That was a choice that we made."],
+ travel:["New city! Same me, unfortunately.","Off we go. Someone here will want to fight me and they'll be right.",
+   "I liked the old place. Nobody had recognised me yet.",
+   "A fresh start! Those always work out for us."],
+ border:["Crossing a border in this coat. Superb idea. Love it.",
+   "If they open the coat I've never met you.",
+   "Nothing suspicious about a sweating man in a big coat. Nothing at all."],
+ borrow:["More debt! My favourite kind of money!","He's not lending us that, he's renting us.",
+   "Borrowed money spends exactly the same. That's why it's better."],
+ payDebt:["Paying him back. He'll be devastated.","There goes the money. We hardly knew it."],
+ bust:["I said nothing at the time and I'd like that noted.","Well, that's the coat empty again.",
+   "They took everything. Rude. Efficient, but rude.",
+   "Told you! I didn't tell you. But I thought it."],
+ heal:["Patched up by a man with a torch and no qualifications.",
+   "That'll hold till Thursday.","I can feel the stitches thinking about giving up."],
+ weapon:["Oh good. Now WE'RE the problem.","This will definitely not make anything worse.",
+   "I feel safer, which is statistically wrong."],
+ vehicle:["A vehicle! Now we can reach danger much faster.",
+   "Lovely. Something else for them to take off us."],
+ property:["Property! Somewhere to lose things at scale.",
+   "Now we've got a building. Buildings can be raided. I've thought this through. I haven't."],
+ milestone:["We've made it! We've made it to the next bit of trouble!",
+   "Look at us. Briefly successful. Savour it.",
+   "Money! It'll be gone by Tuesday but well done us."],
  wait:["Standing still. My specialist subject.","Doing nothing, expensively."],
- heat:["They're definitely watching now.","I can feel a policeman thinking about me."]
+ heat:["They're watching now. I can feel a policeman thinking about me."]
 };
 function remark(kind){
   var pool=REMARKS[kind];
@@ -1648,11 +1699,29 @@ function speak(text,ms){
   var el=document.getElementById("bubble"), tx=document.getElementById("bubbletext");
   var man=document.getElementById("man");
   if(!el||!tx||!man) return;
-  var b=man.getBoundingClientRect();
-  el.style.left=Math.round(b.left+b.width*0.5)+"px";
-  el.style.top =Math.round(b.top - 22)+"px";
   tx.textContent=text;
   el.classList.add("on");
+  /* measure it now that it has its text, then place it clear of his head */
+  var b=man.getBoundingClientRect();
+  var bw=el.offsetWidth, bh=el.offsetHeight;
+  var vw=window.innerWidth, vh=window.innerHeight;
+  /* the top of his head, in page coordinates */
+  var headTop=b.top+b.height*((46-22)/330);
+  var top=headTop-18;                       /* the bubble's BOTTOM edge sits here */
+  /* if there is no room above him, put it beside him instead of on top of him */
+  var sideways=false;
+  if(top-bh<6){
+    sideways=true;
+    top=Math.max(6+bh, headTop+b.height*0.10);
+  }
+  var left=b.left+b.width*0.5;
+  if(sideways) left = (left<vw*0.5) ? left+b.width*0.62 : left-b.width*0.62;
+  /* keep the whole thing on screen */
+  left=clamp(left, bw*0.5+8, vw-bw*0.5-8);
+  top =clamp(top, bh+6, vh-8);
+  el.style.left=Math.round(left)+"px";
+  el.style.top =Math.round(top)+"px";
+  el.classList.toggle("sideways",sideways);
   clearTimeout(bubbleHide);
   bubbleHide=setTimeout(function(){el.classList.remove("on");}, ms||4200);
 }
@@ -1681,7 +1750,9 @@ var UPPER=44, FORE=42, ARMSPAN=UPPER+FORE-3;
 
 var phys={
   state:"idle",            /* idle | notice | track | lunge | recover | grabbed | flying | down */
-  phoneOut:false, smoking:false, smokeT:0, smokeEnd:0, smokeCool:0, puffed:false,
+  phoneOut:false, smoking:false, smokeT:0, smokeEnd:0, smokeCool:0, puffed:false, blown:false,
+  cigMouth:0, cigLit:0, mouthOpen:false,
+  throwing:false, throwKind:null, throwT:0, released:false,
   t:0, x:0, y:0, vx:0, vy:0, rot:0, vrot:0, rotV:0,
   lean:0, leanV:0,
   th:0, om:0,
@@ -1747,16 +1818,27 @@ function paintArms(){
   var lp=armPath(-1);
   var cg=man.querySelector("#ciggfx");
   if(cg){
-    if(phys.smoking&&rp){
+    if((phys.smoking||(phys.throwing&&phys.throwKind==="cig"&&!phys.released))&&rp){
       cg.setAttribute("opacity","1");
-      cg.setAttribute("transform","translate("+rp.hx.toFixed(1)+","+rp.hy.toFixed(1)+")");
+      /* the filter tip travels from his hand to his lips and back */
+      var k=(phys.throwing?0:(phys.cigMouth||0));
+      var mx=97, my=54;                       /* his lips, in viewBox space */
+      var ax=rp.hx+(mx-rp.hx)*k, ay=rp.hy+(my-rp.hy)*k;
+      var ang=-24-10*k;
+      var body=man.querySelector("#cigbody");
+      if(body) body.setAttribute("transform","rotate("+ang.toFixed(1)+")");
+      cg.setAttribute("transform","translate("+ax.toFixed(1)+","+ay.toFixed(1)+")");
+      var glow=man.querySelector("#cigglow");
+      if(glow) glow.setAttribute("opacity",(phys.cigLit||0).toFixed(2));
+      var sm=man.querySelector("#cigsmoke");
+      if(sm) sm.setAttribute("opacity",(0.25+0.55*(phys.cigLit||0)).toFixed(2));
     }else cg.setAttribute("opacity","0");
   }
   var g=man.querySelector("#phonegfx");
   if(g){
-    if(phys.phoneOut){
+    if(phys.phoneOut||(phys.throwing&&phys.throwKind==="phone"&&!phys.released)){
       /* left hand while he's smoking, right hand otherwise */
-      var hp = phys.smoking ? lp : rp;
+      var hp = (phys.smoking&&!phys.throwing) ? lp : rp;
       if(hp){
         g.setAttribute("opacity","1");
         g.setAttribute("transform","translate("+hp.hx.toFixed(1)+","+hp.hy.toFixed(1)+") rotate("+(phys.smoking?12:-14)+")");
@@ -1783,33 +1865,38 @@ function handScreen(side){
 /* A big cartoon cigarette: paper barrel, seam, gold band, cork filter,
    burnt ash cone and a live ember that pulses. */
 function cigSVG(col){
+  /* Drawn from the filter tip at the origin, extending forward along +x, so it can
+     be anchored either in his hand or in his mouth. */
   return '<g id="ciggfx" opacity="0">'+
     '<defs>'+
-      '<linearGradient id="cigPaper" x1="0" y1="0" x2="0" y2="1">'+
-        '<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.5" stop-color="#F2EEE4"/>'+
-        '<stop offset="1" stop-color="#CFC7B6"/></linearGradient>'+
-      '<linearGradient id="cigFilt" x1="0" y1="0" x2="0" y2="1">'+      '<linearGradient id="cigFilt" x1="0" y1="0" x2="0" y2="1">'+
-        '<stop offset="0" stop-color="#E2A75C"/>'+
-        '<stop offset="0.5" stop-color="#C98A3E"/><stop offset="1" stop-color="#9A6428"/></linearGradient>'+
-      '<radialGradient id="ember" cx="0.5" cy="0.5" r="0.5">'+
-        '<stop offset="0" stop-color="#FFF3B0"/><stop offset="0.35" stop-color="#FF9A2E"/>'+
-        '<stop offset="0.75" stop-color="#D8321E"/><stop offset="1" stop-color="#5A1608"/></radialGradient>'+
+      '<linearGradient id="cigBody" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.42" stop-color="#F7F5F0"/>'+
+        '<stop offset="1" stop-color="#D6D1C6"/></linearGradient>'+
+      '<linearGradient id="cigCork" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="#FFB347"/><stop offset="0.45" stop-color="#F59120"/>'+
+        '<stop offset="1" stop-color="#C96A0C"/></linearGradient>'+
     '</defs>'+
-    '<g transform="rotate(-18)">'+
-      /* cork filter */
-      '<rect x="-4" y="-7" width="26" height="14" rx="3" fill="url(#cigFilt)" stroke="'+col+'" stroke-width="2"/>'+
-      '<path d="M2,-7 l0,14 M9,-7 l0,14 M16,-7 l0,14" stroke="rgba(90,50,10,.45)" stroke-width="1.4"/>'+
-      /* gold band */
-      '<rect x="21" y="-7.5" width="5" height="15" fill="#E8C25A" stroke="'+col+'" stroke-width="1.6"/>'+
-      /* paper barrel */
-      '<rect x="25" y="-7.5" width="46" height="15" rx="2" fill="url(#cigPaper)" stroke="'+col+'" stroke-width="2"/>'+
-      '<path d="M27,-3.5 L69,-3.5" stroke="rgba(0,0,0,.10)" stroke-width="1.6"/>'+
-      /* burnt end and ash */
-      '<path d="M71,-7.5 l9,2 l0,11 l-9,2 z" fill="#6E6A66" stroke="'+col+'" stroke-width="1.6"/>'+
-      '<path d="M74,-5 l4,1.5 M74,0 l5,0.5 M74,4 l4,-1" stroke="#9A9690" stroke-width="1.2"/>'+
-      /* the lit end */
-      '<ellipse id="cigember" cx="81" cy="0" rx="5.5" ry="6" fill="url(#ember)"/>'+
-      '<ellipse cx="81" cy="0" rx="2.4" ry="2.8" fill="#FFE9A8" opacity=".9"/>'+
+    '<g id="cigbody">'+
+      /* orange cork filter, hatched */
+      '<rect x="0" y="-10" width="34" height="20" rx="5" fill="url(#cigCork)" stroke="'+col+'" stroke-width="3"/>'+
+      '<path d="M7,-10 l-5,20 M15,-10 l-5,20 M23,-10 l-5,20 M31,-10 l-5,20" '+
+        'stroke="rgba(150,74,4,.55)" stroke-width="2.4" stroke-linecap="round"/>'+
+      /* white paper barrel with its fine hatching */
+      '<rect x="32" y="-10" width="72" height="20" rx="4" fill="url(#cigBody)" stroke="'+col+'" stroke-width="3"/>'+
+      '<path d="M42,-7 l0,14 M50,-7 l0,14 M58,-7 l0,14 M66,-7 l0,14 M74,-7 l0,14 M82,-7 l0,14 M90,-7 l0,14" '+
+        'stroke="rgba(120,115,105,.28)" stroke-width="1.8" stroke-linecap="round"/>'+
+      '<rect x="32" y="-10" width="4" height="20" fill="'+col+'" opacity=".8"/>'+
+      /* the burning end: flat, no ball on the front */
+      '<rect x="102" y="-10" width="14" height="20" rx="3" fill="#3A342E" stroke="'+col+'" stroke-width="3"/>'+
+      '<rect x="105" y="-6" width="4" height="12" rx="1" fill="#6A625A"/>'+
+      '<rect id="cigember" x="114" y="-8" width="7" height="16" rx="3" fill="#C43A18" stroke="'+col+'" stroke-width="2.4"/>'+
+      '<rect id="cigglow" x="114" y="-8" width="7" height="16" rx="3" fill="#FFD24A" opacity="0" stroke="none"/>'+
+      /* smoke curling off the lit end */
+      '<g id="cigsmoke" fill="none" stroke="#9A9AA2" stroke-width="3" stroke-linecap="round" opacity=".7">'+
+        '<path class="curl c1" d="M124,-14 q9,-9 0,-18 q-9,-9 0,-18"/>'+
+        '<path class="curl c2" d="M136,-10 q10,-10 0,-20 q-10,-10 0,-20"/>'+
+        '<path class="curl c3" d="M116,-18 q7,-7 0,-14 q-7,-7 0,-14"/>'+
+      '</g>'+
     '</g></g>';
 }
 function phoneSVG(col){
@@ -1824,34 +1911,82 @@ function phoneSVG(col){
       '<circle cx="9" cy="29" r="1.6" fill="#4A4458"/>'+
     '</g></g>';
 }
-function throwPhone(){
-  var man=document.getElementById("man"), stage=document.querySelector(".stage");
-  if(!man||!stage) return;
+/* An object leaving his hand: it arcs, spins, and lands off screen. */
+function hurl(kind, sx, sy, vx, vy, spin){
+  var d=document.createElement("div");
+  d.className="hurled";
+  var art = kind==="cig"
+    ? '<svg viewBox="-6 -12 130 24" width="86" height="17">'+
+      '<rect x="0" y="-9" width="30" height="18" rx="4" fill="#F59120" stroke="#1C1A24" stroke-width="3"/>'+
+      '<rect x="28" y="-9" width="64" height="18" rx="4" fill="#F7F5F0" stroke="#1C1A24" stroke-width="3"/>'+
+      '<rect x="90" y="-9" width="12" height="18" rx="3" fill="#3A342E" stroke="#1C1A24" stroke-width="3"/>'+
+      '<rect x="100" y="-7" width="6" height="14" rx="3" fill="#E0522A" stroke="#1C1A24" stroke-width="2"/></svg>'
+    : '<svg viewBox="-14 -20 28 40" width="26" height="40">'+
+      '<rect x="-9" y="-16" width="18" height="32" rx="3" fill="#14121A" stroke="#1C1A24" stroke-width="2"/>'+
+      '<rect x="-6.5" y="-12" width="13" height="22" rx="1" fill="#2A2438"/>'+
+      '<rect x="-5.5" y="-10.5" width="11" height="4" fill="#E8912A"/></svg>';
+  d.innerHTML=art;
+  d.style.left=sx+"px"; d.style.top=sy+"px";
+  document.body.appendChild(d);
+  var x=sx, y=sy, rot=0, last=performance.now(), g=1500;
+  function step(now){
+    var dt=Math.min(0.05,(now-last)/1000); last=now;
+    vy+=g*dt; x+=vx*dt; y+=vy*dt; rot+=spin*dt;
+    d.style.transform="translate(-50%,-50%) rotate("+rot.toFixed(1)+"deg)";
+    d.style.left=x.toFixed(1)+"px"; d.style.top=y.toFixed(1)+"px";
+    if(kind==="cig" && Math.random()<0.25){
+      var pf=document.createElement("div");
+      pf.className="smoke";
+      pf.style.left=x+"px"; pf.style.top=y+"px";
+      pf.style.width="14px"; pf.style.height="14px";
+      pf.style.setProperty("--dx",(Math.random()*40-20)+"px");
+      pf.style.setProperty("--sc","2");
+      document.body.appendChild(pf);
+      requestAnimationFrame(function(){pf.classList.add("go");});
+      setTimeout(function(){if(pf.parentNode)pf.parentNode.removeChild(pf);},2400);
+    }
+    if(y>window.innerHeight+140 || x<-200 || x>window.innerWidth+200){
+      if(d.parentNode) d.parentNode.removeChild(d);
+      return;
+    }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+/* the wind-up: bring it in, cock the arm back, then let fly */
+function startThrow(kind){
+  if(phys.throwing) return;
+  phys.throwing=true; phys.throwKind=kind; phys.throwT=0; phys.released=false;
+  speak((kind==="cig"?CIG_TOSS:PHONE_TOSS)[ri(0,(kind==="cig"?CIG_TOSS:PHONE_TOSS).length-1)], 4200);
+}
+function doRelease(){
   var p=armPath(1);
   var pt=vbToScreen(p.hx,p.hy);
-  var d=document.createElement("div");
-  d.className="flyphone";
-  d.style.left=pt.x+"px"; d.style.top=pt.y+"px";
-  d.innerHTML='<svg viewBox="-14 -20 28 40" width="26" height="40">'+
-    '<rect x="-9" y="-16" width="18" height="32" rx="3" fill="#14121A" stroke="#1C1A24" stroke-width="2"/>'+
-    '<rect x="-6.5" y="-12" width="13" height="22" rx="1" fill="#2A2438"/>'+
-    '<rect x="-5.5" y="-10.5" width="11" height="4" fill="#E8912A"/></svg>';
-  document.body.appendChild(d);
-  /* thrown to whichever side has more room */
-  var dir=(pt.x < window.innerWidth/2) ? -1 : 1;
-  d.style.setProperty("--fx",(dir*(window.innerWidth*0.75))+"px");
-  d.style.setProperty("--fr",(dir*900)+"deg");
-  requestAnimationFrame(function(){ d.classList.add("go"); });
-  setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, 1000);
-  oof(3);
+  var dir=(pt.x<window.innerWidth*0.5)?1:-1;      /* throw into the open part of the room */
+  var sc=figRect()? figRect().width/200 : 1;
+  hurl(phys.throwKind, pt.x, pt.y,
+       dir*(520+Math.random()*180), -(380+Math.random()*140),
+       dir*(420+Math.random()*260));
+  if(phys.throwKind==="cig"){
+    var g=document.querySelector("#man #ciggfx"); if(g) g.setAttribute("opacity","0");
+    phys.smoking=false; phys.cigMouth=0; phys.cigLit=0;
+    phys.smokeCool=45+Math.random()*70;
+    if(phys.mouthOpen){ phys.mouthOpen=false; drawMan(); }
+  }else{
+    phys.phoneOut=false;
+    var pg=document.querySelector("#man #phonegfx"); if(pg) pg.setAttribute("opacity","0");
+  }
+  oof(4);
 }
 /* ── smoking ── */
 function puff(){
   var man=document.getElementById("man"); if(!man) return;
   var g=man.querySelector("#ciggfx"); if(!g||g.getAttribute("opacity")!=="1") return;
   var p=armPath(1);
-  /* the ember sits out past the hand along the cigarette */
-  var pt=vbToScreen(p.hx+26, p.hy-14);
+  var k0=phys.cigMouth||0;
+  var ax0=p.hx+(97-p.hx)*k0, ay0=p.hy+(54-p.hy)*k0;
+  var a0=(-24-10*k0)*Math.PI/180;
+  var pt=vbToScreen(ax0+Math.cos(a0)*120, ay0+Math.sin(a0)*120);
   for(var i=0;i<3;i++){
     (function(n){
       setTimeout(function(){
@@ -1870,37 +2005,72 @@ function puff(){
     })(i);
   }
 }
+/* a proper lungful, blown out from his mouth */
+function exhale(){
+  var m=mouthPt(); if(!m) return;
+  for(var i=0;i<7;i++){
+    (function(n){
+      setTimeout(function(){
+        var d=document.createElement("div");
+        d.className="smoke exhale";
+        d.style.left=(m.x+8+Math.random()*16)+"px";
+        d.style.top=(m.y+2+Math.random()*10)+"px";
+        var sz=22+Math.random()*30;
+        d.style.width=sz+"px"; d.style.height=sz+"px";
+        d.style.setProperty("--dx",(40+Math.random()*90)+"px");
+        d.style.setProperty("--sc",(2.6+Math.random()*2.2).toFixed(2));
+        document.body.appendChild(d);
+        requestAnimationFrame(function(){d.classList.add("go");});
+        setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},3200);
+      }, n*70);
+    })(i);
+  }
+}
 function startSmoke(){
-  if(phys.smoking||phys.state!=="idle") return;
-  phys.smoking=true; phys.smokeT=0; phys.drag=0; phys.smokeEnd=16+Math.random()*14;
+  if(phys.smoking||phys.throwing||phys.state!=="idle") return;
+  phys.smoking=true; phys.smokeT=0; phys.smokeEnd=16+Math.random()*14;
+  phys.puffed=false; phys.blown=false;
   var g=document.querySelector("#man #ciggfx"); if(g) g.setAttribute("opacity","1");
   if(Math.random()<0.7) speak(SMOKE_LINES[ri(0,SMOKE_LINES.length-1)],4200);
 }
-function stopSmoke(){
-  phys.smoking=false;
-  var g=document.querySelector("#man #ciggfx"); if(g) g.setAttribute("opacity","0");
-  phys.smokeCool=45+Math.random()*70;
+function stopSmoke(quiet){
+  phys.puffed=false; phys.blown=false;
+  if(quiet){
+    /* interrupted — it just goes out, no ceremony */
+    phys.smoking=false; phys.cigMouth=0; phys.cigLit=0;
+    var g=document.querySelector("#man #ciggfx"); if(g) g.setAttribute("opacity","0");
+    phys.smokeCool=45+Math.random()*70;
+    if(phys.mouthOpen){ phys.mouthOpen=false; drawMan(); }
+    return;
+  }
+  if(phys.mouthOpen){ phys.mouthOpen=false; drawMan(); }
+  phys.cigMouth=0; phys.cigLit=0.05;
+  startThrow("cig");                    /* he finishes it properly */
 }
 function scheduleSmoke(){
   setTimeout(function(){
-    if(!S.over && !phys.smoking && phys.state==="idle" && (phys.smokeCool||0)<=0) startSmoke();
+    if(!S.over && !phys.smoking && !phys.throwing && phys.state==="idle" && (phys.smokeCool||0)<=0) startSmoke();
     scheduleSmoke();
   }, 9000+Math.random()*15000);
 }
 scheduleSmoke();
 
 function showPhone(on){
-  if(phys.phoneOut===on) return;
-  phys.phoneOut=on;
-  if(!on) throwPhone();
-  var g=document.querySelector("#man #phonegfx");
-  if(g) g.setAttribute("opacity", on?"1":"0");
-  drawMan();
+  if(on){
+    if(phys.phoneOut) return;
+    phys.phoneOut=true;
+    var g=document.querySelector("#man #phonegfx");
+    if(g) g.setAttribute("opacity","1");
+    drawMan();
+  }else{
+    if(!phys.phoneOut||phys.throwing) return;
+    startThrow("phone");                /* he keeps hold of it until he throws it */
+  }
 }
 function setChomp(on){ if(phys.chomp!==on){phys.chomp=on; drawMan();} }
 
 function grabIt(){
-  if(phys.smoking) stopSmoke();
+  if(phys.smoking) stopSmoke(true);
   phys.state="grabbed"; phys.caught=true;
   phys.th=0; phys.om=0;
   setChomp(true);
@@ -1938,18 +2108,52 @@ function physTick(now){
   var vbTarget=screenToVb(ptr.x,ptr.y);
 
   /* ── what is he doing ── */
-  if(phys.state==="idle"){
+  if(phys.state==="idle" && phys.throwing){
+    phys.throwT+=dt;
+    var T=phys.throwT;
+    /* 0.00-0.55  brings it in front of him and looks at it
+       0.55-1.25  cocks the arm back behind his shoulder
+       1.25-1.50  swings through, releasing partway
+       1.50-2.20  follow-through, then the arm settles                       */
+    if(T<0.55){ hands.R.tx=118; hands.R.ty=112; }
+    else if(T<1.25){
+      var k=(T-0.55)/0.70, e=k*k*(3-2*k);
+      hands.R.tx=118+52*e; hands.R.ty=112-58*e;      /* back and up */
+    }
+    else if(T<1.50){
+      var k2=(T-1.25)/0.25, e2=k2*k2;
+      hands.R.tx=170-130*e2; hands.R.ty=54+30*e2;    /* whipping forward */
+      if(!phys.released && T>1.36){ phys.released=true; doRelease(); }
+    }
+    else if(T<2.20){
+      var k3=(T-1.50)/0.70;
+      hands.R.tx=40+(REST.R.x-40)*k3; hands.R.ty=84+(REST.R.y-84)*k3;
+    }
+    else { phys.throwing=false; phys.throwKind=null; phys.released=false; }
+    hands.L.tx=REST.L.x; hands.L.ty=REST.L.y;
+  }
+  else if(phys.state==="idle"){
     if(phys.smoking){
       phys.smokeT+=dt;
-      /* a slow cycle: hand up to the mouth, a drag, then back down */
-      var cyc=phys.smokeT%5.2;
-      if(cyc<1.5){ hands.R.tx=118; hands.R.ty=150; }          /* resting, held low */
-      else if(cyc<2.6){ hands.R.tx=112; hands.R.ty=66; }      /* raised to his mouth */
-      else if(cyc<3.4){
-        hands.R.tx=112; hands.R.ty=64;                        /* the drag */
-        if(!phys.puffed){ phys.puffed=true; puff(); }
+      var cyc=phys.smokeT%6.4;
+      /* 0.0-1.6  held down by his side, ember dull
+         1.6-2.6  lifting it toward his face
+         2.6-4.2  in his mouth, dragging, ember bright
+         4.2-4.8  taking it out again
+         4.8-6.4  lowered, blowing the smoke out                                   */
+      if(cyc<1.6){ phys.cigMouth=0; phys.cigLit=0; hands.R.tx=126; hands.R.ty=148; phys.puffed=false; phys.blown=false; }
+      else if(cyc<2.6){ phys.cigMouth=(cyc-1.6)/1.0; phys.cigLit=0.15; hands.R.tx=122; hands.R.ty=96; }
+      else if(cyc<4.2){
+        phys.cigMouth=1; hands.R.tx=124; hands.R.ty=78;
+        /* he pulls on it, so the ember brightens and fades in waves */
+        phys.cigLit=0.55+0.45*Math.abs(Math.sin((cyc-2.6)*2.1));
+        if(!phys.puffed && cyc>3.0){ phys.puffed=true; puff(); }
       }
-      else { hands.R.tx=124; hands.R.ty=132; phys.puffed=false; }  /* lowered, exhaling */
+      else if(cyc<4.8){ phys.cigMouth=1-(cyc-4.2)/0.6; phys.cigLit=0.25; hands.R.tx=124; hands.R.ty=110; }
+      else {
+        phys.cigMouth=0; phys.cigLit=0.08; hands.R.tx=126; hands.R.ty=142;
+        if(!phys.blown){ phys.blown=true; exhale(); }
+      }
       /* the phone moves to his other hand so he can do both */
       if(phys.phoneOut){ hands.L.tx=78; hands.L.ty=78; }
       else { hands.L.tx=REST.L.x; hands.L.ty=REST.L.y; }
@@ -1965,7 +2169,7 @@ function physTick(now){
       hands.R.tx=REST.R.x; hands.R.ty=REST.R.y+Math.sin(phys.t*1.1+1)*2.5;
       phys.cool-=dt;
       if(phys.smokeCool>0) phys.smokeCool-=dt;
-      if(d<REACH_R && phys.cool<=0 && ptr.idle<1.2 && !phys.phoneOut){ phys.state="notice"; phys.t=0;
+      if(d<REACH_R && phys.cool<=0 && ptr.idle<1.2 && !phys.phoneOut && !phys.throwing){ phys.state="notice"; phys.t=0;
         phys.side=(ptr.x>=m.x)?1:-1; }
     }
   }
@@ -2058,6 +2262,11 @@ function physTick(now){
     hands.R.tx=REST.R.x; hands.R.ty=REST.R.y;
     if(phys.t>0.55){ phys.state="idle"; phys.t=0; phys.cool=1.0; }
   }
+
+  /* His mouth is open only while the cigarette is genuinely at his lips and he is
+     otherwise idle. Checked every frame regardless of state, so it can never stick. */
+  var wantOpen = phys.smoking && phys.state==="idle" && phys.cigMouth>0.55;
+  if(wantOpen!==phys.mouthOpen){ phys.mouthOpen=wantOpen; drawMan(); }
 
   /* ── springs: hands ease toward their targets, nothing snaps ── */
   var stiff = (phys.state==="lunge")?46:(phys.state==="grabbed"?26:11);
