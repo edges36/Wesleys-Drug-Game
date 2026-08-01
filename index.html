@@ -109,8 +109,17 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
 .back{background:var(--scr2);color:var(--chalk);font-family:var(--mono);font-size:14px;padding:5px 11px;border:1px solid var(--edge)}
 .back:hover{background:var(--sodium);color:var(--ink)}
 .scrhead h3{font-family:var(--disp);font-size:15px;margin:0;color:var(--sodium)}
-.phonefoot{padding:9px;border-top:1px solid var(--edge);display:flex;justify-content:center}
-.hangup{width:52px;height:8px;background:var(--edge)}
+.phonefoot{padding:9px;border-top:1px solid var(--edge);display:flex;justify-content:center;
+  align-items:center;gap:10px}
+.hangup{width:120px;height:26px;background:none;border:none;position:relative;cursor:pointer}
+.hangup::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:64px;height:6px;border-radius:3px;background:var(--edge);transition:background .15s,width .15s}
+.hangup:hover::after,.hangup:active::after{background:var(--sodium);width:84px}
+.ptright{display:flex;align-items:center;gap:9px}
+.pbuild{color:#5A5566}
+.pclose{background:var(--scr2);border:1px solid var(--edge);color:var(--chalk);
+  font-family:var(--mono);font-size:13px;line-height:1;padding:5px 9px;margin-left:2px}
+.pclose:hover{background:var(--heat);color:#fff;border-color:var(--heat)}
 .apps{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .app{position:relative;background:var(--scr2);border:1px solid var(--edge);color:var(--chalk);
   padding:13px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -260,6 +269,11 @@ button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
   .mbtns{grid-area:btns;gap:8px}
   .mbtns button{flex:1}
   .phonebtn{width:62px;height:62px;right:14px;bottom:14px}
+  .pclose{padding:9px 14px;font-size:16px;min-height:40px}
+  .phonetop{padding:9px 12px;font-size:9px}
+  .phonefoot{padding:11px}
+  .hangup{width:160px;height:40px}
+  .hangup::after{width:84px;height:7px}
   .pills{gap:4px}
   .pill{font-size:9.5px;padding:3px 6px}
   .toast{top:16%;font-size:11.5px;padding:9px 14px}
@@ -371,9 +385,15 @@ button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 </button>
 <div class="phonewrap" id="phonewrap">
   <div class="phone">
-    <div class="phonetop"><span>BURNER</span><span>2026-08-01-b12 &#9646;&#9646;&#9646;</span></div>
+    <div class="phonetop">
+      <span>BURNER</span>
+      <span class="ptright"><span class="pbuild">2026-08-01-b12</span> &#9646;&#9646;&#9646;
+        <button class="pclose" data-close="1" aria-label="Close phone">&#10005;</button></span>
+    </div>
     <div class="scr" id="scr"></div>
-    <div class="phonefoot"><div class="hangup"></div></div>
+    <div class="phonefoot">
+      <button class="hangup" data-close="1" aria-label="Put the phone away"></button>
+    </div>
   </div>
 </div>
 <script>
@@ -930,6 +950,13 @@ function toast(t,k){
 var wrap=document.getElementById("phonewrap"), scr=document.getElementById("scr");
 document.getElementById("phonebtn").onclick=function(){audio();wrap.classList.add("on");go(S.over?"end":"home");};
 wrap.onclick=function(e){if(e.target===wrap&&!S.over)wrap.classList.remove("on");};
+/* close controls live in the phone's header and footer, outside the screen area */
+wrap.addEventListener("click",function(e){
+  var b=e.target.closest("[data-close]");
+  if(!b) return;
+  e.stopPropagation();
+  if(!S.over) wrap.classList.remove("on");
+});
 function go(v){view=v;render();}
 function head(t,back){return '<div class="scrhead"><button class="back" data-go="'+(back||"home")+'">&#8592;</button><h3>'+t+'</h3></div>';}
 var ICON={
@@ -1331,6 +1358,7 @@ function logHTML(){
 scr.addEventListener("click",function(e){
   var b=e.target.closest("button"); if(!b||b.disabled)return;
   var d=b.dataset;
+  if(d.close){ if(!S.over) wrap.classList.remove("on"); return; }
   if(d.go) return go(d.go);
   if(d.chart){ pend={id:d.chart}; return go("chart"); }
   if(d.buy) return openQty(d.buy,"buy");
@@ -2041,6 +2069,9 @@ function askName(){
     '<button class="opt" data-start="1">Start hustling</button>';
   var nm=document.getElementById("nm"); nm.focus(); nm.select();
 }
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape" && !S.over && wrap.classList.contains("on")) wrap.classList.remove("on");
+});
 reset("Wesley"); paint(); askName();
 window.__wdgStarted=true;
 var bm=document.getElementById("bootmsg"); if(bm&&bm.parentNode) bm.parentNode.removeChild(bm);
