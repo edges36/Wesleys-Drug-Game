@@ -2658,6 +2658,7 @@ function render(){
   else if(view==="bankqty")h=bankQtyHTML();
   else if(view==="cops")   h=copsHTML();
   else if(view==="roadblock") h=roadblockHTML();
+  else if(view==="hit")    h=hitHTML();
   else if(view==="event")  h=eventHTML();
   else if(view==="nuke")   h=nukeHTML();
   else if(view==="vanish") h=vanishHTML();
@@ -2696,7 +2697,10 @@ function homeHTML(){
     :"Every milestone taken.";
   var c=city();
   var warn="";
-  if(S.heat>70) warn+='<div class="note" style="color:var(--heat)">&#9679; You are extremely hot. Lie low or buy your way out.</div>';
+  if(S.heat>=88) warn+='<div class="note" style="color:var(--heat)">&#9679; There is a standing contract on you. Crews are being sent. Nowhere is safe, including indoors.</div>';
+  else if(S.heat>=70) warn+='<div class="note" style="color:var(--heat)">&#9679; Someone has put money on your name. Expect company.</div>';
+  else if(S.heat>52) warn+='<div class="note" style="color:var(--heat)">&#9679; People are asking where you drink. Get your heat down.</div>';
+  else if(S.heat>35) warn+='<div class="note" style="color:var(--sodium)">&#9679; You are getting noticed.</div>';
   if(upkeep()>S.cash) warn+='<div class="note" style="color:var(--heat)">&#9679; You can\'t cover tomorrow\'s '+money(upkeep())+' upkeep.</div>';
   if(S.rumour.length) warn+='<div class="note" style="color:var(--sodium)">&#9679; '+S.rumour.length+' rumour'+(S.rumour.length>1?"s":"")+' about tomorrow &mdash; see the market.</div>';
   return '<div class="note">'+esc(c.n).toUpperCase()+', '+c.cc+' &middot; DAY '+Math.min(S.day,S.days)+' OF '+S.days+
@@ -3144,6 +3148,7 @@ scr.addEventListener("click",function(e){
   if(d.bqok) return confirmBank();
   if(d.cop) return copChoice(d.cop);
   if(d.road) return roadChoice(d.road);
+  if(d.hit) return hitChoice(d.hit);
   if(d.dgr) return dangerChoice(d.dgr);
   if(d.opp) return oppChoice(d.opp);
   if(d.respray) return respray(d.respray);
@@ -3607,7 +3612,13 @@ function raidCheck(){
 /* One roll decides what happens, so a high chance of being stopped no longer
    crowds out everything else. */
 function hazard(to,moving){
-  var cop = moving ? legRisk(to) : 0.02;
+  /* someone taking a contract out on you comes before anything else */
+  if(Math.random()<hitChance()){
+    pend={h:HITS[ri(0,HITS.length-1)], tier:hitTier()};
+    go("hit"); return true;
+  }
+  var heatMul = 1 + S.heat/70;          /* the hotter you are, the busier your life */
+  var cop = (moving ? legRisk(to) : 0.02*heatMul);
   var r=Math.random();
   if(r<cop){
     /* once you're known, they stop bringing one car */
@@ -3616,7 +3627,7 @@ function hazard(to,moving){
     }
     go("cops"); return true;
   }
-  var pG=0.26*M("gangs"), pO=0.18*M("chances"), pE=0.22*M("events");
+  var pG=0.26*M("gangs")*heatMul, pO=0.18*M("chances"), pE=0.22*M("events");
   if(r<cop+pG){ pend=pickDanger(); go("danger"); return true; }
   var o=pickOpp();
   if(o && r<cop+pG+pO){ pend={o:o}; go("opp"); return true; }
@@ -3652,7 +3663,7 @@ function waitDays(n){
     d++;
     coolHeat(1);
     if(endDay()) return finish(false);
-    if(Math.random()<0.34 && hazard(S.loc,false)) return;
+    if(Math.random()<clamp(0.30+S.heat/130,0,0.92) && hazard(S.loc,false)) return;
   }
   go("home");
   toast(d===1?("Day "+S.day+". Heat down a little."):(d+" days indoors."));
@@ -3881,6 +3892,96 @@ function oppChoice(k){
   pend=null; paint(); go("home");
 }
 
+
+/* ══════════ CONTRACTS ══════════
+   Past about 55% heat you are worth killing, and it gets worse from there.
+   These are meant to be survivable only with real weapons and real armour. */
+var HITS=[
+ {t:"The Man In The Nice Coat",
+  b:"A very well-dressed man has been three steps behind {N} since the corner. He has not blinked. He is not selling anything.",
+  win:"He goes down still holding the umbrella. It was not an umbrella.",
+  lose:"He was better dressed and better trained. Mostly better trained."},
+ {t:"Two Lads On A Moped",
+  b:"A moped has mounted the pavement. There are two of them on it. The one on the back is holding something and it is not a phone.",
+  win:"You take the moped out from under them. It carries on without them.",
+  lose:"Mopeds are faster than you. That was the whole plan and it worked."},
+ {t:"The Woman With The Dog",
+  b:"She has been walking the same small dog past you for twenty minutes. The dog is exhausted. She is not.",
+  win:"She was a professional. The dog was a prop. The dog is now yours.",
+  lose:"You underestimated her because of the dog. Everyone does. That is the dog's job."},
+ {t:"Somebody Sent The Nephew",
+  b:"Terry's nephew is back and this time he has brought friends and a length of pipe. They are not here to talk about the corner.",
+  win:"The nephew learns the same lesson twice in one week.",
+  lose:"He brought friends specifically because of last time."},
+ {t:"The Quiet Van",
+  b:"A van has been parked opposite with the engine running for two hours. The side door just opened. Nobody has got out yet.",
+  win:"You get to the van first. Whatever was in it drives away without stopping.",
+  lose:"Four of them came out of that van at once. Only one needed to."},
+ {t:"A Cartel Courtesy Call",
+  b:"Two men have flown a very long way to see {N} specifically. They are polite about it. They are polite about all of it.",
+  win:"They leave. Someone else will come. But these two leave.",
+  lose:"They were polite right up until they were not."},
+ {t:"The Roof Across The Street",
+  b:"There is a glint on the roof opposite that has been there too long to be a window. Something just moved beside it.",
+  win:"You get across the road and up the fire escape faster than anyone expected. Especially him.",
+  lose:"You never really had a chance against someone on a roof. Nobody does."}
+];
+function hitTier(){
+  if(S.heat>=88) return {n:3, lbl:"a whole crew", pen:0.78, dmg:[26,44], pay:[18000,52000]};
+  if(S.heat>=70) return {n:2, lbl:"two of them", pen:0.86, dmg:[18,34], pay:[9000,28000]};
+  return {n:1, lbl:"one of them", pen:1,    dmg:[12,26], pay:[4000,14000]};
+}
+/* how likely someone comes for you, purely from heat */
+function hitChance(){
+  if(S.heat<52) return 0;
+  return clamp((S.heat-52)/48*0.34, 0, 0.34)*M("gangs");
+}
+function hitHTML(){
+  var h=pend.h, t=pend.tier, W=wep(), v=VESTS.filter(function(x){return x.t===S.vestT;})[0];
+  var odds=W?Math.round(fightOdds(W.w,1)*t.pen*100):0;
+  var runOdds=Math.round(clamp(0.34-S.heat/300,0.04,0.5)*100);
+  return '<div class="scrhead"><h3 style="color:var(--heat)">SOMEONE IS HERE FOR YOU</h3></div>'+
+    '<div class="note" style="color:var(--chalk);font-size:13px;line-height:1.6">'+nm(h.b)+'</div>'+
+    '<div class="note" style="color:var(--heat)">Your heat is '+Math.round(S.heat)+'%. That is why there is '+t.lbl+
+      '. '+(v?('Your '+esc(v.n).toLowerCase()+' is the only reason this is survivable.')
+             :'You are not wearing body armour.')+'</div>'+
+    '<button class="opt" data-hit="fight"'+(W?"":" disabled")+'>Fight'+
+      '<small>'+(W?("about "+odds+"% with the "+esc(W.n).toLowerCase()+
+        (S.vestT?" &middot; armour helping":" &middot; no armour")):"You have nothing to fight with.")+'</small></button>'+
+    '<button class="opt" data-hit="run">Run<small>about '+runOdds+'% &middot; they came a long way, they will follow</small></button>'+
+    '<button class="opt" data-hit="pay"'+(S.cash>=250000?"":" disabled")+'>Buy the contract out'+
+      '<small>'+(S.cash>=250000?money(250000)+" &middot; whoever ordered it will simply order another":"$250,000 &middot; you can't cover it")+'</small></button>'+
+    (S.nuke?'<button class="opt nuke" data-detonate="1">Reach for the suitcase<small>You are carrying an atomic bomb.</small></button>':'');
+}
+function hitChoice(k){
+  var h=pend.h, t=pend.tier, dead=false;
+  if(k==="fight"){
+    var W=wep();
+    if(Math.random()<fightOdds(W.w,1)*t.pen){
+      var pay=Math.round(ri(t.pay[0],t.pay[1])*(1+S.mile*0.5));
+      S.cash+=pay; addHeat(3);
+      say(h.win+" Took "+money(pay)+" off the body.","good");
+      toast(h.win,"good"); animate("happy");
+    }else{
+      say(h.lose,"bad"); toast(h.lose,"bad");
+      dead=hurt(ri(t.dmg[0],t.dmg[1]));
+    }
+  }else if(k==="run"){
+    if(Math.random()<clamp(0.34-S.heat/300,0.04,0.5)){
+      say("Lost them in the crowd. This time.","good"); toast("You got away. This time.","good");
+    }else{
+      say(h.lose,"bad"); toast("They caught you.","bad");
+      dead=hurt(ri(t.dmg[0]+4,t.dmg[1]+6));
+    }
+  }else{
+    S.cash-=250000; coolHeat(6);
+    say("Bought the contract out for "+money(250000)+".","good");
+    toast("Paid it off. Someone will just order another.","good");
+  }
+  pend=null; paint();
+  if(dead) return finish(true);
+  go("home");
+}
 /* ══════════ ROADBLOCKS ══════════ */
 function roadUnits(){ return clamp(1+Math.floor(S.heat/17),1,7); }
 /* Body armour is the difference between starting a fight and finishing one, so it
