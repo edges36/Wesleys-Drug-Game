@@ -50,14 +50,40 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
 @keyframes shiver{ 0%,100%{transform:translateX(-50%)} 25%{transform:translateX(calc(-50% - 2.5px))}
   75%{transform:translateX(calc(-50% + 2.5px))} }
 @keyframes collapse{ 0%{transform:translateX(-50%) rotate(0)} 100%{transform:translateX(-50%) rotate(-84deg) translateY(46px)} }
-@keyframes flash{ 0%{opacity:0} 6%{opacity:1} 100%{opacity:0} }
 .figwrap.hit{animation:hitshake .55s ease-out}
 .figwrap.stagger{animation:stagger .8s ease-out}
 .figwrap.happy{animation:celebrate .85s ease-out}
 .figwrap.hurting{animation:shiver .4s ease-in-out infinite}
 .figwrap.down{animation:collapse 1.1s ease-in forwards}
 .nukeflash{position:fixed;inset:0;background:#fff;z-index:200;pointer-events:none;opacity:0}
-.nukeflash.go{animation:flash 2.6s ease-out forwards}
+/* ── the bomb ── */
+@keyframes flashout{0%{opacity:0}4%{opacity:1}30%{opacity:1}100%{opacity:0}}
+.nukeflash.go{animation:flashout 2.8s ease-out forwards}
+@keyframes quake{
+  0%,100%{transform:translate(0,0)}
+  10%{transform:translate(-14px,9px)} 20%{transform:translate(13px,-11px)}
+  30%{transform:translate(-11px,-8px)} 40%{transform:translate(10px,10px)}
+  50%{transform:translate(-8px,6px)} 60%{transform:translate(7px,-6px)}
+  70%{transform:translate(-5px,-4px)} 80%{transform:translate(4px,3px)}
+  90%{transform:translate(-2px,2px)}
+}
+body.quake{animation:quake 1.3s ease-out}
+.shock{position:fixed;left:50%;top:52%;width:40px;height:40px;margin:-20px 0 0 -20px;
+  border-radius:50%;border:7px solid rgba(255,180,60,.95);z-index:198;pointer-events:none;
+  opacity:0;transition:transform 1.5s cubic-bezier(.15,.7,.3,1),opacity 1.5s ease-out}
+.shock.go{transform:scale(70);opacity:0}
+.shock{opacity:.95}
+.debris{position:fixed;z-index:199;pointer-events:none;border-radius:2px;
+  transform:translate(0,0) rotate(0);opacity:1;
+  transition:transform 1.9s cubic-bezier(.2,.6,.4,1),opacity 1.9s ease-in}
+.debris.go{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0}
+@keyframes vaporise{
+  0%{opacity:1;transform:scale(1)}
+  18%{opacity:1;transform:scale(1.22)}
+  100%{opacity:0;transform:scale(.1)}
+}
+.figphys.vaporised{animation:vaporise .7s ease-in forwards}
+
 .top{position:absolute;top:0;left:0;right:0;padding:14px 16px;z-index:12;
   display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
 .brand{font-family:var(--disp);font-size:clamp(13px,2.6vw,19px);line-height:1.15}
@@ -202,6 +228,29 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
 .lrow b{font-weight:700;color:var(--chalk)}
 .lrow b.cg{color:var(--cash)} .lrow b.ch{color:var(--heat)}
 .lrow.tot{background:var(--scr2);font-size:12.5px}
+
+/* ── settings sliders ── */
+.setting{margin-bottom:14px}
+.setrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:5px}
+.setname{font-size:13px;font-weight:600;color:var(--chalk)}
+.setval{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--sodium);white-space:nowrap}
+.sethint{font-family:var(--mono);font-size:9.5px;color:var(--dim);line-height:1.4;margin-top:4px}
+.slider{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:none;
+  display:block;cursor:pointer;margin:0}
+.slider::-webkit-slider-runnable-track{height:8px;background:var(--scr2);border:1px solid var(--edge);border-radius:4px}
+.slider::-moz-range-track{height:8px;background:var(--scr2);border:1px solid var(--edge);border-radius:4px}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:var(--sodium);border:3px solid var(--ink);margin-top:-9px;
+  box-shadow:0 0 0 1px var(--edge)}
+.slider::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--sodium);
+  border:3px solid var(--ink);box-shadow:0 0 0 1px var(--edge)}
+.slider:focus-visible::-webkit-slider-thumb{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:560px){
+  .slider{height:34px}
+  .slider::-webkit-slider-thumb{width:30px;height:30px;margin-top:-12px}
+  .slider::-moz-range-thumb{width:30px;height:30px}
+  .setname{font-size:13.5px}
+}
 .milebar{display:flex;gap:3px;margin:9px 0 12px}
 .milebar i{flex:1;height:6px;background:var(--scr2);border:1px solid var(--edge)}
 .milebar i.hit{background:var(--sodium);border-color:var(--sodium)}
@@ -884,7 +933,55 @@ var DANGERS=[
   bribe:340, runOdds:0.76,
   win:"The cart goes over. Sausages everywhere. Seagulls arrive within seconds.",
   lose:"He is defending his livelihood and you are defending a sausage you never had.",
-  paid:"You pay for a sausage you did not take. He gives you a sausage. Fair enough."}
+  paid:"You pay for a sausage you did not take. He gives you a sausage. Fair enough."},
+{t:"The Crew From Juarez",
+  b:"Four men get out of one car, which is impressive, and they know {N} by name. Nobody is smiling. Running is not really on the table here.",
+  bribe:38000, runOdds:0.28,
+  win:"You put the first one through a windscreen and the other three reconsider everything.",
+  lose:"Four of them. One of you. The maths was never in your favour.",
+  paid:"They take the money, count it twice, and tell you the price goes up next time."},
+
+ {t:"An Ambush",
+  b:"The alley was empty thirty seconds ago. It is not empty now. Two behind, one in front, and the one in front has a length of scaffolding.",
+  bribe:14000, runOdds:0.22,
+  win:"You take the scaffolding off him and use it as intended. They scatter.",
+  lose:"Scaffolding is a genuinely excellent weapon and he knew that.",
+  paid:"You empty your pockets onto the ground. They let you back out of the alley."},
+
+ {t:"Debt Collectors",
+  b:"Two enormous men in matching coats say they are here about money {N} owes to somebody neither of them will name. They have brought a bag. The bag is for you.",
+  bribe:26000, runOdds:0.35,
+  win:"You go through both of them. The bag goes unused. You keep the bag.",
+  lose:"They put you in the bag. Briefly. It was very undignified.",
+  paid:"They take it, thank you politely, and mention they'll be back on Thursday."},
+
+ {t:"The Rooftop Man",
+  b:"Someone has been following you for two blocks and has just dropped down from a fire escape directly in front of {N}. He has clearly practised that.",
+  bribe:19000, runOdds:0.40,
+  win:"He practised the landing, not the fighting. Big difference.",
+  lose:"He practised both. You should have assumed he practised both.",
+  paid:"He takes the money and climbs back up the fire escape, which is somehow worse."},
+
+ {t:"Somebody's Whole Family",
+  b:"It started as an argument about a parking space. There are now eleven of them, including a grandmother who has rolled up her sleeves.",
+  bribe:9000, runOdds:0.30,
+  win:"You will not describe what happened next. The grandmother respected it.",
+  lose:"The grandmother went first. That's all you remember.",
+  paid:"You pay for the parking space. You do not park in it."},
+
+ {t:"A Man With A Dog",
+  b:"The man is not the problem. The dog is the problem. The dog has been waiting its whole life for this and it has clearly trained for it.",
+  bribe:5500, runOdds:0.26,
+  win:"You win, somehow, and the dog respects you now. The man does not.",
+  lose:"Never fight a dog that looks that pleased to see you.",
+  paid:"You buy the dog a sausage. You are now the dog's friend. The man is furious."},
+
+ {t:"The Other Buyers",
+  b:"You have turned up to the same corner as three men who also sell things, and they have decided there is not room for four. One is holding a hammer like he means it.",
+  bribe:31000, runOdds:0.33,
+  win:"There is now room for one. The corner is yours until roughly Tuesday.",
+  lose:"There was not room for four and it turns out there was not room for you.",
+  paid:"You buy your way off the corner. They watch you leave, which is the point."}
 ];
 
 /* ══════════ OPPORTUNITIES: TAKE IT OR LEAVE IT ══════════ */
@@ -961,15 +1058,112 @@ var OPPS=[
   drugs:true, heat:7}
 ];
 
+/* ══════════════════════════════════════════════════════════════
+   DIFFICULTY SETTINGS
+   Every one of these feeds a real number in the game. Percentages are
+   multipliers against the default behaviour, so 100 is the normal game.
+   ══════════════════════════════════════════════════════════════ */
+var CFG_DEF=[
+ {g:"THE START"},
+ {k:"startCash", v:2000, min:0,   max:50000, st:500, n:"Starting cash", f:"money",
+  d:"What's in your pocket on day one."},
+ {k:"startDebt", v:5500, min:0,   max:40000, st:500, n:"Starting debt", f:"money",
+  d:"What you already owe the loan shark."},
+ {k:"startDays", v:30,   min:5,   max:180,   st:5,   n:"Days to begin with", f:"days",
+  d:"How long you get before the first milestone."},
+ {k:"mileDays",  v:5,    min:1,   max:60,    st:1,   n:"Days added per milestone", f:"days",
+  d:"Every money milestone buys you this many more days."},
+
+ {g:"THE LAW"},
+ {k:"police",    v:100, min:0, max:400, st:10, n:"How often police stop you", f:"pct",
+  d:"0 means they never do. 400 means constantly."},
+ {k:"seize",     v:100, min:0, max:250, st:10, n:"How much they seize", f:"pct",
+  d:"How much cash they take when you're caught."},
+ {k:"heatGain",  v:100, min:0, max:300, st:10, n:"How fast heat builds", f:"pct",
+  d:"Heat rises from big sales, borders, busts and being rich."},
+ {k:"heatCool",  v:100, min:10, max:400, st:10, n:"How fast heat fades", f:"pct",
+  d:"Higher means lying low works faster."},
+ {k:"raids",     v:100, min:0, max:400, st:10, n:"Warehouse raid chance", f:"pct",
+  d:"How often they turn over your property."},
+
+ {g:"THE STREET"},
+ {k:"gangs",     v:100, min:0, max:400, st:10, n:"Rival gangs and trouble", f:"pct",
+  d:"How often someone starts on you and you must fight, run or pay."},
+ {k:"chances",   v:100, min:0, max:400, st:10, n:"Opportunities to steal", f:"pct",
+  d:"Unattended cars, boats, bags and suitcases."},
+ {k:"events",    v:100, min:0, max:400, st:10, n:"Random street events", f:"pct",
+  d:"Muggings, shakedowns, lucky finds and paydays."},
+ {k:"fightWin",  v:100, min:20, max:250, st:10, n:"Your odds in a fight", f:"pct",
+  d:"How likely your weapon is to win."},
+ {k:"damage",    v:100, min:0, max:300, st:10, n:"Damage you take", f:"pct",
+  d:"0 makes you indestructible."},
+ {k:"docCost",   v:100, min:0, max:400, st:10, n:"Doctor's prices", f:"pct",
+  d:"What it costs to patch yourself up."},
+
+ {g:"THE MARKET"},
+ {k:"volatility",v:100, min:0, max:300, st:10, n:"Price swings", f:"pct",
+  d:"How wildly prices spike and crash day to day."},
+ {k:"extremes",  v:100, min:0, max:600, st:10, n:"Extreme price events", f:"pct",
+  d:"Gluts at a couple of dollars, and frenzies worth millions."},
+ {k:"rumourAcc", v:85,  min:30, max:100, st:5, n:"How often rumours are right", f:"pct",
+  d:"The word on the street predicting tomorrow's prices."},
+ {k:"delivery",  v:100, min:0, max:300, st:10, n:"Risk shipping to warehouses", f:"pct",
+  d:"Chance a cross-city delivery gets intercepted."},
+
+ {g:"MONEY"},
+ {k:"sharkRate", v:10,  min:0, max:30, st:1,  n:"Loan shark interest", f:"rate",
+  d:"Compounded every single day. This is the clock."},
+ {k:"bankRate",  v:0.5, min:0, max:8,  st:0.5,n:"Bank interest", f:"rate",
+  d:"What your deposits earn each day."},
+ {k:"credit",    v:100, min:0, max:500, st:10, n:"Borrowing limit", f:"pct",
+  d:"How much he'll lend against what you're worth."},
+ {k:"upkeepC",   v:100, min:0, max:300, st:10, n:"Daily upkeep costs", f:"pct",
+  d:"What your vehicles, property and staff cost to keep."}
+];
+var CFG={};
+function cfgReset(){ CFG={}; CFG_DEF.forEach(function(o){ if(o.k) CFG[o.k]=o.v; }); }
+cfgReset();
+function C(k){ var v=CFG[k]; return (v===undefined||isNaN(v))?0:v; }
+function M(k){ return C(k)/100; }            /* percentage settings as a multiplier */
+function cfgSave(){ try{ localStorage.setItem("wdg_cfg",JSON.stringify(CFG)); }catch(e){} }
+function cfgLoad(){
+  try{
+    var raw=localStorage.getItem("wdg_cfg"); if(!raw) return;
+    var o=JSON.parse(raw);
+    CFG_DEF.forEach(function(d){
+      if(d.k && typeof o[d.k]==="number" && isFinite(o[d.k]))
+        CFG[d.k]=clamp(o[d.k],d.min,d.max);
+    });
+  }catch(e){}
+}
+function cfgFmt(d){
+  var v=C(d.k);
+  if(d.f==="money") return money(v);
+  if(d.f==="days")  return v+" day"+(v===1?"":"s");
+  if(d.f==="rate")  return v+"% a day";
+  return v+"%";
+}
+/* a plain-English read on how hard they've made it */
+function cfgFlavour(){
+  var hard=(M("police")+M("gangs")+M("heatGain")+M("damage")+M("raids")+M("upkeepC"))/6;
+  var easy=(M("heatCool")+M("fightWin")+M("credit"))/3;
+  var score=hard/(easy||1);
+  if(score<0.45) return "A gentle time. Nothing much can hurt you.";
+  if(score<0.85) return "Easier than standard.";
+  if(score<1.2)  return "About how the game is meant to be played.";
+  if(score<1.8)  return "Harder than standard. Expect to lose runs.";
+  return "Punishing. You will almost certainly die poor.";
+}
+
 var POCKETS=8;
 var S={}, view="home", pend=null, endInfo=null;
 
 /* ══════════ STATE ══════════ */
 function reset(name){
-  S={name:name||"Wesley",day:1,days:30,mile:0,loc:"nyc",cash:2000,bank:0,debt:5500,hp:100,heat:0,
+  S={name:name||"Wesley",day:1,days:C("startDays"),mile:0,loc:"nyc",cash:C("startCash"),bank:0,debt:C("startDebt"),hp:100,heat:0,
      coat:100,wep:{},vestT:0,ammo:0,ride:"foot",owned:{foot:1},hot:{},props:{},crew:{},nuke:0,
      inv:{},stash:{},nat:{},prices:{},prev:{},flags:{},pat:{},dev:{},plan:{},rumour:[],
-     borrowedToday:0,interest:0,lastInterest:0,cost:{},
+     started:false, borrowedToday:0,interest:0,lastInterest:0,cost:{},
      hist:{},log:[],over:false,mood:"",bandage:0};
   GOODS.forEach(function(g){S.inv[g.id]=0;S.cost[g.id]=0;S.hist[g.id]=[];});
   seedHistory(60);
@@ -1044,7 +1238,7 @@ function upkeep(){
   PROPS.forEach(function(p){if(S.props[p.id])t+=p.up;});
   RIDES.forEach(function(r){if(S.owned[r.id])t+=r.up;});
   CREW.forEach(function(c){if(S.crew[c.id])t+=c.up;});
-  return t;
+  return Math.round(t*M("upkeepC"));
 }
 
 /* ══════════ MARKET ENGINE (patterns + 20% dramatic shocks) ══════════ */
@@ -1121,7 +1315,7 @@ function planNextDay(){
   GOODS.forEach(function(g){
     if(Math.random()<0.20) S.plan[g.id]={up:Math.random()<0.5, mag:1.9+Math.random()*2.6};
   });
-  var acc = hasCrew("fixer") ? 0.93 : 0.85;      /* the fixer hears more, and better */
+  var acc = clamp((hasCrew("fixer")?0.93:0.85)*(C("rumourAcc")/85),0.05,1);
   var reach = hasCrew("fixer") ? 0.92 : 0.72;
   GOODS.forEach(function(g){
     var pl=S.plan[g.id], pn=CITIES[ri(0,CITIES.length-1)].n;
@@ -1138,12 +1332,14 @@ function roll(){
     if(S.hist[g.id].length>200) S.hist[g.id].shift();
     if(Math.random()<0.12){S.prices[g.id]=0;return;}
     var b=nat*p.m, r=Math.random();
-    if(r<0.006){                                   /* the bottom falls out completely */
+    var xE=0.006*M("extremes"), xF=xE+0.0025*M("extremes");
+    var xS=xF+0.066*M("volatility"), xC=xS+0.090*M("volatility");
+    if(r<xE){                                      /* the bottom falls out completely */
       b=ri(1,4); S.flags[g.id]="glut";
-    }else if(r<0.0085){                            /* a genuine once-in-a-run payday */
+    }else if(r<xF){                                /* a genuine once-in-a-run payday */
       b*=11+Math.random()*26; S.flags[g.id]="frenzy";
-    }else if(r<0.075){b*=2+Math.random()*3;S.flags[g.id]="spike";}
-    else if(r<0.165){b/=2+Math.random()*3.5;S.flags[g.id]="crash";}
+    }else if(r<xS){b*=2+Math.random()*3;S.flags[g.id]="spike";}
+    else if(r<xC){b/=2+Math.random()*3.5;S.flags[g.id]="crash";}
     S.prices[g.id]=Math.max(1,Math.round(b));
   });
   for(var k in S.flags){
@@ -1165,11 +1361,12 @@ function maxBuy(g,pr,cash,room){
 
 /* ══════════ HEAT, HARM, MILESTONES ══════════ */
 function addHeat(n,why){
-  S.heat=clamp(S.heat+n,0,100);
+  S.heat=clamp(S.heat+n*M("heatGain"),0,100);
   if(n>=6) flashMood("worried");
 }
-function coolHeat(n){S.heat=clamp(S.heat-n,0,100);}
+function coolHeat(n){S.heat=clamp(S.heat-n*M("heatCool"),0,100);}
 function hurt(n){
+  n=n*M("damage");
   var v=VESTS.filter(function(x){return x.t===S.vestT;})[0];
   if(v) n=Math.round(n*(1-v.r));
   if(hasCrew("guard")) n=Math.round(n*0.67);
@@ -1184,10 +1381,10 @@ function hurt(n){
 function checkMiles(){
   var w=worth();
   while(S.mile<MILES.length && w>=MILES[S.mile]){
-    S.mile++; S.days+=5;
+    S.mile++; S.days+=C("mileDays");
     var m=MILES[S.mile-1];
-    say("Passed "+money(m)+". You bought yourself another 5 days.","mile");
-    toast("MILESTONE "+money(m)+" — 5 more days. You now have until day "+S.days+".","mile"); remark("milestone");
+    say("Passed "+money(m)+". You bought yourself another "+C("mileDays")+" days.","mile");
+    toast("MILESTONE "+money(m)+" — "+C("mileDays")+" more days. You now have until day "+S.days+".","mile"); remark("milestone");
     animate("happy"); flashMood("rich");
   }
 }
@@ -2389,16 +2586,23 @@ function toast(t,k){
 var wrap=document.getElementById("phonewrap"), scr=document.getElementById("scr");
 document.getElementById("phonebtn").onclick=function(){
   audio(); wrap.classList.add("on"); navStack=[];
+  if(!S.started){ go("menu"); return; }      /* still at the menu */
   showPhone(true);
   go(S.over?"end":"home");
 };
-wrap.onclick=function(e){if(e.target===wrap&&!S.over){wrap.classList.remove("on");showPhone(false);}};
+/* Tapping the dark area beside the phone puts it away — but only once a game is
+   actually running. Before that it would drop you into a run you never started. */
+wrap.onclick=function(e){
+  if(e.target!==wrap) return;
+  if(!S.started || S.over) return;
+  wrap.classList.remove("on"); showPhone(false);
+};
 /* close controls live in the phone's header and footer, outside the screen area */
 wrap.addEventListener("click",function(e){
   var b=e.target.closest("[data-close]");
   if(!b) return;
   e.stopPropagation();
-  if(!S.over){ wrap.classList.remove("on"); showPhone(false); }
+  if(S.started && !S.over){ wrap.classList.remove("on"); showPhone(false); }
 });
 /* Screens you can be sent to but shouldn't be able to go *back* to:
    one-off interruptions and confirmation screens. */
@@ -2453,15 +2657,36 @@ function render(){
   else if(view==="qty")    h=qtyHTML();
   else if(view==="bankqty")h=bankQtyHTML();
   else if(view==="cops")   h=copsHTML();
+  else if(view==="roadblock") h=roadblockHTML();
   else if(view==="event")  h=eventHTML();
   else if(view==="nuke")   h=nukeHTML();
   else if(view==="vanish") h=vanishHTML();
   else if(view==="danger") h=dangerHTML();
   else if(view==="opp")    h=oppHTML();
   else if(view==="end")    h=endHTML();
+  else if(view==="menu")   h=menuHTML();
+  else if(view==="newgame")h=newGameHTML();
+  else if(view==="settings")h=settingsHTML();
   scr.innerHTML=h; scr.scrollTop=0;
+  /* no way out of the phone until a game is running */
+  var pre=!S.started;
+  var xb=document.querySelector(".pclose"), hb=document.querySelector(".hangup");
+  if(xb) xb.style.visibility=pre?"hidden":"visible";
+  if(hb) hb.style.visibility=pre?"hidden":"visible";
   var f=scr.querySelector("input"); if(f&&f.type==="number") f.select();
   if(view==="qty"){var q=document.getElementById("qin"); if(q){q.oninput=qcalc; qcalc();}}
+  if(view==="settings"){
+    Array.prototype.forEach.call(scr.querySelectorAll("input[data-cfg]"),function(sl){
+      sl.oninput=function(){
+        var k=sl.dataset.cfg, d=null;
+        CFG_DEF.forEach(function(x){ if(x.k===k) d=x; });
+        CFG[k]=parseFloat(sl.value);
+        var lab=document.getElementById("sv-"+k);
+        if(lab&&d) lab.textContent=cfgFmt(d);
+        cfgSave();
+      };
+    });
+  }
 }
 function homeHTML(){
   var bars="";
@@ -2645,6 +2870,7 @@ function legRisk(to){
   var base = 0.035 + load*0.30*far + 0.02*far;
   base *= r.risk * t.heat * border;
   base *= (1 + S.heat/55);
+  base *= M("police");
   if(isHot()) base *= 1.65;              /* driving something that's on a list */
   if(hasCrew("driver")) base*=0.80;
   return clamp(base,0.01,0.92);
@@ -2699,11 +2925,12 @@ function vanishHTML(){
     '<button class="opt" data-go="travel">Stay and keep working<small>The run continues</small></button>';
 }
 function waitHTML(){
-  return '<div class="note">Lying low bleeds off heat but the days still pass, the shark still charges, '+
-    'and upkeep is still due. Prices reroll where you stand.</div>'+
-    '<button class="opt" data-wait="1">Sit tight for a day<small>&minus;4 heat</small></button>'+
-    '<button class="opt" data-wait="3">Three days indoors<small>&minus;12 heat</small></button>'+
-    '<button class="opt" data-wait="7">A week off the radar<small>&minus;28 heat &middot; costs '+money(upkeep()*7)+' in upkeep</small></button>';
+  return '<div class="note">Heat only comes off when you lie low, and only 1 a day. The days still '+
+    'pass, the shark still charges, and upkeep is still due. Prices reroll where you stand. '+
+    'A lawyer on the payroll bleeds off another 2 a day on his own.</div>'+
+    '<button class="opt" data-wait="1">Sit tight for a day<small>&minus;1 heat</small></button>'+
+    '<button class="opt" data-wait="3">Three days indoors<small>&minus;3 heat</small></button>'+
+    '<button class="opt" data-wait="7">A week off the radar<small>&minus;7 heat &middot; costs '+money(upkeep()*7)+' in upkeep</small></button>';
 }
 
 /* ── store ── */
@@ -2718,12 +2945,12 @@ function storeHTML(){
       '<small>wins about '+Math.round(w.w*10)+' fights in 10</small></button>';
   });
   if(S.nuke){
-    h+='<button class="opt nuke" data-gonuke="1"><em>ARMED</em>Suitcase atomic bomb'+
-       '<small>You are carrying a live atomic weapon. There is a button.</small></button>';
+    h+='<button class="opt nuke" data-detonate="1"><em>ARMED</em>Suitcase atomic bomb'+
+       '<small>There is a button. It is right there.</small></button>';
   }else{
     h+='<button class="opt nuke" data-nuke="1"'+(S.cash<NUKE.p?" disabled":"")+'>'+
        '<em>'+money(NUKE.p)+'</em>'+NUKE.n+
-       '<small>Do not buy this. There is no version of this that ends well.</small></button>';
+       '<small>It fits in a suitcase. It is exactly what it says it is.</small></button>';
   }
   h+='<div class="sec">BODY ARMOUR</div>';
   VESTS.forEach(function(v){
@@ -2796,7 +3023,7 @@ function crewHTML(){
   return h;
 }
 function bankHTML(){
-  var daily=Math.round(S.bank*0.005), owedDaily=Math.round(S.debt*0.10);
+  var daily=Math.round(S.bank*(C("bankRate")/100)), owedDaily=Math.round(S.debt*(C("sharkRate")/100));
   var h='<div class="ledger">'+
     '<div class="lrow"><span>Cash in hand</span><b>'+money(S.cash)+'</b></div>'+
     '<div class="lrow"><span>On deposit</span><b class="cg">'+money(S.bank)+'</b></div>'+
@@ -2824,7 +3051,7 @@ function bankHTML(){
   return h;
 }
 function docHTML(){
-  var missing=100-S.hp, cost=Math.round(missing*90*(1+S.mile*0.35));
+  var missing=100-S.hp, cost=Math.round(missing*90*(1+S.mile*0.35)*M("docCost"));
   if(!missing) return '<div class="note">Not a scratch on you. Come back bleeding.</div>';
   return '<div class="note">A back room with a bare bulb. No questions, no records.</div>'+
     '<button class="opt" data-doc="1"'+(S.cash>=cost?"":" disabled")+'>Patch me up<small>'+money(cost)+
@@ -2882,6 +3109,7 @@ scr.addEventListener("click",function(e){
   var d=b.dataset;
   if(d.close){ if(!S.over) wrap.classList.remove("on"); return; }
   if(d.back) return goBack();
+  if(d.preset) return applyPreset(d.preset);
   if(d.go) return go(d.go);
   if(d.chart){ pend={id:d.chart}; return go("chart"); }
   if(d.buy) return openQty(d.buy,"buy");
@@ -2902,11 +3130,11 @@ scr.addEventListener("click",function(e){
   if(d.sellprop) return sellProp(d.sellprop);
   if(d.fire) return fireCrew(d.fire);
   if(d.nuke) return buyNuke();
-  if(d.gonuke) return go("nuke");
+  if(d.gonuke) return detonate();
   if(d.vanish) return finish(false,"vanish");
   if(d.detonate) return detonate();
   if(d.doc){
-    var c=Math.round((100-S.hp)*90*(1+S.mile*0.35));
+    var c=Math.round((100-S.hp)*90*(1+S.mile*0.35)*M("docCost"));
     S.cash-=c; S.hp=100; S.bandage=0;
     say("Doctor patched you up for "+money(c)+".","good");
     toast("Stitched up. Good as new.","good"); flashMood("rich"); remark("heal");
@@ -2915,6 +3143,7 @@ scr.addEventListener("click",function(e){
   if(d.qok) return confirmQty();
   if(d.bqok) return confirmBank();
   if(d.cop) return copChoice(d.cop);
+  if(d.road) return roadChoice(d.road);
   if(d.dgr) return dangerChoice(d.dgr);
   if(d.opp) return oppChoice(d.opp);
   if(d.respray) return respray(d.respray);
@@ -2942,7 +3171,7 @@ function deliveryRisk(pid){
   var r=(0.05+far*0.14)*border*(1+S.heat/140);
   if(hasCrew("driver")) r*=0.78;
   if(hasCrew("fixer")) r*=0.85;
-  return clamp(r,0.02,0.55);
+  return clamp(r*M("delivery"),0,0.9);
 }
 function openQty(id,mode){
   var g=good(id), pr=S.prices[id], prop=hasProp(), dest="load";
@@ -3028,6 +3257,10 @@ function qcalc(){
     line+='<br>Cost '+money(basis)+' &middot; <b style="color:'+(prof>=0?"var(--cash)":"var(--heat)")+'">'+
       (prof>=0?"profit ":"loss ")+money(Math.abs(prof))+'</b>';
   }
+  if(pend.mode==="sell"){
+    var hh=q*0.005*M("heatGain");
+    if(hh>=0.1) line+='<br><span style="color:var(--heat)">+'+hh.toFixed(1)+' heat for moving '+q.toLocaleString()+'</span>';
+  }
   if(pend.mode==="buy"&&cst>0&&totalHeld(pend.g.id)>0){
     var blended=(totalHeld(pend.g.id)*cst+q*u)/(totalHeld(pend.g.id)+q);
     line+='<br>Average cost becomes '+money(blended)+' each';
@@ -3081,7 +3314,7 @@ function confirmQty(){
     S.cash+=take;
     if(toStore) bin(pid)[pend.g.id]-=v; else S.inv[pend.g.id]-=v;
     tidyCost(pend.g.id);
-    addHeat(clamp(take/2500000,0.4,9));            /* big sales get noticed */
+    addHeat(v*0.005);      /* 5 heat per 1,000 units moved: volume is what gets noticed */
     say("Sold "+v.toLocaleString()+" "+pend.g.n+" for "+money(take)+
         (basis?" (cost "+money(basis)+", "+(profit>=0?"made ":"lost ")+money(Math.abs(profit))+")":"")+
         (toStore?" out of storage.":"."), profit>=0?"good":"bad");
@@ -3104,7 +3337,7 @@ function vanishFee(){
   if(hasCrew("lawyer")) rate*=0.85;
   return Math.round(w*rate);
 }
-function creditLimit(){ return Math.round(10000 + Math.max(0,worth())*0.6); }
+function creditLimit(){ return Math.round((10000 + Math.max(0,worth())*0.6)*M("credit")); }
 function borrowLeft(){
   var headroom = creditLimit() - S.debt;                 /* total exposure he'll accept */
   var today    = 1000000 - S.borrowedToday;              /* and never more than 1M a day */
@@ -3264,40 +3497,67 @@ function buyNuke(){
   toast("You are carrying an atomic bomb. Nobody made you do this.","bad");
   flashMood("worried"); go("store"); paint();
 }
-function nukeHTML(){
-  return '<div class="scrhead"><h3 style="color:var(--heat)">THE SUITCASE</h3></div>'+
-    '<div class="note">It sits open on the bed. Two keys, one switch, and a little screen counting '+
-    'nothing yet. '+esc(city().n)+' is going about its evening outside the window.</div>'+
-    '<div class="note" style="color:var(--heat)">If you do this, everyone in '+esc(city().n)+
-    ' dies. That includes you. The run ends. There is no score to salvage and no leaderboard '+
-    'entry worth having. You already knew that.</div>'+
-    '<button class="opt nuke" data-detonate="1">Turn both keys<small>There is no undo</small></button>'+
-    '<button class="opt" data-go="store">Close the case and walk away<small>The sensible option</small></button>';
-}
 function detonate(){
-  wrap.classList.remove("on");
-  var f=document.getElementById("nukeflash");
-  f.classList.add("go"); boom();
-  var w=document.getElementById("figwrap");
-  if(w) w.classList.add("down");
+  if(S.over) return;
   S.over=true;
-  setTimeout(function(){
-    var stamp=new Date().toLocaleDateString();
-    endInfo={score:0,rank:"Vaporised",dead:true,nuked:true,stash:0,carry:0,lost:0,
-      code:encode({n:S.name,s:0,t:stamp,d:Math.min(S.day,S.days),dead:true,nuke:1})};
-    addScore({n:S.name,s:0,t:stamp,d:Math.min(S.day,S.days),dead:true,nuke:1});
-    wrap.classList.add("on"); go("end");
-  },2700);
+  wrap.classList.remove("on");
+  boom();
+  var stage=document.querySelector(".stage");
+  var fig=document.getElementById("figphys");
+
+  /* the flash */
+  var f=document.getElementById("nukeflash");
+  f.classList.add("go");
+  document.body.classList.add("quake");
+
+  /* a shockwave going out across the room */
+  var ring=document.createElement("div");
+  ring.className="shock";
+  document.body.appendChild(ring);
+  requestAnimationFrame(function(){ ring.classList.add("go"); });
+
+  /* he comes apart */
+  var b=figRect();
+  if(b){
+    for(var i=0;i<26;i++){
+      (function(){
+        var d=document.createElement("div");
+        d.className="debris";
+        var sz=5+Math.random()*16;
+        d.style.width=sz+"px"; d.style.height=sz+"px";
+        d.style.left=(b.left+b.width*(0.2+Math.random()*0.6))+"px";
+        d.style.top =(b.top +b.height*(0.1+Math.random()*0.8))+"px";
+        d.style.background=["#8A5F3A","#1C1A24","#4A3324","#6E4A2C","#E8DCC0"][ri(0,4)];
+        d.style.setProperty("--dx",((Math.random()*2-1)*window.innerWidth*0.75).toFixed(0)+"px");
+        d.style.setProperty("--dy",(-(150+Math.random()*window.innerHeight*0.6)).toFixed(0)+"px");
+        d.style.setProperty("--rot",((Math.random()*2-1)*1400).toFixed(0)+"deg");
+        document.body.appendChild(d);
+        requestAnimationFrame(function(){ d.classList.add("go"); });
+        setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, 2400);
+      })();
+    }
+  }
+  if(fig) fig.classList.add("vaporised");
+  var sh=document.getElementById("shade"); if(sh) sh.style.opacity="0";
+  document.querySelectorAll(".contact,.groundshadow").forEach(function(e){e.style.opacity="0";});
+
+  setTimeout(function(){ document.body.classList.remove("quake"); }, 1400);
+  setTimeout(function(){ if(ring.parentNode) ring.parentNode.removeChild(ring); }, 2600);
+
+  var stamp=new Date().toLocaleDateString();
+  endInfo={score:0,rank:"Vaporised",dead:true,nuked:true,stash:0,carry:0,lost:0,
+    code:encode({n:S.name,s:0,t:stamp,d:Math.min(S.day,S.days),dead:true,nuke:1})};
+  addScore({n:S.name,s:0,t:stamp,d:Math.min(S.day,S.days),dead:true,nuke:1});
+  setTimeout(function(){ wrap.classList.add("on"); go("end"); }, 3000);
 }
 
-/* ══════════ DAYS, UPKEEP, RAIDS, COPS ══════════ */
+/* ══════════ DAYS, UPKEEP, RAIDS ══════════ */
 function endDay(){
   S.day++;
-  S.debt=Math.round(S.debt*1.10);
-  var gained=Math.round(S.bank*0.005);
+  S.debt=Math.round(S.debt*(1+C("sharkRate")/100));
+  var gained=Math.round(S.bank*(C("bankRate")/100));
   S.bank+=gained; S.interest+=gained; S.lastInterest=gained;
   S.borrowedToday=0;
-  /* the daily bleed */
   var due=upkeep();
   if(due>0){
     var short=due;
@@ -3310,9 +3570,8 @@ function endDay(){
       flashMood("worried");
     }
   }
-  /* heat cools slowly by itself, faster with a lawyer */
-  coolHeat(hasCrew("lawyer")?3.2:1.2);
-  /* being conspicuous costs you */
+  /* time alone no longer cools you off; only lying low does, and a lawyer helps */
+  if(hasCrew("lawyer")) coolHeat(2);
   if(worth()>1e7) addHeat(0.5);
   if(worth()>1e8) addHeat(0.7);
   if(isHot() && Math.random()<0.05){
@@ -3328,7 +3587,7 @@ function raidCheck(){
   if(!stashUsed()) return;
   PROPS.forEach(function(p){
     if(!S.props[p.id]) return;
-    var chance=0.014*(1+S.heat/70);
+    var chance=0.014*(1+S.heat/70)*M("raids");
     if(hasCrew("lawyer")) chance*=0.6;
     if(Math.random()<chance){
       var frac=0.25+Math.random()*0.45, lost=0, b=bin(p.id);
@@ -3345,55 +3604,207 @@ function raidCheck(){
     }
   });
 }
+/* One roll decides what happens, so a high chance of being stopped no longer
+   crowds out everything else. */
+function hazard(to,moving){
+  var cop = moving ? legRisk(to) : 0.02;
+  var r=Math.random();
+  if(r<cop){
+    /* once you're known, they stop bringing one car */
+    if(S.heat>22 && Math.random()<clamp(S.heat/110,0,0.8)){
+      pend={units:roadUnits()}; go("roadblock"); return true;
+    }
+    go("cops"); return true;
+  }
+  var pG=0.26*M("gangs"), pO=0.18*M("chances"), pE=0.22*M("events");
+  if(r<cop+pG){ pend=pickDanger(); go("danger"); return true; }
+  var o=pickOpp();
+  if(o && r<cop+pG+pO){ pend={o:o}; go("opp"); return true; }
+  var ev=pickEvent();
+  if(ev && r<cop+pG+pO+pE){ pend=ev; go("event"); return true; }
+  return false;
+}
+function nm(t){return String(t).replace(/\{N\}/g, esc(S.name));}
 function pickDanger(){
   var d=DANGERS[ri(0,DANGERS.length-1)];
-  var scale=1+S.mile*0.55;
-  return {d:d, bribe:Math.round(d.bribe*scale)};
+  return {d:d, bribe:Math.round(d.bribe*(1+S.mile*0.55))};
 }
 function pickOpp(){
   for(var i=0;i<8;i++){
     var o=OPPS[ri(0,OPPS.length-1)];
-    if(o.ride){
-      if(S.owned[o.ride]) continue;          /* no point offering one you own */
-      return o;
-    }
+    if(o.ride){ if(S.owned[o.ride]) continue; return o; }
     return o;
   }
   return null;
 }
-/* One roll decides what happens, so a high chance of being stopped no longer
-   crowds out everything else. Something happens on most journeys. */
-function hazard(to,moving){
-  var cop = moving ? legRisk(to) : 0.02;
-  var r=Math.random();
-  if(r<cop){ go("cops"); return true; }
-  if(r<cop+0.26){ pend=pickDanger(); go("danger"); return true; }
-  var o=pickOpp();
-  if(o && r<cop+0.44){ pend={o:o}; go("opp"); return true; }
-  var ev=pickEvent();
-  if(ev && r<cop+0.66){ pend=ev; go("event"); return true; }
-  return false;
+function travel(to){
+  var from=S.loc;
+  S.loc=to;
+  addHeat(city(to).cc!==city(from).cc ? 3.5 : 1.4);
+  if(endDay()) return finish(false);
+  if(hazard(to,true)) return;
+  go("home"); toast("Arrived in "+city().n+".");
+  remark(city(to).cc!==city(from).cc?"border":"travel");
 }
-function nm(t){return String(t).replace(/\{N\}/g, esc(S.name));}
+function waitDays(n){
+  var d=0;
+  while(d<n){
+    d++;
+    coolHeat(1);
+    if(endDay()) return finish(false);
+    if(Math.random()<0.34 && hazard(S.loc,false)) return;
+  }
+  go("home");
+  toast(d===1?("Day "+S.day+". Heat down a little."):(d+" days indoors."));
+}
 
+/* ══════════ BEING STOPPED ══════════ */
+function stopName(){
+  var r=ride();
+  return S.ride==="foot" ? "AIRPORT SECURITY"
+       : (r.id==="speed"||r.id==="cargo") ? "THE COAST GUARD"
+       : (r.id==="cessna"||r.id==="jet") ? "CUSTOMS ON THE TARMAC" : "STATE TROOPERS";
+}
+function copsHTML(){
+  var W=wep(), who=stopName();
+  if(used()===0){
+    var lines = S.ride==="foot"
+      ? ["They swab your hands, empty your bag onto a tray and pull your shoes apart. The dog sits down next to somebody else's suitcase.",
+         "You go through the scanner twice. A man in gloves checks the lining of your coat, finds nothing but lining, and looks disappointed.",
+         "They ask where you're flying and why, three times, in slightly different words. Then they wave you through."]
+      : ["They walk you through the questions and go over the vehicle with a torch. There's nothing to find, and after twenty minutes they admit it.",
+         "A dog goes over everything you own and loses interest. The officer keeps you talking a while longer out of principle.",
+         "They search you thoroughly, find an empty coat, and hand your papers back without a word."];
+    return '<div class="scrhead"><h3 style="color:var(--sodium)">'+who+'</h3></div>'+
+      '<div class="note">'+esc(lines[ri(0,lines.length-1)])+'</div>'+
+      '<div class="note" style="color:var(--cash)">You\'re carrying nothing. There is nothing they can do to you.</div>'+
+      '<button class="opt" data-cop="clean">Wait it out<small>Costs you nothing but your afternoon</small></button>';
+  }
+  return '<div class="scrhead"><h3 style="color:var(--heat)">'+who+'</h3></div>'+
+    '<div class="note">They pull you aside in '+esc(city().n)+'. You are carrying '+
+    used().toLocaleString()+' units and your heat is '+Math.round(S.heat)+'%.</div>'+
+    '<button class="opt" data-cop="run">Run for it<small>Most people get away. Most.</small></button>'+
+    '<button class="opt" data-cop="fight"'+(W?"":" disabled")+'>Use the '+(W?esc(W.n).toLowerCase():"weapon you don\'t have")+
+    '<small>'+(W?("about "+Math.round(fightOdds(W.w,1)*100)+"% to win"+(S.vestT?" &middot; armour helping":""))
+       :(S.nuke?"A bomb is no use at a roadside stop. Buy something smaller."
+              :"You'd need something from the Store."))+'</small></button>'+
+    '<button class="opt" data-cop="bribe"'+(S.cash>=25000?"":" disabled")+'>Offer them '+money(25000)+
+    '<small>'+(S.cash>=25000?"Works more often than it should":"You don't have the cash")+'</small></button>'+
+    (S.nuke?'<button class="opt nuke" data-detonate="1">Reach for the suitcase'+
+      '<small>You are carrying an atomic bomb.</small></button>':'');
+}
+function copChoice(k){
+  var dead=false;
+  if(k==="clean"){
+    coolHeat(2);
+    say("Searched at "+(S.ride==="foot"?"the airport":"a checkpoint")+" carrying nothing. They let you go.","good");
+    toast("Clean. They found nothing and you walked.","good");
+    go("home"); paint(); return;
+  }
+  if(k==="run"){
+    if(Math.random()<0.70-S.heat/300){say("Lost them.","good");toast("You lost them.","good");coolHeat(1);}
+    else dead=bust(ri(9,20));
+  }else if(k==="bribe"){
+    S.cash-=25000;
+    if(Math.random()<0.72){say("Paid them off, "+money(25000)+".","good");toast("They took it and looked away.","good");}
+    else{addHeat(8);say("They took the money and searched you anyway.","bad");dead=bust(ri(6,14));}
+  }else{
+    var W=wep();
+    if(Math.random()<fightOdds(W.w,1)){
+      var b=Math.round(ri(3000,12000)*(1+S.mile*0.8));
+      S.cash+=b; addHeat(9);
+      say(W.k,"good"); toast(W.k,"good"); animate("happy");
+    }else dead=bust(ri(18,32));
+  }
+  paint();
+  if(dead) return finish(true);
+  go("home");
+}
+function bust(dmg){
+  var lost=used();
+  if(lost===0){
+    coolHeat(1);
+    say("Searched and released. They had nothing on you.","good");
+    toast("They found nothing. You walked.","good");
+    return false;
+  }
+  var seizeRate=(hasCrew("lawyer")?0.18:0.35)*M("seize");
+  GOODS.forEach(function(g){S.inv[g.id]=0;tidyCost(g.id);});
+  var take=Math.round(S.cash*seizeRate); S.cash-=take;
+  addHeat(12);
+  say("Busted. They took "+lost.toLocaleString()+" units and "+money(take)+".","bad");
+  toast(stashUsed()?"Busted — but your storage is untouched.":"Busted. They took everything on you.","bad");
+  remark("bust");
+  return hurt(dmg);
+}
+
+/* ══════════ STREET EVENTS ══════════ */
+var EVENTS=[
+ function(){var g=GOODS[ri(0,7)],q=ri(3,12); if(space()<q)return null;
+   return {t:"Lucky find",b:"You find "+q+" "+g.n+" in a locker nobody claimed.",
+     a:[{l:"Pocket it",f:function(){S.inv[g.id]+=q;addCost(g.id,q,0);say("Found "+q+" "+g.n+" for nothing.","good");toast("Found "+q+" "+g.n+".","good");animate("happy");}}]};},
+ function(){var l=Math.round(S.cash*0.22); if(l<50)return null;
+   return {t:"Jumped",b:"Two kids corner you outside the motel. One has a blade.",
+     a:[{l:"Hand it over",s:"Lose "+money(l),f:function(){S.cash-=l;say("Mugged for "+money(l)+".","bad");toast("Mugged for "+money(l)+".","bad");flashMood("worried");}},
+        {l:"Fight them off",s:"Keep the cash, take a beating",f:function(){say("Fought them off, but they cut you up.","bad");toast("You kept the cash. It cost you.","bad");return hurt(ri(10,24));}}]};},
+ function(){var p=Math.round(ri(300,900)*(1+S.mile*0.4)); if(S.cash<p)return null;
+   return {t:"Tailor",b:"A tailor will stitch extra lining into your coat.",
+     a:[{l:"Pay "+money(p),s:"+25 coat space",f:function(){S.cash-=p;S.coat+=25;say("Coat lined. +25 space.","good");toast("Coat lined.","good");}},
+        {l:"Not today",f:function(){}}]};},
+ function(){var f=Math.round(ri(150,600)*(1+S.mile*0.5)); if(S.cash<f)return null;
+   return {t:"Shakedown",b:"A patrol officer wants "+money(f)+" to look somewhere else.",
+     a:[{l:"Pay him",f:function(){S.cash-=f;coolHeat(2);say("Paid off a cop, "+money(f)+".","bad");toast("Paid him off.");}},
+        {l:"Tell him no",s:"He won't like it",f:function(){if(Math.random()<0.5){say("He let it go.","good");toast("He let it go.","good");}
+          else{addHeat(5);say("He put you into the wall.","bad");toast("Bad call.","bad");return hurt(ri(8,18));}}}]};},
+ function(){var w=Math.round(ri(500,2500)*(1+S.mile*0.8));
+   return {t:"Payday",b:"An old customer settles up. "+money(w)+" in a paper bag.",
+     a:[{l:"Take it",f:function(){S.cash+=w;say("Old debt settled, +"+money(w)+".","good");toast("+"+money(w),"good");animate("happy");}}]};},
+ function(){if(S.heat<25)return null;
+   return {t:"Somebody's watching",b:"The same grey sedan has been behind you for three blocks.",
+     a:[{l:"Take the long way round",s:"Costs nothing but nerves",f:function(){coolHeat(5);say("Shook the tail.","good");toast("You shook them. Heat down.","good");}},
+        {l:"Ignore it",s:"Probably nothing",f:function(){addHeat(9);say("The sedan is still there.","bad");toast("They're still behind you.","bad");flashMood("worried");}}]};},
+ function(){if(!stashCap())return null;
+   return {t:"A tip-off",b:"Someone says your storage is being watched.",
+     a:[{l:"Pay for a warning",s:money(40000),f:function(){if(S.cash<40000){toast("You can't afford it.","bad");return;}S.cash-=40000;coolHeat(10);say("Paid for a heads-up.","good");toast("Heat down 10.","good");}},
+        {l:"Risk it",f:function(){addHeat(4);}}]};}
+];
+function pickEvent(){for(var i=0;i<8;i++){var e=EVENTS[ri(0,EVENTS.length-1)]();if(e)return e;}return null;}
+function eventHTML(){
+  var h='<div class="scrhead"><h3>'+esc(pend.t)+'</h3></div><div class="note">'+esc(pend.b)+'</div>';
+  pend.a.forEach(function(a,i){
+    h+='<button class="opt" data-ev="'+i+'">'+esc(a.l)+(a.s?'<small>'+esc(a.s)+'</small>':"")+'</button>';
+  });
+  return h;
+}
+function evChoice(i){
+  var dead=pend.a[+i].f(); pend=null; paint();
+  if(dead) return finish(true);
+  go("home");
+}
+
+/* ══════════ TROUBLE AND OPPORTUNITIES ══════════ */
 function dangerHTML(){
   var d=pend.d, W=wep(), bribe=pend.bribe;
   var runOdds=Math.round(clamp(d.runOdds-S.heat/400,0.15,0.95)*100);
-  var fightOdds=W?Math.round(W.w*100):0;
+  var fOdds=W?Math.round(fightOdds(W.w,1)*100):0;
   return '<div class="scrhead"><h3 style="color:var(--heat)">'+esc(d.t).toUpperCase()+'</h3></div>'+
     '<div class="note" style="color:var(--chalk);font-size:13px;line-height:1.6">'+nm(d.b)+'</div>'+
     '<button class="opt" data-dgr="fight"'+(W?"":" disabled")+'>Use the '+(W?esc(W.n).toLowerCase():"weapon you haven\'t got")+
-      '<small>'+(W?("about "+fightOdds+"% to win &middot; losing hurts"):"Buy something from the Store first")+'</small></button>'+
-    '<button class="opt" data-dgr="run">Run</button>'.replace('</button>',
-      '<small>about '+runOdds+'% to get away'+(S.heat>40?" &middot; your heat makes this harder":"")+'</small></button>')+
+      '<small>'+(W?("about "+fOdds+"% to win"+(S.vestT?" &middot; armour helping":""))
+                 :(S.nuke?"A bomb is not a weapon for this. Buy something smaller."
+                        :"You need a weapon from the Store first"))+'</small></button>'+
+    '<button class="opt" data-dgr="run">Run<small>about '+runOdds+'% to get away'+
+      (S.heat>40?" &middot; your heat makes this harder":"")+'</small></button>'+
     '<button class="opt" data-dgr="bribe"'+(S.cash>=bribe?"":" disabled")+'>Pay them '+money(bribe)+
-      '<small>'+(S.cash>=bribe?"about 90% to make it go away":"you don\'t have it")+'</small></button>';
+      '<small>'+(S.cash>=bribe?"about 90% to make it go away":"you don\'t have it")+'</small></button>'+
+    (S.nuke?'<button class="opt nuke" data-detonate="1">Reach for the suitcase'+
+      '<small>You are carrying an atomic bomb.</small></button>':'');
 }
 function dangerChoice(k){
   var d=pend.d, bribe=pend.bribe, dead=false;
   if(k==="fight"){
     var W=wep();
-    if(Math.random()<W.w){
+    if(Math.random()<fightOdds(W.w,1)){
       say(W.k,"good"); toast(d.win,"good"); animate("happy"); addHeat(5);
     }else{
       say(d.lose,"bad"); toast(d.lose,"bad");
@@ -3417,10 +3828,8 @@ function dangerChoice(k){
   if(dead) return finish(true);
   go("home");
 }
-
 function oppHTML(){
-  var o=pend.o;
-  var extra="";
+  var o=pend.o, extra="";
   if(o.ride){
     var r=RIDES.filter(function(x){return x.id===o.ride;})[0];
     extra='<div class="note">A free '+r.n.toLowerCase()+' holds '+r.cap.toLocaleString()+
@@ -3428,16 +3837,14 @@ function oppHTML(){
       'get it resprayed and replated at the Store.</div>';
   }
   return '<div class="scrhead"><h3 style="color:var(--sodium)">'+esc(o.t).toUpperCase()+'</h3></div>'+
-    '<div class="note" style="color:var(--chalk);font-size:13px;line-height:1.6">'+nm(o.b)+'</div>'+
-    extra+
+    '<div class="note" style="color:var(--chalk);font-size:13px;line-height:1.6">'+nm(o.b)+'</div>'+extra+
     '<button class="opt nuke" data-opp="take">'+esc(o.take)+'<small>'+esc(o.note)+' &middot; +'+o.heat+' heat</small></button>'+
     '<button class="opt" data-opp="skip">'+esc(o.skip)+'<small>Nothing happens. Nothing ever happens.</small></button>';
 }
 function oppChoice(k){
   var o=pend.o;
   if(k==="skip"){
-    say("Left the "+o.t.toLowerCase()+" well alone.");
-    toast("Probably wise.");
+    say("Left the "+o.t.toLowerCase()+" well alone."); toast("Probably wise.");
     pend=null; go("home"); paint(); return;
   }
   addHeat(o.heat);
@@ -3458,8 +3865,8 @@ function oppChoice(k){
     }
   }else{
     if(Math.random()<0.78){
-      var amt=ri(o.bagLo,o.bagHi)*(1+S.mile*0.5);
-      amt=Math.round(amt); S.cash+=amt;
+      var amt=Math.round(ri(o.bagLo,o.bagHi)*(1+S.mile*0.5));
+      S.cash+=amt;
       say("Took "+money(amt)+" from the "+o.t.toLowerCase()+".","good");
       toast("+"+money(amt),"good"); animate("happy");
     }else{
@@ -3473,144 +3880,89 @@ function oppChoice(k){
   }
   pend=null; paint(); go("home");
 }
-function travel(to){
-  var from=S.loc;
-  S.loc=to;
-  addHeat(city(to).cc!==city(from).cc ? 3.5 : 1.4);
-  if(endDay()) return finish(false);
-  if(hazard(to,true)) return;
-  go("home"); toast("Arrived in "+city().n+".");
-  remark(city(to).cc!==city(from).cc?"border":"travel");
+
+/* ══════════ ROADBLOCKS ══════════ */
+function roadUnits(){ return clamp(1+Math.floor(S.heat/17),1,7); }
+/* Body armour is the difference between starting a fight and finishing one, so it
+   improves your odds as well as soaking damage. Numbers stack with the weapon. */
+function gearBonus(){
+  var b=1;
+  if(S.vestT===1) b*=1.08;
+  if(S.vestT===2) b*=1.17;
+  if(S.vestT===3) b*=1.27;
+  if(hasCrew("guard")) b*=1.10;
+  return b;
 }
-function waitDays(n){
-  var d=0;
-  while(d<n){
-    d++;
-    coolHeat(4);
-    if(endDay()) return finish(false);
-    if(Math.random()<0.34 && hazard(S.loc,false)) return;
-  }
-  go("home");
-  toast(d===1?("Day "+S.day+". Heat down a little."):(d+" days indoors. Heat down "+(d*4+d*1.2|0)+"."));
+/* units>1 only for roadblocks; being outnumbered hurts, but good kit still carries you */
+function fightOdds(base,units){
+  var u=Math.max(1,units||1);
+  return clamp(base*M("fightWin")*gearBonus()*Math.pow(0.93,u-1),0.02,0.97);
 }
-function stopName(){
-  var r=ride();
-  return S.ride==="foot" ? "AIRPORT SECURITY"
-       : (r.id==="speed"||r.id==="cargo") ? "THE COAST GUARD"
-       : (r.id==="cessna"||r.id==="jet") ? "CUSTOMS ON THE TARMAC" : "STATE TROOPERS";
+function roadblockHTML(){
+  var n=pend.units, W=wep(), v=VESTS.filter(function(x){return x.t===S.vestT;})[0];
+  var runOdds=Math.round(clamp(0.62-n*0.075-S.heat/500,0.05,0.9)*100);
+  var fOdds=W?Math.round(fightOdds(W.w,n)*100):0;
+  var bribe=Math.round((18000+n*22000)*(1+S.mile*0.5));
+  var scene = n<=1 ? "A single patrol car has pulled you over."
+    : n<=2 ? "Two cars. They've boxed you in against the kerb."
+    : n<=3 ? "Three cars across the road and a man with a clipboard."
+    : n<=4 ? "Four cars, a van, and someone reading your plate into a radio."
+    : n<=5 ? "Five cars and a helicopter somewhere above you."
+    : n<=6 ? "Six cars, a van, dogs, and a man with a loudhailer saying your name."
+    : "They have closed the entire road. There is a drone. There is a negotiator.";
+  return '<div class="scrhead"><h3 style="color:var(--heat)">ROADBLOCK</h3></div>'+
+    '<div class="note" style="color:var(--chalk);font-size:13px;line-height:1.6">'+esc(scene)+
+      ' Your heat is '+Math.round(S.heat)+'%, and that is exactly why there are '+n+' of them.</div>'+
+    '<div class="note">Carrying '+used().toLocaleString()+' units'+
+      (v?(' &middot; wearing a '+esc(v.n).toLowerCase()):' &middot; <b style="color:var(--heat)">no body armour</b>')+
+      (W?(' &middot; '+esc(W.n).toLowerCase()):' &middot; <b style="color:var(--heat)">no weapon</b>')+'</div>'+
+    '<button class="opt" data-road="fight"'+(W?"":" disabled")+'>Shoot your way through'+
+      '<small>'+(W?("about "+fOdds+"% with your "+esc(W.n).toLowerCase()+" against "+n+
+        " of them"+(S.vestT?" &middot; your armour is helping":" &middot; body armour would help")):
+        "You have no weapon. This is what they are for.")+
+      '</small></button>'+
+    '<button class="opt" data-road="run">Drive at the gap<small>about '+runOdds+'% &middot; harder the more of them there are</small></button>'+
+    '<button class="opt" data-road="bribe"'+(S.cash>=bribe?"":" disabled")+'>Offer '+money(bribe)+
+      '<small>'+(S.cash>=bribe?("they all want a cut &middot; "+n+" of them"):"you can't cover it")+'</small></button>'+
+    '<button class="opt" data-road="give">Hand it over<small>Lose the load and the heat, keep your teeth</small></button>'+
+    (S.nuke?'<button class="opt nuke" data-detonate="1">Reach for the suitcase<small>You are carrying an atomic bomb.</small></button>':'');
 }
-function copsHTML(){
-  var W=wep(), who=stopName();
-  /* Nothing in your coat means nothing to find. They waste your time and let you go. */
-  if(used()===0){
-    var lines = S.ride==="foot"
-      ? ["They swab your hands, empty your bag onto a tray and pull your shoes apart. The dog sits down next to somebody else's suitcase.",
-         "You go through the scanner twice. A man in gloves checks the lining of your coat, finds nothing but lining, and looks disappointed.",
-         "They ask where you're flying and why, three times, in slightly different words. Then they wave you through."]
-      : ["They walk you through the questions and go over the vehicle with a torch. There's nothing to find, and after twenty minutes they admit it.",
-         "A dog goes over everything you own and loses interest. The officer keeps you talking a while longer out of principle.",
-         "They search you thoroughly, find an empty coat, and hand your papers back without a word."];
-    return '<div class="scrhead"><h3 style="color:var(--sodium)">'+who+'</h3></div>'+
-      '<div class="note">'+esc(lines[ri(0,lines.length-1)])+'</div>'+
-      '<div class="note" style="color:var(--cash)">You\'re carrying nothing. There is nothing they can do to you.</div>'+
-      '<button class="opt" data-cop="clean">Wait it out<small>Costs you nothing but your afternoon</small></button>';
-  }
-  return '<div class="scrhead"><h3 style="color:var(--heat)">'+who+'</h3></div>'+
-    '<div class="note">They pull you aside in '+esc(city().n)+'. You are carrying '+
-    used().toLocaleString()+' units and your heat is '+Math.round(S.heat)+'%.</div>'+
-    '<button class="opt" data-cop="run">Run for it<small>Most people get away. Most.</small></button>'+
-    '<button class="opt" data-cop="fight"'+(W?"":" disabled")+'>Use the '+(W?esc(W.n).toLowerCase():"weapon you don\'t have")+
-    '<small>'+(W?("wins about "+Math.round(W.w*10)+" in 10"):"You'd need something from the Store.")+'</small></button>'+
-    '<button class="opt" data-cop="bribe"'+(S.cash>=25000?"":" disabled")+'>Offer them '+money(25000)+
-    '<small>'+(S.cash>=25000?"Works more often than it should":"You don't have the cash")+'</small></button>';
-}
-function copChoice(k){
-  var dead=false;
-  if(k==="clean"){
-    coolHeat(2);
-    say("Searched at "+(S.ride==="foot"?"the airport":"a checkpoint")+" carrying nothing. They let you go.","good");
-    toast("Clean. They found nothing and you walked.","good");
-    go("home"); paint(); return;
-  }
-  if(k==="run"){
-    var odds=0.70-S.heat/300;
-    if(Math.random()<odds){say("Lost them.","good");toast("You lost them.","good");coolHeat(1);}
-    else dead=bust(ri(9,20));
-  }else if(k==="bribe"){
-    S.cash-=25000;
-    if(Math.random()<0.72){say("Paid them off, "+money(25000)+".","good");toast("They took it and looked away.","good");}
-    else{addHeat(8);say("They took the money and searched you anyway.","bad");dead=bust(ri(6,14));}
-  }else{
+function roadChoice(k){
+  var n=pend.units, dead=false;
+  var bribe=Math.round((18000+n*22000)*(1+S.mile*0.5));
+  if(k==="fight"){
     var W=wep();
-    if(Math.random()<W.w){
-      var b=Math.round(ri(3000,12000)*(1+S.mile*0.8));
-      S.cash+=b; addHeat(9);
-      say(W.k,"good");
-      toast(W.k,"good");
-      animate("happy");
-    }else{ dead=bust(ri(18,32)); }
+    if(Math.random()<fightOdds(W.w,n)){
+      var take=Math.round(ri(4000,16000)*n*(1+S.mile*0.6));
+      S.cash+=take; addHeat(4+n);
+      say("Fought through "+n+" units with the "+W.n.toLowerCase()+". Took "+money(take)+" off them.","good");
+      toast(W.k,"good"); animate("happy");
+    }else{
+      say("Outnumbered "+n+" to one. It went how you would expect.","bad");
+      toast("They had numbers and you had optimism.","bad");
+      dead=bust(ri(16,26)+n*4);
+    }
+  }else if(k==="run"){
+    if(Math.random()<clamp(0.62-n*0.075-S.heat/500,0.05,0.9)){
+      say("Went through the gap and lost them.","good"); toast("Through the gap. Gone.","good"); coolHeat(2);
+    }else{ dead=bust(ri(10,20)+n*3); }
+  }else if(k==="bribe"){
+    S.cash-=bribe;
+    if(Math.random()<clamp(0.85-n*0.06,0.35,0.9)){
+      say("Paid off all "+n+" of them, "+money(bribe)+".","good");
+      toast("Money changed hands. You drove on.","good"); coolHeat(4);
+    }else{
+      say("Took the money, searched you anyway.","bad");
+      toast("They took it and searched you anyway.","bad"); dead=bust(ri(8,16));
+    }
+  }else{
+    var lost=used();
+    GOODS.forEach(function(g){S.inv[g.id]=0; tidyCost(g.id);});
+    coolHeat(25);
+    say("Handed over "+lost.toLocaleString()+" units without a fuss. They let you go.","bad");
+    toast("You gave them everything. Heat right down.","bad");
   }
-  paint();
-  if(dead) return finish(true);
-  go("home");
-}
-function bust(dmg){
-  var lost=used();
-  if(lost===0){
-    /* they had nothing on you, so there is nothing to seize and no reason to hurt you */
-    coolHeat(1);
-    say("Searched and released. They had nothing on you.","good");
-    toast("They found nothing. You walked.","good");
-    return false;
-  }
-  var seizeRate=hasCrew("lawyer")?0.18:0.35;
-  GOODS.forEach(function(g){S.inv[g.id]=0;});
-  var take=Math.round(S.cash*seizeRate); S.cash-=take;
-  addHeat(12);
-  say("Busted. They took "+lost.toLocaleString()+" units and "+money(take)+".","bad");
-  toast(stashUsed()?"Busted — but your storage is untouched.":"Busted. They took everything on you.","bad");
-  remark("bust");
-  return hurt(dmg);
-}
-var EVENTS=[
- function(){var g=GOODS[ri(0,7)],q=ri(3,12); if(space()<q)return null;
-   return {t:"Lucky find",b:"You find "+q+" "+g.n+" in a locker nobody claimed.",
-     a:[{l:"Pocket it",f:function(){S.inv[g.id]+=q;addCost(g.id,q,0);say("Found "+q+" "+g.n+" for nothing.","good");toast("Found "+q+" "+g.n+".","good");animate("happy");}}]};},
- function(){var l=Math.round(S.cash*0.22); if(l<50)return null;
-   return {t:"Jumped",b:"Two kids corner you outside the motel. One has a blade.",
-     a:[{l:"Hand it over",s:"Lose "+money(l),f:function(){S.cash-=l;say("Mugged for "+money(l)+".","bad");toast("Mugged for "+money(l)+".","bad");flashMood("worried");}},
-        {l:"Fight them off",s:"Keep the cash, take a beating",f:function(){say("Fought them off, but they cut you up.","bad");toast("You kept the cash. It cost you.","bad");return hurt(ri(10,24));}}]};},
- function(){var p=Math.round(ri(300,900)*(1+S.mile*0.4)); if(S.cash<p)return null;
-   return {t:"Tailor",b:"A tailor will stitch extra lining into your coat.",
-     a:[{l:"Pay "+money(p),s:"+25 coat space",f:function(){S.cash-=p;S.coat+=25;say("Coat lined. +25 space.","good");toast("Coat lined.","good");}},
-        {l:"Not today",f:function(){}}]};},
- function(){var f=Math.round(ri(150,600)*(1+S.mile*0.5)); if(S.cash<f)return null;
-   return {t:"Shakedown",b:"A patrol officer wants "+money(f)+" to look somewhere else.",
-     a:[{l:"Pay him",f:function(){S.cash-=f;coolHeat(2);say("Paid off a cop, "+money(f)+".","bad");toast("Paid him off.");}},
-        {l:"Tell him no",s:"He won't like it",f:function(){if(Math.random()<0.5){say("He let it go.","good");toast("He let it go.","good");}
-          else{addHeat(5);say("He put you into the wall.","bad");toast("Bad call.","bad");return hurt(ri(8,18));}}}]};},
- function(){var w=Math.round(ri(500,2500)*(1+S.mile*0.8));
-   return {t:"Payday",b:"An old customer settles up. "+money(w)+" in a paper bag.",
-     a:[{l:"Take it",f:function(){S.cash+=w;say("Old debt settled, +"+money(w)+".","good");toast("+"+money(w),"good");animate("happy");}}]};},
- function(){if(S.heat<25)return null;
-   return {t:"Somebody's watching",b:"The same grey sedan has been behind you for three blocks.",
-     a:[{l:"Take the long way round",s:"Costs nothing but nerves",f:function(){coolHeat(5);say("Shook the tail.","good");toast("You shook them. Heat down 5.","good");}},
-        {l:"Ignore it",s:"Probably nothing",f:function(){addHeat(9);say("The sedan is still there.","bad");toast("They're still behind you.","bad");flashMood("worried");}}]};},
- function(){if(!stashCap())return null;
-   return {t:"A tip-off",b:"Someone says your storage is being watched.",
-     a:[{l:"Pay for a warning",s:money(40000),f:function(){if(S.cash<40000){toast("You can't afford it.","bad");return;}S.cash-=40000;coolHeat(10);say("Paid for a heads-up.","good");toast("Heat down 10.","good");}},
-        {l:"Risk it",f:function(){addHeat(4);}}]};}
-];
-function pickEvent(){for(var i=0;i<8;i++){var e=EVENTS[ri(0,EVENTS.length-1)]();if(e)return e;}return null;}
-function eventHTML(){
-  var h='<div class="scrhead"><h3>'+esc(pend.t)+'</h3></div><div class="note">'+esc(pend.b)+'</div>';
-  pend.a.forEach(function(a,i){
-    h+='<button class="opt" data-ev="'+i+'">'+esc(a.l)+(a.s?'<small>'+esc(a.s)+'</small>':"")+'</button>';
-  });
-  return h;
-}
-function evChoice(i){
-  var dead=pend.a[+i].f(); pend=null; paint();
+  pend=null; paint();
   if(dead) return finish(true);
   go("home");
 }
@@ -3649,7 +4001,8 @@ function addCode(){
   go("score");
 }
 function copyCode(){
-  var t=document.getElementById("codeout").textContent;
+  var el=document.getElementById("codeout"); if(!el) return;
+  var t=el.textContent;
   if(navigator.clipboard) navigator.clipboard.writeText(t);
   toast("Code copied. Send it to him.","good");
 }
@@ -3681,11 +4034,11 @@ function finish(dead,mode){
 function endHTML(){
   var e=endInfo;
   if(e.nuked){
-    return '<div class="mid"><div class="note">'+esc(city().n).toUpperCase()+' IS GONE</div>'+
+    return '<div class="mid">'+
+      '<div style="font-family:var(--disp);font-size:19px;line-height:1.25;color:var(--heat);margin:6px 0 12px">'+
+        'WHAT DID YOU THINK<br>WAS GOING TO HAPPEN?</div>'+
       '<div class="big neg">$0</div><div class="rank">Vaporised</div>'+
-      '<div class="note">You turned both keys on day '+S.day+'. Everything you built, every dollar, '+
-      'every warehouse, and roughly two million people you never met. The leaderboard will record '+
-      'that you scored nothing.</div></div>'+
+      '<div class="note">'+esc(city().n)+' is gone. So are you. Day '+S.day+'.</div></div>'+
       '<div class="share" id="codeout">'+e.code+'</div>'+
       '<button class="opt" data-copy="1">Copy code</button>'+
       '<button class="opt" data-again="1">Start again, differently</button>';
@@ -3720,28 +4073,78 @@ function endHTML(){
 function startGame(){
   var nm=document.getElementById("nm");
   reset(nm?nm.value.trim()||"Wesley":"Wesley");
+  S.started=true;
   wrap.classList.remove("on"); paint();
   toast("New York. Day one. No vehicle, so you fly commercial until you can fix that.");
 }
 function askName(){
   S.over=false; wrap.classList.add("on");
-  scr.innerHTML='<div class="scrhead"><h3>Who\'s playing?</h3></div>'+
-    '<div class="note">Ten cities across three countries. Thirty days to start, and every money '+
-    'milestone buys five more. Buy cheap in Tijuana, sell dear in New York &mdash; but you can only '+
-    'move product in a vehicle you own, and without one you\'re queuing through airport security '+
-    'with your coat full.</div>'+
-    '<div class="note">Everything you own costs you money every day. The police get more interested '+
-    'the richer and louder you get. Watch the heat bar.</div>'+
-    '<div class="note">On the road people will start trouble with you. Every time, you can fight them, '+
-    'run, or pay them off &mdash; and the game tells you the odds before you choose. You will also be '+
-    'offered things that are not yours. Taking them is often worth it. It is never free.</div>'+
-    '<input class="qty" id="nm" maxlength="18" value="Wesley">'+
-    '<button class="opt" data-start="1">Start hustling</button>';
-  var nm=document.getElementById("nm"); nm.focus(); nm.select();
+  navStack=[]; go("menu");
 }
-document.addEventListener("keydown",function(e){
-  if(e.key==="Escape" && !S.over && wrap.classList.contains("on")){ wrap.classList.remove("on"); showPhone(false); }
-});
+function menuHTML(){
+  return '<div class="mid" style="padding:10px 0 4px">'+
+    '<div style="font-family:var(--disp);font-size:26px;line-height:1.05;color:var(--chalk)">WESLEY\'S</div>'+
+    '<div style="font-family:var(--disp);font-size:26px;line-height:1.05;color:var(--sodium);margin-bottom:4px">DRUG GAME</div>'+
+    '<div class="note" style="margin-bottom:14px">Ten cities. Three countries. One coat.</div></div>'+
+    '<button class="opt" data-go="newgame" style="padding:16px 14px;font-size:16px">Start game'+
+      '<small>'+C("startDays")+' days to begin with, '+money(C("startCash"))+' in your pocket</small></button>'+
+    '<button class="opt" data-go="settings" style="padding:16px 14px;font-size:16px">Game settings'+
+      '<small>'+esc(cfgFlavour())+'</small></button>'+
+    '<button class="opt" data-go="score" style="padding:13px 14px">Leaderboard'+
+      '<small>Scores from you and whoever you\'ve swapped codes with</small></button>';
+}
+function newGameHTML(){
+  return head("Who\'s playing?","menu")+
+    '<div class="note">Buy cheap in Tijuana, sell dear in New York. You can only move product in a '+
+    'vehicle you own, and without one you queue through airport security with your coat full. '+
+    'Everything you own costs money every day, and the police get more interested the richer you get.</div>'+
+    '<input class="qty" id="nm" maxlength="18" value="'+esc(S.name||"Wesley")+'">'+
+    '<button class="opt" data-start="1" style="padding:15px 14px;font-size:15px">Start hustling'+
+      '<small>'+esc(cfgFlavour())+'</small></button>';
+}
+function settingsHTML(){
+  var h=head("Game settings","menu");
+  h+='<div class="note">Everything here changes how the game plays. 100% is the standard game. '+
+     'Your settings are remembered.</div>';
+  h+='<div class="note" style="color:var(--sodium)">'+esc(cfgFlavour())+'</div>';
+  CFG_DEF.forEach(function(d){
+    if(d.g){ h+='<div class="sec">'+d.g+'</div>'; return; }
+    var pctOfRange=(C(d.k)-d.min)/((d.max-d.min)||1);
+    h+='<div class="setting">'+
+       '<div class="setrow"><span class="setname">'+d.n+'</span>'+
+       '<span class="setval" id="sv-'+d.k+'">'+cfgFmt(d)+'</span></div>'+
+       '<input class="slider" type="range" data-cfg="'+d.k+'" min="'+d.min+'" max="'+d.max+
+         '" step="'+d.st+'" value="'+C(d.k)+'">'+
+       '<div class="sethint">'+esc(d.d)+'</div></div>';
+  });
+  h+='<div class="sec">PRESETS</div>';
+  h+='<button class="opt" data-preset="easy">Take it easy<small>Gentler police, less damage, cheap upkeep, more days</small></button>';
+  h+='<button class="opt" data-preset="normal">Standard game<small>Everything back to how it was designed</small></button>';
+  h+='<button class="opt" data-preset="hard">Make it hurt<small>Constant police, brutal heat, expensive everything</small></button>';
+  h+='<button class="opt" data-preset="chaos">Absolute chaos<small>Wild prices, trouble everywhere, nothing is safe</small></button>';
+  h+='<button class="opt" data-go="menu" style="margin-top:12px">Done<small>Back to the menu</small></button>';
+  return h;
+}
+var PRESETS={
+ easy:  {police:40,gangs:55,heatGain:50,heatCool:180,raids:35,damage:45,docCost:55,
+         upkeepC:55,credit:190,fightWin:150,seize:50,startCash:8000,startDebt:2500,
+         startDays:45,mileDays:12,sharkRate:6,delivery:55},
+ normal:null,
+ hard:  {police:190,gangs:180,heatGain:170,heatCool:65,raids:190,damage:165,docCost:180,
+         upkeepC:165,credit:60,fightWin:75,seize:150,startCash:1200,startDebt:8000,
+         startDays:24,mileDays:4,sharkRate:14,delivery:160},
+ chaos: {police:260,gangs:320,heatGain:200,heatCool:120,raids:250,damage:200,docCost:150,
+         upkeepC:150,credit:250,fightWin:120,seize:180,volatility:260,extremes:450,
+         rumourAcc:55,startDays:30,mileDays:6,sharkRate:16,delivery:220,chances:300,events:250}
+};
+function applyPreset(name){
+  cfgReset();
+  var pr=PRESETS[name];
+  if(pr) for(var k in pr) if(CFG[k]!==undefined) CFG[k]=pr[k];
+  cfgSave(); go("settings");
+  toast(name==="normal"?"Back to the standard game.":"Preset applied.","good");
+}
+cfgLoad();
 reset("Wesley"); paint(); askName();
 window.__wdgStarted=true;
 var bm=document.getElementById("bootmsg"); if(bm&&bm.parentNode) bm.parentNode.removeChild(bm);
