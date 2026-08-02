@@ -251,6 +251,126 @@ body.quake{animation:quake 1.3s ease-out}
   .slider::-moz-range-thumb{width:30px;height:30px}
   .setname{font-size:13.5px}
 }
+
+
+
+
+/* ══════════ LISTINGS ══════════ */
+.lcard{display:flex;gap:11px;align-items:flex-start;background:var(--scr2);
+  border:1px solid var(--edge);border-radius:11px;padding:10px;margin-bottom:10px}
+.lcard.owned{border-color:var(--cash);background:rgba(63,169,90,.07)}
+.lthumb{flex:0 0 auto;width:92px;height:58px;border-radius:8px;overflow:hidden;
+  display:block;border:1px solid rgba(255,255,255,.09)}
+.lthumb svg{width:100%;height:100%;display:block}
+.lbody{flex:1;min-width:0;display:block}
+.ltitle{display:block;font-size:14px;font-weight:700;color:var(--chalk);line-height:1.2}
+.ltitle em{font-style:normal;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  color:var(--sodium);margin-left:6px;vertical-align:middle}
+.lblurb{display:block;font-family:var(--mono);font-size:9.5px;color:var(--dim);
+  line-height:1.45;margin-top:4px}
+.lspecs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.lspec{font-family:var(--mono);font-size:9px;color:var(--chalk);background:rgba(255,255,255,.07);
+  border:1px solid var(--edge);border-radius:4px;padding:2px 5px;white-space:nowrap}
+.lright{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:7px;min-width:74px}
+.lprice{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--sodium);white-space:nowrap}
+.lprice.own{color:var(--cash);font-size:11px}
+.lbuy{background:var(--sodium);border:none;color:var(--ink);font-family:var(--body);
+  font-size:11.5px;font-weight:700;letter-spacing:.05em;padding:8px 13px;border-radius:7px;
+  cursor:pointer;min-height:34px;white-space:nowrap}
+.lbuy:disabled{background:var(--scr2);color:var(--dim);border:1px solid var(--edge);cursor:default}
+.lbuy:hover:not(:disabled){background:#FFA943}
+@media(max-width:560px){
+  .lthumb{width:78px;height:52px}
+  .ltitle{font-size:13.5px}
+  .lbuy{padding:9px 12px;min-height:38px;font-size:12px}
+  .lright{min-width:66px}
+}
+@media(hover:none){ .lbuy:hover:not(:disabled){background:var(--sodium)} .lbuy:active:not(:disabled){background:#FFA943} }
+/* ══════════ THE BROWSER ══════════ */
+.bbar{display:flex;align-items:center;gap:8px;margin:-2px -2px 12px;padding:7px 8px;
+  background:#0B0910;border:1px solid var(--edge);border-radius:10px}
+.bback,.bclose{background:var(--scr2);border:1px solid var(--edge);color:var(--chalk);
+  font-family:var(--mono);font-size:15px;line-height:1;padding:6px 11px;cursor:pointer;border-radius:7px;
+  min-height:34px}
+.bclose{font-size:12px}
+.burl{flex:1;min-width:0;background:#151220;border:1px solid var(--edge);border-radius:7px;
+  padding:7px 10px;font-family:var(--mono);font-size:11px;color:#9C97A8;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.burl .block{font-size:9px;opacity:.7;filter:grayscale(1)}
+.shead{border-left:4px solid var(--sodium);padding:2px 0 2px 11px;margin-bottom:14px}
+.slogo{font-family:var(--disp);font-size:19px;letter-spacing:.02em;line-height:1.1}
+.stag{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:3px;line-height:1.4}
+/* the loading page */
+.loadwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:230px;gap:13px;padding:28px 12px}
+.loadsite{font-family:var(--disp);font-size:22px;letter-spacing:.02em;text-align:center;line-height:1.15}
+.loadbar{width:100%;max-width:250px;height:9px;background:var(--scr2);border:1px solid var(--edge);
+  border-radius:5px;overflow:hidden}
+.loadbar i{display:block;height:100%;width:0%;transition:width .12s linear}
+.loadtxt{font-family:var(--mono);font-size:11px;color:var(--chalk)}
+.loadurl{font-family:var(--mono);font-size:9.5px;color:var(--dim)}
+@media(max-width:560px){ .bback,.bclose{min-height:38px;padding:8px 12px} .burl{font-size:11.5px;padding:8px 10px} }
+/* ══════════ PHONE HOME SCREEN ══════════ */
+.isq{position:relative;overflow:hidden}
+.isq svg{position:relative;z-index:2;width:74%;height:74%;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.30))}
+.igloss{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(175deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.10) 42%,
+             rgba(255,255,255,0) 52%,rgba(0,0,0,.14) 100%)}
+.iring{position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:23%;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34), inset 0 0 0 1px rgba(0,0,0,.18),
+             inset 0 -3px 8px rgba(0,0,0,.16)}
+.isq{box-shadow:0 5px 11px rgba(0,0,0,.46), 0 1px 2px rgba(0,0,0,.5)}
+
+.iappgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 6px;margin:14px 0 6px}
+.iapp{background:none;border:none;padding:0;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:6px;font-family:var(--body)}
+.isq{position:relative;width:100%;max-width:62px;aspect-ratio:1;border-radius:23%;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 7px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.22);
+  transition:transform .12s ease}
+.isq svg{width:60%;height:60%;display:block}
+.iapp:active .isq{transform:scale(.90)}
+.ilab{font-size:11px;font-weight:600;color:var(--chalk);letter-spacing:.01em;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);line-height:1.15;text-align:center}
+.ibadge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;border-radius:10px;
+  background:#F0353F;color:#fff;font-family:var(--body);font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;padding:0 5px;
+  border:2px solid var(--scr);box-shadow:0 1px 3px rgba(0,0,0,.5)}
+.ibadge.dim{background:#E8912A}
+.idock{display:flex;flex-direction:column;gap:5px;margin-top:14px;padding:11px 12px;
+  background:rgba(255,255,255,.05);border:1px solid var(--edge);border-radius:14px}
+.idock span{font-family:var(--mono);font-size:10px;color:var(--dim);line-height:1.4}
+.idock span:first-child{color:var(--chalk)}
+@media(max-width:560px){
+  .iappgrid{grid-template-columns:repeat(4,1fr);gap:18px 8px}
+  .isq{max-width:64px}
+  .ilab{font-size:11.5px}
+}
+@media(max-height:540px) and (orientation:landscape){
+  .iappgrid{grid-template-columns:repeat(5,1fr);gap:12px 6px}
+  .isq{max-width:50px}
+}
+/* ── grouped phone menu (kept for other screens) ── */
+.mgroup{margin-bottom:16px}
+.mghead{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:var(--sodium);
+  margin:0 0 7px;padding-bottom:5px;border-bottom:1px solid var(--edge)}
+.mrowbtn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  background:var(--scr2);border:1px solid var(--edge);color:var(--chalk);
+  padding:12px 13px;margin-bottom:7px;font-family:var(--body);cursor:pointer;position:relative}
+.mrowbtn:hover{border-color:var(--sodium)}
+.mrowbtn .mtxt{flex:1;min-width:0}
+.mrowbtn b{display:block;font-size:14.5px;font-weight:700;line-height:1.2}
+.mrowbtn small{display:block;font-family:var(--mono);font-size:10px;color:var(--dim);
+  margin-top:3px;line-height:1.4;white-space:normal}
+.mchev{color:var(--dim);font-size:19px;line-height:1;flex:0 0 auto}
+.mdot{position:absolute;left:4px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;
+  background:var(--sodium)}
+@media(max-width:560px){
+  .mrowbtn{padding:14px 13px;min-height:56px}
+  .mrowbtn b{font-size:15px}
+  .mrowbtn small{font-size:10.5px}
+}
+@media(hover:none){ .mrowbtn:hover{border-color:var(--edge)} .mrowbtn:active{border-color:var(--sodium)} }
 .milebar{display:flex;gap:3px;margin:9px 0 12px}
 .milebar i{flex:1;height:6px;background:var(--scr2);border:1px solid var(--edge)}
 .milebar i.hit{background:var(--sodium);border-color:var(--sodium)}
@@ -579,21 +699,48 @@ var GOODS=[
  {id:"crack", n:"Crack",       lo:8000,  hi:18000,  v:.23, c:"#E8944F"},
  {id:"coke",  n:"Cocaine",     lo:15000, hi:29000,  v:.14, c:"#E4EAF2"},
  {id:"fent",  n:"Fentanyl",    lo:20000, hi:52000,  v:.30, c:"#B03BE8"},
- {id:"carf",  n:"Carfentanil", lo:40000, hi:110000, v:.34, c:"#FF5470"}
+ {id:"carf",  n:"Carfentanil", lo:40000, hi:110000, v:.34, c:"#FF5470"},
+ /* only sold in one city each — the good ones are in the dangerous places */
+ {id:"bcbud", n:"BC Bud",      lo:1400,  hi:3600,   v:.12, c:"#3FBF5A", only:"van"},
+ {id:"crank", n:"Motor Crank", lo:2600,  hi:7000,   v:.24, c:"#B8B2A0", only:"det"},
+ {id:"gold",  n:"Hollywood Gold",lo:9000,hi:26000,  v:.22, c:"#F5D14F", only:"lax"},
+ {id:"white", n:"Miami White", lo:26000, hi:62000,  v:.20, c:"#F2F6FF", only:"mia"},
+ {id:"ice",   n:"Sinaloa Ice", lo:34000, hi:88000,  v:.27, c:"#9FE4F5", only:"mex"},
+ {id:"brown", n:"Juarez Brown",lo:58000, hi:190000, v:.36, c:"#A0522D", only:"cjz"}
 ];
 
 /* 10 cities. x/y are rough map positions used for travel distance. */
 var CITIES=[
- {id:"nyc",  n:"New York",     cc:"USA", m:1.22, heat:1.25, x:88, y:34, d:"Rich buyers, heavy policing"},
- {id:"mia",  n:"Miami",        cc:"USA", m:1.14, heat:1.40, x:84, y:76, d:"Ports, powder, patrol boats"},
- {id:"chi",  n:"Chicago",      cc:"USA", m:1.00, heat:1.05, x:66, y:36, d:"Steady, central, unremarkable"},
- {id:"det",  n:"Detroit",      cc:"USA", m:0.88, heat:0.85, x:72, y:32, d:"Cheap, quiet, cold"},
- {id:"lax",  n:"Los Angeles",  cc:"USA", m:1.10, heat:1.15, x:14, y:58, d:"Everything, all the time"},
- {id:"tij",  n:"Tijuana",      cc:"MEX", m:0.74, heat:1.30, x:16, y:66, d:"Cheapest supply anywhere"},
- {id:"cjz",  n:"Ciudad Juarez",cc:"MEX", m:0.70, heat:1.45, x:34, y:72, d:"Cheap and genuinely dangerous"},
- {id:"mex",  n:"Mexico City",  cc:"MEX", m:0.80, heat:1.10, x:46, y:92, d:"Huge market, cheap product"},
- {id:"van",  n:"Vancouver",    cc:"CAN", m:1.06, heat:0.80, x:12, y:12, d:"Relaxed, damp, profitable"},
- {id:"tor",  n:"Toronto",      cc:"CAN", m:1.12, heat:0.90, x:76, y:22, d:"Money, and nobody looking"}
+ {id:"det",  n:"Detroit",      cc:"USA", m:0.86, heat:0.72, cost:0.70, x:72, y:32,
+  d:"Cheap, quiet and cold. Nothing much happens and nothing much pays.",
+  common:["ludes","speed","crack","meth"], rare:["coke","fent","carf"]},
+ {id:"van",  n:"Vancouver",    cc:"CAN", m:1.04, heat:0.78, cost:0.95, x:12, y:12,
+  d:"Relaxed, damp and forgiving. Good weed, gentle police.",
+  common:["weed","hash","shroom","mdma"], rare:["crack","smack","carf"]},
+ {id:"chi",  n:"Chicago",      cc:"USA", m:1.00, heat:1.00, cost:1.00, x:66, y:36,
+  d:"Steady, central, unremarkable. Everything is average here.",
+  common:[], rare:[]},
+ {id:"tor",  n:"Toronto",      cc:"CAN", m:1.10, heat:0.92, cost:1.05, x:76, y:22,
+  d:"Money, and nobody looking too hard. Pills move well.",
+  common:["mdma","ket","oxy"], rare:["crack","pcp"]},
+ {id:"lax",  n:"Los Angeles",  cc:"USA", m:1.14, heat:1.20, cost:1.25, x:14, y:58,
+  d:"Everything, all the time, and everyone is watching everyone.",
+  common:["coke","mdma","ket","oxy"], rare:["ludes","hash"]},
+ {id:"mex",  n:"Mexico City",  cc:"MEX", m:0.78, heat:1.15, cost:0.75, x:46, y:92,
+  d:"An enormous market on cheap product. The police are for sale but so are you.",
+  common:["meth","smack","weed","speed"], rare:["mdma","ket","acid"]},
+ {id:"nyc",  n:"New York",     cc:"USA", m:1.26, heat:1.32, cost:1.40, x:88, y:34,
+  d:"The best prices on the map and the heaviest policing to match.",
+  common:["coke","smack","fent"], rare:["weed","shroom","speed"]},
+ {id:"mia",  n:"Miami",        cc:"USA", m:1.20, heat:1.48, cost:1.35, x:84, y:76,
+  d:"Powder arrives by boat and leaves by the gram. Patrol boats everywhere.",
+  common:["coke","crack","ket"], rare:["hash","meth","ludes"]},
+ {id:"tij",  n:"Tijuana",      cc:"MEX", m:0.70, heat:1.38, cost:0.65, x:16, y:66,
+  d:"The cheapest supply anywhere, and it is cheap for reasons you will meet.",
+  common:["meth","smack","weed","crack","fent"], rare:["mdma","acid","oxy"]},
+ {id:"cjz",  n:"Ciudad Juarez",cc:"MEX", m:0.64, heat:1.62, cost:0.60, x:34, y:72,
+  d:"Buy for almost nothing. The margins are the best on the map and so is the chance of dying.",
+  common:["fent","carf","smack","meth","pcp"], rare:["weed","shroom","mdma"]}
 ];
 
 var MILES=[1e4,1e5,1e6,5e6,1e7,2.5e7,5e7,1e8,2.5e8,5e8,1e9,5e9,2.5e10,1e11];
@@ -756,9 +903,9 @@ var PROPS=[
  {id:"lockup",n:"Lock-up",     p:30000,   cap:600,   up:220,    loc:"nyc"},
  {id:"wh",    n:"Warehouse",   p:350000,  cap:4000,  up:2200,   loc:"det"},
  {id:"stone", n:"Brownstone",  p:2000000, cap:12000, up:11000,  loc:"chi"},
- {id:"villa", n:"Beach villa", p:9000000, cap:30000, up:46000,  loc:"mia"},
- {id:"ranch", n:"Desert ranch",p:26000000,cap:80000, up:120000, loc:"cjz"},
- {id:"comp",  n:"Compound",    p:80000000,cap:220000,up:340000, loc:"mex"}
+ {id:"villa", n:"Beach villa", p:9000000, cap:0, up:46000,  loc:"mia"},
+ {id:"ranch", n:"Desert ranch",p:26000000,cap:0, up:120000, loc:"cjz"},
+ {id:"comp",  n:"Compound",    p:80000000,cap:0,up:340000, loc:"mex"}
 ];
 
 /* people on the payroll — ongoing cost, ongoing benefit */
@@ -1155,6 +1302,63 @@ function cfgFlavour(){
   return "Punishing. You will almost certainly die poor.";
 }
 
+/* ══════════ PROPERTY: STORAGE, SECURITY, TENANTS ══════════
+   Every building starts at 4,000 units and can be built up to half a million. */
+var STORAGE=[
+ {cap:4000,   p:0,        up:0,      n:"Whatever fits"},
+ {cap:12000,  p:180000,   up:1200,   n:"Racking and a forklift"},
+ {cap:40000,  p:900000,   up:5500,   n:"The floor above as well"},
+ {cap:120000, p:4200000,  up:26000,  n:"Industrial shelving, properly done"},
+ {cap:500000, p:19000000, up:110000, n:"You have bought the building next door too"}
+];
+var SECURITY=[
+ {r:1.00, p:0,        up:0,     n:"A padlock",             d:"It is a good padlock. It is still a padlock."},
+ {r:0.72, p:60000,    up:500,   n:"A dog called Baxter",   d:"Baxter is enormous and has opinions about visitors."},
+ {r:0.46, p:420000,   up:3200,  n:"Fences and cameras",    d:"Nobody watches the cameras but the sign helps."},
+ {r:0.26, p:2600000,  up:19000, n:"Men with radios",       d:"Four of them. They rotate. One is called Big Kevin."},
+ {r:0.10, p:14000000, up:88000, n:"A man called Nigel",    d:"Nobody knows what Nigel did before. Nobody asks Nigel anything."}
+];
+var TENANTS=[
+ {inc:0,      p:0,        n:"Nobody",                        d:"Empty rooms make no money and ask no questions."},
+ {inc:2200,   p:90000,    n:"A quiet couple upstairs",       d:"They pay on time and have never once looked in the back."},
+ {inc:11000,  p:600000,   n:"A man who says he's a dentist", d:"He has a chair and a drill. That is where the evidence ends."},
+ {inc:48000,  p:3400000,  n:"An entire family and the cousins",d:"Eleven of them. Cash weekly. Constant, cheerful noise."},
+ {inc:210000, p:16000000, n:"A business that asks nothing",  d:"They pay enormously and you have agreed not to wonder why."}
+];
+/* ══════════ INVESTMENTS ══════════
+   Legitimate-ish concerns that quietly pay you every single day. */
+var BIZ=[
+ {id:"wash",  n:"A car wash",            p:250000,   inc:4200,   heat:0.4,
+  d:"Nobody has ever washed a car here. Takings are excellent."},
+ {id:"tan",   n:"A tanning salon",       p:700000,   inc:12500,  heat:0.3,
+  d:"Two beds, one broken, somehow turning over forty thousand a week."},
+ {id:"laun",  n:"A laundrette",          p:1800000,  inc:33000,  heat:0.9,
+  d:"The machines run all night whether or not anyone brings washing."},
+ {id:"van",   n:"A sandwich van",        p:120000,   inc:1900,   heat:0.1,
+  d:"It does not move and it does not sell sandwiches, but it does very well."},
+ {id:"castle",n:"A bouncy castle firm",  p:480000,   inc:7800,   heat:0.2,
+  d:"Six castles, one van, and a booking diary that is entirely fictional."},
+ {id:"park",  n:"A car park",            p:5500000,  inc:98000,  heat:1.2,
+  d:"Forty spaces, always full, nobody has ever seen a car arrive or leave."},
+ {id:"gym",   n:"A gym nobody attends",  p:14000000, inc:265000, heat:1.6,
+  d:"Nine thousand members. Two of them exist. The rest pay by standing order."},
+ {id:"club",  n:"A nightclub",           p:40000000, inc:820000, heat:2.4,
+  d:"It is open four hours a week and turns over more than a small airline."}
+];
+function pup(id){
+  if(!S.pup[id]) S.pup[id]={sto:0,sec:0,ten:0};
+  return S.pup[id];
+}
+function bizIncome(){
+  var t=0; BIZ.forEach(function(b){ if(S.biz[b.id]) t+=b.inc; });
+  PROPS.forEach(function(p){ if(S.props[p.id]) t+=TENANTS[pup(p.id).ten].inc; });
+  return Math.round(t);
+}
+function bizHeat(){
+  var t=0; BIZ.forEach(function(b){ if(S.biz[b.id]) t+=b.heat; });
+  return t;
+}
+
 var POCKETS=8;
 var S={}, view="home", pend=null, endInfo=null;
 
@@ -1163,7 +1367,7 @@ function reset(name){
   S={name:name||"Wesley",day:1,days:C("startDays"),mile:0,loc:"nyc",cash:C("startCash"),bank:0,debt:C("startDebt"),hp:100,heat:0,
      coat:100,wep:{},vestT:0,ammo:0,ride:"foot",owned:{foot:1},hot:{},props:{},crew:{},nuke:0,
      inv:{},stash:{},nat:{},prices:{},prev:{},flags:{},pat:{},dev:{},plan:{},rumour:[],
-     started:false, borrowedToday:0,interest:0,lastInterest:0,cost:{},
+     started:false, pup:{}, biz:{}, borrowedToday:0,interest:0,lastInterest:0,cost:{},
      hist:{},log:[],over:false,mood:"",bandage:0};
   GOODS.forEach(function(g){S.inv[g.id]=0;S.cost[g.id]=0;S.hist[g.id]=[];});
   seedHistory(60);
@@ -1191,7 +1395,8 @@ function usedAt(pid){var b=bin(pid),t=0;GOODS.forEach(function(g){t+=b[g.id];});
 function capAt(pid){var p=PROPS.filter(function(x){return x.id===pid;})[0];return (p&&S.props[pid])?p.cap:0;}
 function roomAt(pid){return Math.max(0,capAt(pid)-usedAt(pid));}
 function stashUsed(){var t=0;PROPS.forEach(function(p){if(S.props[p.id])t+=usedAt(p.id);});return t;}
-function stashCap(){var t=0;PROPS.forEach(function(p){if(S.props[p.id])t+=p.cap;});return t;}
+function stashCap(){var t=0;PROPS.forEach(function(p){if(S.props[p.id])t+=STORAGE[pup(p.id).sto].cap;});return t;}
+function capOf(id){ return S.props[id]?STORAGE[pup(id).sto].cap:0; }
 /* how much of one drug is stored in the warehouse you're standing in */
 function heldHere(gid){var pr=hasProp();return pr?bin(pr.id)[gid]:0;}
 /* how many of a drug you own anywhere, and what you paid on average */
@@ -1235,41 +1440,41 @@ function hasCrew(id){return !!S.crew[id];}
 /* daily bleed: property, vehicles, payroll */
 function upkeep(){
   var t=0;
-  PROPS.forEach(function(p){if(S.props[p.id])t+=p.up;});
+  PROPS.forEach(function(p){
+    if(!S.props[p.id])return;
+    var u=pup(p.id);
+    t+=p.up+STORAGE[u.sto].up+SECURITY[u.sec].up;
+  });
   RIDES.forEach(function(r){if(S.owned[r.id])t+=r.up;});
   CREW.forEach(function(c){if(S.crew[c.id])t+=c.up;});
   return Math.round(t*M("upkeepC"));
 }
 
-/* ══════════ MARKET ENGINE (patterns + 20% dramatic shocks) ══════════ */
-var REGIMES=["cycle","boom","bust","calm"];
+/* ══════════ PRICE ENGINE ══════════
+   Each drug follows a pattern for a spell — a cycle, a boom, a bust or a calm
+   stretch — then picks a new one. Prices are that pattern plus noise, with the
+   occasional planned shock the rumour mill can hear about in advance. */
 function newPattern(g){
-  var r=Math.random();
-  var reg = r<0.45?"cycle" : r<0.65?"boom" : r<0.85?"bust" : "calm";
-  return {reg:reg, per:ri(9,26), ph:Math.random()*Math.PI*2,
-          amp:(reg==="calm"?0.10:0.28)+g.v*0.9,
-          drift:reg==="boom"?0.011:reg==="bust"?-0.010:0,
-          lvl:0.7+Math.random()*0.8};
+  var kinds=["cycle","boom","bust","calm"];
+  return {k:kinds[ri(0,3)], per:ri(9,26), t:0, ph:Math.random()*6.283, amp:0.22+g.v*1.15};
 }
 function stepPattern(g){
+  if(!S.pat[g.id]) S.pat[g.id]=newPattern(g);
   var p=S.pat[g.id];
-  p.ph += Math.PI*2/p.per;
-  p.lvl = clamp(p.lvl*(1+p.drift),0.35,3.2);
-  var f = p.lvl*(1+p.amp*Math.sin(p.ph));
-  var pl=S.plan[g.id];
-  if(pl){
-    f *= pl.up ? pl.mag : 1/pl.mag;
-    S.dev[g.id]=pl.up?1:-1;
-    if(Math.random()<0.30){
-      p.reg=REGIMES[ri(0,3)];
-      p.drift=p.reg==="boom"?0.011:p.reg==="bust"?-0.010:0;
-      p.per=ri(9,26);
-    }
-  }else{ f *= 1+(Math.random()*2-1)*0.035; S.dev[g.id]=0; }
-  return clamp(f,0.14,5.6);
+  p.t++;
+  if(p.t>p.per){ S.pat[g.id]=newPattern(g); p=S.pat[g.id]; }
+  var x=p.t/p.per, base;
+  if(p.k==="cycle")      base=1+Math.sin(x*6.283+p.ph)*p.amp;
+  else if(p.k==="boom")  base=1+x*p.amp*1.7;
+  else if(p.k==="bust")  base=1-x*p.amp*0.72;
+  else                   base=1+Math.sin(x*6.283+p.ph)*p.amp*0.30;
+  base*=(1+(Math.random()-0.5)*g.v*0.55);
+  S.dev[g.id]=0;
+  var d=S.plan&&S.plan[g.id];
+  if(d){ base*= d.up?d.mag:(1/d.mag); S.dev[g.id]=d.up?1:-1; }
+  return clamp(base,0.22,7);
 }
-/* A day's trading, not just its closing price: open where yesterday finished,
-   then wander within the day before settling on the close. */
+/* A day's trading, not just its closing price. */
 function candle(g,prevClose,close){
   var open = prevClose>0 ? prevClose : Math.round(close*(0.97+Math.random()*0.06));
   var hi=Math.max(open,close), lo=Math.min(open,close);
@@ -1282,7 +1487,6 @@ function closeOf(x){ return (x&&typeof x==="object") ? x.c : x; }
 function closes(arr){ return arr.map(closeOf); }
 function seedHistory(n){
   GOODS.forEach(function(g){
-    S.pat[g.id]=newPattern(g); S.hist[g.id]=[];
     var mid=(g.lo+g.hi)/2, prevClose=0;
     for(var i=0;i<n;i++){
       S.plan={}; if(Math.random()<0.20) S.plan[g.id]={up:Math.random()<0.5,mag:1.9+Math.random()*2.6};
@@ -1291,6 +1495,7 @@ function seedHistory(n){
     }
     S.nat[g.id]=closeOf(S.hist[g.id][S.hist[g.id].length-1]);
   });
+  S.plan={};
 }
 var SPIKE_LINES=[
  "A shipment of {D} got seized at the docks. Word is the price goes through the roof tomorrow.",
@@ -1323,6 +1528,21 @@ function planNextDay(){
     else if(Math.random()<0.05) S.rumour.push(rumourLine(g,Math.random()<0.5,pn));
   });
 }
+/* ── how available a drug is where you're standing ──
+   0 means it simply isn't sold here. Common drugs turn up often and cheap;
+   scarce ones are frequently absent and cost a premium when they appear. */
+function avail(g,cid){
+  var c=cid?city(cid):city();
+  if(g.only) return g.only===c.id ? 2.2 : 0;      /* exclusives, one city each */
+  if(c.common && c.common.indexOf(g.id)>=0) return 1.75;
+  if(c.rare   && c.rare.indexOf(g.id)>=0)   return 0.45;
+  return 1;
+}
+function localName(cid){
+  var c=cid?city(cid):city();
+  var ex=GOODS.filter(function(g){return g.only===c.id;})[0];
+  return ex?ex.n:null;
+}
 function roll(){
   var p=city(); S.prev=S.prices; S.prices={}; S.flags={};
   GOODS.forEach(function(g){
@@ -1330,8 +1550,11 @@ function roll(){
     var prevC=S.hist[g.id].length?closeOf(S.hist[g.id][S.hist[g.id].length-1]):0;
     S.nat[g.id]=nat; S.hist[g.id].push(candle(g,prevC,nat));
     if(S.hist[g.id].length>200) S.hist[g.id].shift();
-    if(Math.random()<0.12){S.prices[g.id]=0;return;}
-    var b=nat*p.m, r=Math.random();
+    var av=avail(g);
+    if(av===0){S.prices[g.id]=0;return;}          /* not sold in this city at all */
+    if(Math.random()<clamp(0.12/av,0.02,0.62)){S.prices[g.id]=0;return;}
+    /* scarce goods carry a premium here, plentiful ones a discount */
+    var b=nat*p.m*Math.pow(1/av,0.42), r=Math.random();
     var xE=0.006*M("extremes"), xF=xE+0.0025*M("extremes");
     var xS=xF+0.066*M("volatility"), xC=xS+0.090*M("volatility");
     if(r<xE){                                      /* the bottom falls out completely */
@@ -2612,7 +2835,10 @@ function go(v,isBack){
     if(navStack[navStack.length-1]!==view) navStack.push(view);
     if(navStack.length>24) navStack.shift();
   }
-  view=v; render();
+  var fresh = SITES[v] && view!==v;
+  view=v;
+  if(fresh){ startLoad(v); return; }
+  render();
 }
 function goBack(){
   var prev=null;
@@ -2642,18 +2868,19 @@ function app(id,label,dis,dot){
 function render(){
   if(S.over&&view!=="end"&&view!=="score") view="end";
   var h="";
-  if(view==="home") h=homeHTML();
-  else if(view==="market") h=head("Market")+marketHTML();
+  if(pageLoading && SITES[view]) h=loadingHTML(view);
+  else if(view==="home") h=homeHTML();
+  else if(view==="market") h=browserBar(view)+siteHead(view)+marketHTML();
   else if(view==="chart")  h=head(good(pend.id).n,"market")+chartHTML();
-  else if(view==="travel") h=head("Travel")+travelHTML();
-  else if(view==="store")  h=head("The Store")+storeHTML();
-  else if(view==="crew")   h=head("Payroll")+crewHTML();
-  else if(view==="bank")   h=head("Bank &amp; Shark")+bankHTML();
-  else if(view==="doc")    h=head("Doctor")+docHTML();
-  else if(view==="stash")  h=head("Stash")+stashHTML();
-  else if(view==="wait")   h=head("Lie Low")+waitHTML();
-  else if(view==="score")  h=head("Scores",S.over?"end":"home")+scoreHTML();
-  else if(view==="log")    h=head("Word on the Street")+logHTML();
+  else if(view==="travel") h=browserBar(view)+siteHead(view)+travelHTML();
+  else if(view==="store") h=browserBar(view)+siteHead(view)+storeHTML();
+  else if(view==="crew") h=browserBar(view)+siteHead(view)+crewHTML();
+  else if(view==="bank") h=browserBar(view)+siteHead(view)+bankHTML();
+  else if(view==="doc") h=browserBar(view)+siteHead(view)+docHTML();
+  else if(view==="stash") h=browserBar(view)+siteHead(view)+stashHTML();
+  else if(view==="wait") h=browserBar(view)+siteHead(view)+waitHTML();
+  else if(view==="score") h=browserBar(view)+siteHead(view)+scoreHTML();
+  else if(view==="log") h=browserBar(view)+siteHead(view)+logHTML();
   else if(view==="qty")    h=qtyHTML();
   else if(view==="bankqty")h=bankQtyHTML();
   else if(view==="cops")   h=copsHTML();
@@ -2689,6 +2916,744 @@ function render(){
     });
   }
 }
+
+
+
+/* ══════════ LISTING THUMBNAILS ══════════ */
+var PROP_ART={
+ /* ── a lock-up under a streetlight ── */
+ lockup:'<defs><linearGradient id="p1s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#3A4358"/><stop offset="1" stop-color="#6E7488"/></linearGradient>'+
+   '<linearGradient id="p1d" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#D6CFBE"/><stop offset="1" stop-color="#9A9382"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#p1s)"/>'+
+   '<rect y="48" width="96" height="12" fill="#2E3240"/>'+
+   '<path d="M0 48h96v2H0z" fill="#454B5C"/>'+
+   /* the block */
+   '<rect x="10" y="14" width="76" height="34" fill="#5A5348"/>'+
+   '<rect x="10" y="11" width="76" height="4" fill="#6E6656"/>'+
+   /* roller door */
+   '<rect x="20" y="22" width="56" height="26" fill="url(#p1d)"/>'+
+   '<path d="M20 26h56M20 30h56M20 34h56M20 38h56M20 42h56M20 46h56" stroke="#7E7767" stroke-width="1.2"/>'+
+   '<rect x="42" y="44" width="12" height="2.5" rx="1" fill="#4A4438"/>'+
+   /* graffiti and a bin */
+   '<path d="M24 40q6-5 11 0t9-2" stroke="#D8434F" stroke-width="1.6" fill="none" opacity=".75"/>'+
+   '<rect x="80" y="38" width="9" height="10" rx="1" fill="#3E5A44"/><rect x="79" y="36" width="11" height="2.5" rx="1" fill="#4E6E54"/>'+
+   /* lamp */
+   '<path d="M6 48V16h5" stroke="#2E3240" stroke-width="2.5" fill="none"/>'+
+   '<circle cx="12" cy="16" r="3.2" fill="#FFE9A8"/><circle cx="12" cy="16" r="7" fill="#FFE9A8" opacity=".18"/>',
+
+ /* ── an industrial warehouse with loading bays ── */
+ wh:'<defs><linearGradient id="p2s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#7E93A8"/><stop offset="1" stop-color="#C6D2DC"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#p2s)"/>'+
+   '<rect y="46" width="96" height="14" fill="#5E6470"/>'+
+   '<path d="M0 50h96" stroke="#8A909C" stroke-width="1" stroke-dasharray="7 6"/>'+
+   /* shed */
+   '<path d="M4 26l44-14 44 14v20H4z" fill="#8FA0AD"/>'+
+   '<path d="M4 26l44-14 44 14H4z" fill="#B4C4D0"/>'+
+   '<path d="M48 12v14M4 26h88" stroke="#6E7E8C" stroke-width="1"/>'+
+   '<rect x="4" y="44" width="88" height="3" fill="#6E7E8C"/>'+
+   /* bays */
+   '<rect x="12" y="30" width="17" height="15" fill="#38414B"/><rect x="14" y="32" width="13" height="11" fill="#4E5A66"/>'+
+   '<rect x="39" y="30" width="17" height="15" fill="#38414B"/><rect x="41" y="32" width="13" height="11" fill="#4E5A66"/>'+
+   '<rect x="66" y="30" width="17" height="15" fill="#38414B"/><rect x="68" y="32" width="13" height="11" fill="#4E5A66"/>'+
+   /* pallet + lorry hint */
+   '<rect x="60" y="41" width="12" height="5" fill="#B58A4E"/><rect x="60" y="44" width="12" height="2" fill="#8E6A38"/>'+
+   '<circle cx="24" cy="20" r="2" fill="#D8CBB4" opacity=".4"/>',
+
+ /* ── a brownstone terrace at dusk ── */
+ stone:'<defs><linearGradient id="p3s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#2E3450"/><stop offset="1" stop-color="#8A6E7E"/></linearGradient>'+
+   '<linearGradient id="p3w" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#FFE9A8"/><stop offset="1" stop-color="#E0B65A"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#p3s)"/>'+
+   '<rect y="52" width="96" height="8" fill="#2A2C38"/>'+
+   /* neighbours */
+   '<rect x="0" y="18" width="16" height="34" fill="#5A4038"/>'+
+   '<rect x="80" y="20" width="16" height="32" fill="#5A4038"/>'+
+   /* the building */
+   '<rect x="16" y="8" width="64" height="44" fill="#8C5A46"/>'+
+   '<path d="M14 8h68v5H14z" fill="#6E4436"/>'+
+   '<path d="M16 24h64M16 38h64" stroke="#7A4C3A" stroke-width="1"/>'+
+   /* lit windows */
+   '<rect x="23" y="14" width="11" height="8" rx="1" fill="url(#p3w)"/>'+
+   '<rect x="42" y="14" width="11" height="8" rx="1" fill="#3A2C30"/>'+
+   '<rect x="61" y="14" width="11" height="8" rx="1" fill="url(#p3w)"/>'+
+   '<rect x="23" y="28" width="11" height="8" rx="1" fill="#3A2C30"/>'+
+   '<rect x="61" y="28" width="11" height="8" rx="1" fill="url(#p3w)"/>'+
+   '<path d="M28.5 14v8M23 18h11M66.5 14v8M61 18h11" stroke="#8C5A46" stroke-width=".8"/>'+
+   /* stoop and door */
+   '<rect x="42" y="30" width="12" height="22" fill="#3E2A22"/>'+
+   '<path d="M40 52h16l2 4H38z" fill="#6E6458"/>'+
+   '<circle cx="52" cy="41" r="1" fill="#F5D14F"/>'+
+   '<rect x="44" y="33" width="8" height="6" fill="url(#p3w)" opacity=".85"/>',
+
+ /* ── a beach villa with a pool ── */
+ villa:'<defs><linearGradient id="p4s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#5EC8E8"/><stop offset="1" stop-color="#FFD9A0"/></linearGradient>'+
+   '<linearGradient id="p4p" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#7FE0F0"/><stop offset="1" stop-color="#2E9AC0"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#p4s)"/>'+
+   '<circle cx="78" cy="13" r="7" fill="#FFF0B0"/>'+
+   '<rect y="40" width="96" height="20" fill="#E8D2A0"/>'+
+   /* pool */
+   '<rect x="4" y="46" width="42" height="12" rx="3" fill="url(#p4p)"/>'+
+   '<path d="M8 50h12M24 50h10M10 54h16" stroke="#CFF2FA" stroke-width="1.2" opacity=".8"/>'+
+   /* villa */
+   '<rect x="30" y="22" width="46" height="20" fill="#F7F2E6"/>'+
+   '<path d="M26 22l27-11 27 11z" fill="#D8654E"/>'+
+   '<path d="M26 22h54v2.5H26z" fill="#B8503C"/>'+
+   '<rect x="36" y="28" width="10" height="9" fill="#8FD8EC"/>'+
+   '<rect x="52" y="28" width="10" height="9" fill="#8FD8EC"/>'+
+   '<rect x="66" y="28" width="7" height="14" fill="#B58A4E"/>'+
+   '<path d="M36 32.5h10M41 28v9M52 32.5h10M57 28v9" stroke="#F7F2E6" stroke-width=".8"/>'+
+   /* palm */
+   '<path d="M86 58V34" stroke="#8E6A38" stroke-width="2.5"/>'+
+   '<path d="M86 34q-9-5-13 1 8-1 13 3zM86 34q9-5 13 1-8-1-13 3zM86 34q-3-9 3-11-1 7-3 11z" fill="#2E8E4A"/>'+
+   /* lounger */
+   '<rect x="12" y="42" width="12" height="3" rx="1.5" fill="#F7F2E6"/>',
+
+ /* ── a desert ranch ── */
+ ranch:'<defs><linearGradient id="p5s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#F2A45A"/><stop offset="1" stop-color="#F5D6A0"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#p5s)"/>'+
+   '<circle cx="20" cy="16" r="8" fill="#FFE9B0" opacity=".9"/>'+
+   /* mesas */
+   '<path d="M0 34h18l4-8h14l4 8h12v6H0z" fill="#C98A5A" opacity=".55"/>'+
+   '<path d="M58 34h10l3-6h8l3 6h14v6H58z" fill="#C98A5A" opacity=".45"/>'+
+   '<rect y="38" width="96" height="22" fill="#D8B078"/>'+
+   '<path d="M0 44q20 3 40 0t56 2" stroke="#C29A62" stroke-width="1.5" fill="none"/>'+
+   /* ranch house */
+   '<rect x="18" y="30" width="44" height="16" fill="#B0714A"/>'+
+   '<path d="M14 30l26-10 26 10z" fill="#7E4A2E"/>'+
+   '<path d="M14 30h52v2.5H14z" fill="#6A3E26"/>'+
+   '<rect x="24" y="35" width="8" height="7" fill="#FFE0A0"/>'+
+   '<rect x="46" y="35" width="8" height="7" fill="#FFE0A0"/>'+
+   '<rect x="36" y="36" width="7" height="10" fill="#5A3A22"/>'+
+   /* fence + cactus */
+   '<path d="M66 46v-9M72 46v-9M78 46v-9M64 40h16M64 43h16" stroke="#9A7448" stroke-width="1.6"/>'+
+   '<path d="M88 46V32M88 38c0-4-4-4-4-7M88 36c0-4 4-3 4-6" stroke="#3E7E42" stroke-width="2.6" fill="none" stroke-linecap="round"/>',
+
+ /* ── a walled compound, watchtowers, floodlights ── */
+ comp:'<defs><linearGradient id="p6s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#22283A"/><stop offset="1" stop-color="#5A5064"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#p6s)"/>'+
+   '<rect y="50" width="96" height="10" fill="#2A2634"/>'+
+   /* main house behind */
+   '<rect x="30" y="18" width="36" height="20" fill="#8E8270"/>'+
+   '<path d="M28 18l20-8 20 8z" fill="#6A6052"/>'+
+   '<rect x="38" y="24" width="8" height="7" fill="#FFE9A8"/>'+
+   '<rect x="52" y="24" width="8" height="7" fill="#FFE9A8"/>'+
+   /* wall */
+   '<rect x="2" y="34" width="92" height="16" fill="#7E735E"/>'+
+   '<path d="M2 34h92v3H2z" fill="#94886F"/>'+
+   '<path d="M14 37v13M30 37v13M46 37v13M62 37v13M78 37v13" stroke="#6A6052" stroke-width="1"/>'+
+   /* gate */
+   '<rect x="40" y="38" width="16" height="12" fill="#4A4436"/>'+
+   '<path d="M44 38v12M48 38v12M52 38v12" stroke="#2E2A22" stroke-width="1.2"/>'+
+   /* towers + lights */
+   '<rect x="2" y="24" width="12" height="26" fill="#5E5546"/><path d="M0 24h16l-2-4H2z" fill="#4A4438"/>'+
+   '<rect x="82" y="24" width="12" height="26" fill="#5E5546"/><path d="M80 24h16l-2-4H82z" fill="#4A4438"/>'+
+   '<circle cx="8" cy="28" r="2.4" fill="#FFE9A8"/><path d="M8 28l-8 10v-10z" fill="#FFE9A8" opacity=".22"/>'+
+   '<circle cx="88" cy="28" r="2.4" fill="#FFE9A8"/><path d="M88 28l8 10v-10z" fill="#FFE9A8" opacity=".22"/>'+
+   '<circle cx="48" cy="14" r="1.6" fill="#D8324B"/>'
+};
+var RIDE_ART={
+ foot:'<defs><linearGradient id="r0s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#3E4A60"/><stop offset="1" stop-color="#8A93A8"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#r0s)"/>'+
+   '<rect y="44" width="96" height="16" fill="#2E3444"/>'+
+   /* terminal windows */
+   '<rect x="4" y="10" width="88" height="26" rx="2" fill="#4E5872" opacity=".65"/>'+
+   '<path d="M16 10v26M32 10v26M48 10v26M64 10v26M80 10v26" stroke="#3A4256" stroke-width="1.4"/>'+
+   /* queue barrier */
+   '<path d="M8 44v-8M28 44v-8M48 44v-8M68 44v-8" stroke="#B8BEC8" stroke-width="1.6"/>'+
+   '<path d="M8 38h60" stroke="#D8434F" stroke-width="1.8"/>'+
+   /* him, in the queue */
+   '<circle cx="80" cy="26" r="5" fill="#EFEDE6" stroke="#1C1A24" stroke-width="1.6"/>'+
+   '<path d="M80 31v9M75 46l5-6 5 6M76 34h8" stroke="#1C1A24" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+   '<rect x="74" y="33" width="12" height="9" rx="1" fill="#8A5F3A" stroke="#1C1A24" stroke-width="1.4"/>',
+
+ sedan:'<defs><linearGradient id="r1s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#6E7A92"/><stop offset="1" stop-color="#C4CBD8"/></linearGradient>'+
+   '<linearGradient id="r1b" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#E85560"/><stop offset="1" stop-color="#9C1E28"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#r1s)"/>'+
+   '<rect y="42" width="96" height="18" fill="#3E434E"/>'+
+   '<path d="M0 51h96" stroke="#C9CDD6" stroke-width="1.6" stroke-dasharray="9 8"/>'+
+   /* body */
+   '<path d="M8 44q1-11 8-12l10-9h30l12 9 12 2q6 1 6 10z" fill="url(#r1b)"/>'+
+   '<path d="M28 24h20l9 8H22z" fill="#B8DCEC"/>'+
+   '<path d="M37 24v8" stroke="#8FB6C8" stroke-width="1.4"/>'+
+   '<path d="M12 36h68" stroke="#7C1620" stroke-width="1.6" opacity=".7"/>'+
+   '<circle cx="80" cy="34" r="3" fill="#FFE9A8"/>'+
+   '<circle cx="26" cy="45" r="7.5" fill="#22202A"/><circle cx="26" cy="45" r="3.4" fill="#9AA0AE"/>'+
+   '<circle cx="70" cy="45" r="7.5" fill="#22202A"/><circle cx="70" cy="45" r="3.4" fill="#9AA0AE"/>',
+
+ van:'<defs><linearGradient id="r2b" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#5FA3E8"/><stop offset="1" stop-color="#1E5490"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="#8A93A8"/>'+
+   '<rect y="42" width="96" height="18" fill="#3E434E"/>'+
+   '<path d="M0 51h96" stroke="#C9CDD6" stroke-width="1.6" stroke-dasharray="9 8"/>'+
+   '<path d="M6 44V20h52v24z" fill="url(#r2b)"/>'+
+   '<path d="M58 44V26h14l12 12v6z" fill="#3E7FBF"/>'+
+   '<path d="M62 28h9l8 9h-17z" fill="#B8DCEC"/>'+
+   '<rect x="12" y="24" width="18" height="12" rx="1" fill="#2E5F96" opacity=".8"/>'+
+   '<path d="M6 34h52" stroke="#16406E" stroke-width="1.4" opacity=".6"/>'+
+   '<circle cx="84" cy="37" r="2.6" fill="#FFE9A8"/>'+
+   '<circle cx="24" cy="45" r="7.5" fill="#22202A"/><circle cx="24" cy="45" r="3.2" fill="#9AA0AE"/>'+
+   '<circle cx="72" cy="45" r="7.5" fill="#22202A"/><circle cx="72" cy="45" r="3.2" fill="#9AA0AE"/>',
+
+ truck:'<rect width="96" height="60" fill="#8A93A8"/>'+
+   '<rect y="42" width="96" height="18" fill="#3E434E"/>'+
+   '<path d="M0 51h96" stroke="#C9CDD6" stroke-width="1.6" stroke-dasharray="9 8"/>'+
+   /* trailer */
+   '<rect x="26" y="14" width="66" height="30" fill="#C9CDD6"/>'+
+   '<rect x="26" y="14" width="66" height="5" fill="#9AA0AE"/>'+
+   '<path d="M34 19v25M48 19v25M62 19v25M76 19v25" stroke="#A8AEBA" stroke-width="1.4"/>'+
+   /* cab */
+   '<path d="M4 44V24h16l6 8v12z" fill="#D8434F"/>'+
+   '<path d="M8 26h10l4 6H8z" fill="#B8DCEC"/>'+
+   '<rect x="4" y="36" width="22" height="4" fill="#9C1E28"/>'+
+   '<circle cx="6" cy="32" r="2.2" fill="#FFE9A8"/>'+
+   '<circle cx="16" cy="46" r="7" fill="#22202A"/><circle cx="16" cy="46" r="3" fill="#9AA0AE"/>'+
+   '<circle cx="44" cy="46" r="7" fill="#22202A"/><circle cx="44" cy="46" r="3" fill="#9AA0AE"/>'+
+   '<circle cx="60" cy="46" r="7" fill="#22202A"/><circle cx="60" cy="46" r="3" fill="#9AA0AE"/>'+
+   '<circle cx="82" cy="46" r="7" fill="#22202A"/><circle cx="82" cy="46" r="3" fill="#9AA0AE"/>',
+
+ speed:'<defs><linearGradient id="r4s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#9EDCF2"/><stop offset="1" stop-color="#4FA8CC"/></linearGradient>'+
+   '<linearGradient id="r4w" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#3E9AC4"/><stop offset="1" stop-color="#1E5C80"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#r4s)"/>'+
+   '<rect y="38" width="96" height="22" fill="url(#r4w)"/>'+
+   '<path d="M0 40q14 4 26 0t26 0 26 0 18 2" stroke="#BFEAF8" stroke-width="1.6" fill="none" opacity=".8"/>'+
+   /* hull */
+   '<path d="M10 38h72l-9 10H20z" fill="#F2EDE2"/>'+
+   '<path d="M24 28h30l10 10H20z" fill="#D8434F"/>'+
+   '<path d="M28 30h20l6 6H26z" fill="#B8DCEC"/>'+
+   '<path d="M12 40h68" stroke="#C9C3B6" stroke-width="1.4"/>'+
+   /* wake */
+   '<path d="M0 50q18 6 34 1M56 51q18 5 40 1" stroke="#EAF8FE" stroke-width="2.6" fill="none" opacity=".9"/>'+
+   '<circle cx="70" cy="32" r="1.6" fill="#F5D14F"/>',
+
+ cargo:'<defs><linearGradient id="r5s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#7EA8C4"/><stop offset="1" stop-color="#C6DCE8"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#r5s)"/>'+
+   '<rect y="40" width="96" height="20" fill="#2E5C78"/>'+
+   '<path d="M0 44q16 4 32 0t32 0 32 0" stroke="#5A93B4" stroke-width="1.6" fill="none"/>'+
+   /* hull */
+   '<path d="M2 38h92l-10 14H12z" fill="#2B3A48"/>'+
+   '<path d="M2 38h92v3H2z" fill="#D8434F"/>'+
+   /* containers */
+   '<rect x="10" y="26" width="14" height="11" fill="#D8434F"/><rect x="26" y="26" width="14" height="11" fill="#3FA95A"/>'+
+   '<rect x="42" y="26" width="14" height="11" fill="#E8912A"/><rect x="58" y="26" width="14" height="11" fill="#3E7FBF"/>'+
+   '<rect x="18" y="16" width="14" height="10" fill="#8E4AC8"/><rect x="34" y="16" width="14" height="10" fill="#D8CBB4"/>'+
+   '<rect x="50" y="16" width="14" height="10" fill="#3FA95A"/>'+
+   /* bridge */
+   '<rect x="76" y="20" width="14" height="18" fill="#EFEDE6"/>'+
+   '<path d="M78 24h10v4H78z" fill="#5A6E7E"/>'+
+   '<path d="M83 20v-6" stroke="#2B3A48" stroke-width="1.6"/>',
+
+ cessna:'<defs><linearGradient id="r6s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#4FA8E8"/><stop offset="1" stop-color="#CFE8F8"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#r6s)"/>'+
+   '<ellipse cx="20" cy="14" rx="12" ry="5" fill="#fff" opacity=".55"/>'+
+   '<ellipse cx="72" cy="22" rx="14" ry="5" fill="#fff" opacity=".4"/>'+
+   '<rect y="48" width="96" height="12" fill="#6E7A66"/>'+
+   '<path d="M0 53h96" stroke="#E8E4DA" stroke-width="1.6" stroke-dasharray="8 7"/>'+
+   /* aircraft */
+   '<path d="M18 38h48l14 3-14 3H18z" fill="#F2EDE2"/>'+
+   '<path d="M30 38l-6-14h7l12 14z" fill="#E0DACC"/>'+
+   '<path d="M20 38h20v6H20z" fill="#3E7FBF"/>'+
+   '<path d="M64 38l6-12h5l-4 12z" fill="#E0DACC"/>'+
+   '<circle cx="34" cy="35" r="3" fill="#B8DCEC"/>'+
+   '<path d="M16 41l-6-3v6z" fill="#D8434F"/>'+
+   '<path d="M40 44v4M56 44v4" stroke="#5A5546" stroke-width="1.6"/>'+
+   '<circle cx="40" cy="49" r="2" fill="#22202A"/><circle cx="56" cy="49" r="2" fill="#22202A"/>',
+
+ jet:'<defs><linearGradient id="r7s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#1E4A80"/><stop offset="1" stop-color="#7FC0E8"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#r7s)"/>'+
+   '<circle cx="80" cy="12" r="6" fill="#FFF0B0" opacity=".9"/>'+
+   '<ellipse cx="26" cy="18" rx="16" ry="5" fill="#fff" opacity=".35"/>'+
+   '<rect y="48" width="96" height="12" fill="#3A3F48"/>'+
+   '<path d="M0 54h96" stroke="#C9CDD6" stroke-width="1.4" stroke-dasharray="9 8"/>'+
+   /* jet */
+   '<path d="M8 36h62q10 0 18 5-8 5-18 5H8q-5-5 0-10z" fill="#F7F5F0"/>'+
+   '<path d="M34 36L18 20h9l24 16z" fill="#E2DED6"/>'+
+   '<path d="M34 46L18 58h9l24-12z" fill="#E2DED6" opacity=".8"/>'+
+   '<path d="M62 36l10-14h6l-4 14z" fill="#D8434F"/>'+
+   '<path d="M14 38h44" stroke="#3E7FBF" stroke-width="2"/>'+
+   '<circle cx="20" cy="38" r="2" fill="#B8DCEC"/><circle cx="27" cy="38" r="1.6" fill="#B8DCEC"/>'+
+   '<circle cx="33" cy="38" r="1.6" fill="#B8DCEC"/>'+
+   '<ellipse cx="52" cy="42" rx="7" ry="4" fill="#9AA0AE"/>'
+};
+var BIZ_ART={
+ wash:'<rect width="96" height="60" fill="#6E8EA8"/><rect y="46" width="96" height="14" fill="#4A5460"/>'+
+   '<rect x="8" y="14" width="80" height="32" fill="#2E86A8"/>'+
+   '<rect x="8" y="10" width="80" height="6" fill="#1E6A88"/>'+
+   '<rect x="16" y="20" width="64" height="20" fill="#8FD4E8" opacity=".55"/>'+
+   '<path d="M22 14v10M34 14v10M46 14v10M58 14v10M70 14v10" stroke="#CFF0FA" stroke-width="2" stroke-linecap="round"/>'+
+   '<rect x="30" y="30" width="34" height="12" rx="3" fill="#D8434F"/>'+
+   '<rect x="36" y="32" width="10" height="6" fill="#B8DCEC"/>'+
+   '<circle cx="36" cy="43" r="3" fill="#22202A"/><circle cx="58" cy="43" r="3" fill="#22202A"/>'+
+   '<circle cx="20" cy="26" r="2" fill="#EAF8FE" opacity=".8"/><circle cx="76" cy="30" r="2.4" fill="#EAF8FE" opacity=".8"/>'+
+   '<path d="M12 6h72" stroke="#F5D14F" stroke-width="3" stroke-linecap="round"/>',
+
+ tan:'<rect width="96" height="60" fill="#3A2E4A"/>'+
+   '<rect y="48" width="96" height="12" fill="#2A2038"/>'+
+   '<rect x="6" y="8" width="84" height="40" rx="3" fill="#4E3E62"/>'+
+   /* bed */
+   '<rect x="14" y="28" width="68" height="10" rx="5" fill="#E8912A"/>'+
+   '<rect x="18" y="18" width="60" height="9" rx="4.5" fill="#F5D14F"/>'+
+   '<path d="M22 22h52" stroke="#FFF0B0" stroke-width="2" stroke-linecap="round"/>'+
+   '<rect x="14" y="38" width="68" height="4" rx="2" fill="#3A2E4A"/>'+
+   '<path d="M20 42v6M76 42v6" stroke="#2A2038" stroke-width="3"/>'+
+   /* glow */
+   '<ellipse cx="48" cy="27" rx="34" ry="7" fill="#FFD36B" opacity=".28"/>'+
+   '<circle cx="86" cy="14" r="3" fill="#F06BD0"/>',
+
+ laun:'<rect width="96" height="60" fill="#B8C4CE"/><rect y="48" width="96" height="12" fill="#8E97A2"/>'+
+   '<path d="M0 52h96" stroke="#A4ACB6" stroke-width="1.4"/>'+
+   /* three machines */
+   '<rect x="6" y="12" width="26" height="36" fill="#D8DCE2"/>'+
+   '<rect x="35" y="12" width="26" height="36" fill="#E4E8EE"/>'+
+   '<rect x="64" y="12" width="26" height="36" fill="#D8DCE2"/>'+
+   '<rect x="6" y="12" width="26" height="7" fill="#9AA4B0"/><rect x="35" y="12" width="26" height="7" fill="#9AA4B0"/>'+
+   '<rect x="64" y="12" width="26" height="7" fill="#9AA4B0"/>'+
+   '<circle cx="19" cy="33" r="9" fill="#5A6E7E"/><circle cx="19" cy="33" r="6" fill="#9EDCF2"/>'+
+   '<circle cx="48" cy="33" r="9" fill="#5A6E7E"/><circle cx="48" cy="33" r="6" fill="#CFE8F2"/>'+
+   '<circle cx="77" cy="33" r="9" fill="#5A6E7E"/><circle cx="77" cy="33" r="6" fill="#9EDCF2"/>'+
+   '<circle cx="10" cy="15.5" r="1.4" fill="#3FA95A"/><circle cx="39" cy="15.5" r="1.4" fill="#D8434F"/>'+
+   '<circle cx="68" cy="15.5" r="1.4" fill="#3FA95A"/>'+
+   '<path d="M15 30q4-4 8 0" stroke="#EAF8FE" stroke-width="1.4" fill="none"/>',
+
+ van:'<rect width="96" height="60" fill="#8FB6C8"/><rect y="44" width="96" height="16" fill="#5E6470"/>'+
+   '<path d="M0 52h96" stroke="#7E8894" stroke-width="1.4" stroke-dasharray="8 7"/>'+
+   '<path d="M8 44V20h50v24z" fill="#F2EDE2"/>'+
+   '<path d="M58 44V26h12l10 10v8z" fill="#E0DACC"/>'+
+   '<path d="M61 28h8l7 8H61z" fill="#B8DCEC"/>'+
+   /* hatch and counter */
+   '<rect x="14" y="24" width="34" height="14" fill="#3E5A66"/>'+
+   '<rect x="12" y="38" width="38" height="3" fill="#B58A4E"/>'+
+   '<path d="M12 22h38l-2-6H14z" fill="#D8434F"/>'+
+   '<path d="M18 30h10M18 34h16" stroke="#8FD4E8" stroke-width="1.6" stroke-linecap="round"/>'+
+   '<circle cx="24" cy="45" r="6" fill="#22202A"/><circle cx="70" cy="45" r="6" fill="#22202A"/>'+
+   '<circle cx="24" cy="45" r="2.4" fill="#9AA0AE"/><circle cx="70" cy="45" r="2.4" fill="#9AA0AE"/>',
+
+ castle:'<defs><linearGradient id="b5s" x1="0" y1="0" x2="0" y2="1">'+
+   '<stop offset="0" stop-color="#7FC8E8"/><stop offset="1" stop-color="#CFE8B8"/></linearGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#b5s)"/>'+
+   '<rect y="48" width="96" height="12" fill="#5A8E4A"/>'+
+   '<path d="M12 48V30q0-13 36-13t36 13v18z" fill="#F06BD0"/>'+
+   '<path d="M12 48V30q0-13 36-13v31z" fill="#F58ADC"/>'+
+   '<path d="M26 48V22M48 48V17M70 48V22" stroke="#D8434F" stroke-width="2.6"/>'+
+   '<rect x="8" y="44" width="80" height="6" rx="2" fill="#8E4AC8"/>'+
+   /* turrets */
+   '<path d="M12 30l-5-8 10 0z" fill="#F5D14F"/><path d="M84 30l5-8-10 0z" fill="#F5D14F"/>'+
+   '<path d="M48 17l-4-9 8 0z" fill="#F5D14F"/>'+
+   /* kid */
+   '<circle cx="60" cy="36" r="3" fill="#FFE0B8"/>'+
+   '<path d="M60 39v6M57 48l3-3 3 3" stroke="#2B2833" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+
+ park:'<rect width="96" height="60" fill="#4A5460"/>'+
+   '<rect x="4" y="6" width="88" height="48" fill="#6E7A85"/>'+
+   '<path d="M4 22h88M4 38h88" stroke="#8E98A4" stroke-width="2"/>'+
+   '<path d="M4 6h88v3H4z" fill="#5A6470"/>'+
+   /* cars in bays */
+   '<rect x="10" y="12" width="14" height="7" rx="2" fill="#D8434F"/>'+
+   '<rect x="30" y="12" width="14" height="7" rx="2" fill="#3E7FBF"/>'+
+   '<rect x="52" y="28" width="14" height="7" rx="2" fill="#F5D14F"/>'+
+   '<rect x="72" y="28" width="14" height="7" rx="2" fill="#8E8A9C"/>'+
+   '<rect x="16" y="43" width="14" height="7" rx="2" fill="#3FA95A"/>'+
+   /* big P sign */
+   '<rect x="58" y="8" width="26" height="26" rx="3" fill="#1E5FA8"/>'+
+   '<path d="M67 30V13h7a5 5 0 0 1 0 10h-7" stroke="#fff" stroke-width="3.4" fill="none"/>'+
+   '<path d="M0 54h96" stroke="#3A424C" stroke-width="3"/>',
+
+ gym:'<rect width="96" height="60" fill="#2E3440"/>'+
+   '<rect y="48" width="96" height="12" fill="#404856"/>'+
+   '<rect x="6" y="8" width="84" height="40" fill="#39404E"/>'+
+   /* mirror */
+   '<rect x="56" y="12" width="32" height="30" fill="#4E586A" opacity=".7"/>'+
+   /* barbell */
+   '<rect x="10" y="30" width="44" height="5" rx="2.5" fill="#B8BEC8"/>'+
+   '<rect x="4" y="22" width="10" height="21" rx="3" fill="#22202A"/>'+
+   '<rect x="50" y="22" width="10" height="21" rx="3" fill="#22202A"/>'+
+   '<rect x="16" y="26" width="6" height="13" rx="2" fill="#3A4250"/>'+
+   '<rect x="42" y="26" width="6" height="13" rx="2" fill="#3A4250"/>'+
+   /* treadmill */
+   '<path d="M64 44h22v3H64z" fill="#22202A"/>'+
+   '<path d="M66 44V30h4v14" stroke="#8E98A4" stroke-width="2" fill="none"/>'+
+   '<rect x="62" y="26" width="12" height="4" rx="2" fill="#8E98A4"/>'+
+   '<circle cx="82" cy="14" r="2" fill="#3FA95A"/>',
+
+ club:'<defs><radialGradient id="b8g" cx="0.5" cy="0.2" r="0.8">'+
+   '<stop offset="0" stop-color="#5A3A78"/><stop offset="1" stop-color="#16101E"/></radialGradient></defs>'+
+   '<rect width="96" height="60" fill="url(#b8g)"/>'+
+   '<rect y="50" width="96" height="10" fill="#0E0A14"/>'+
+   /* beams */
+   '<path d="M48 16L14 50h12z" fill="#8E4AC8" opacity=".38"/>'+
+   '<path d="M48 16L44 50h10z" fill="#4FC3E8" opacity=".34"/>'+
+   '<path d="M48 16l34 34H70z" fill="#F06BD0" opacity=".34"/>'+
+   /* mirrorball */
+   '<circle cx="48" cy="14" r="8" fill="#C9CDD6"/>'+
+   '<path d="M41 11h14M41 14h14M41 17h14M44 7v14M48 6v16M52 7v14" stroke="#8E96A4" stroke-width=".9"/>'+
+   '<path d="M48 6V2" stroke="#5A5464" stroke-width="1.6"/>'+
+   /* crowd */
+   '<circle cx="16" cy="44" r="4" fill="#1A1622"/><circle cx="28" cy="46" r="4" fill="#1A1622"/>'+
+   '<circle cx="62" cy="45" r="4" fill="#1A1622"/><circle cx="76" cy="43" r="4" fill="#1A1622"/>'+
+   '<rect x="12" y="47" width="8" height="6" fill="#1A1622"/><rect x="24" y="49" width="8" height="4" fill="#1A1622"/>'+
+   '<rect x="58" y="48" width="8" height="5" fill="#1A1622"/><rect x="72" y="46" width="8" height="7" fill="#1A1622"/>'
+};
+
+/* ══════════ PRODUCT SHOTS ══════════
+   A little studio: backdrop, floor, and a shadow under the item. */
+function studio(inner,tint){
+  return '<defs><linearGradient id="stG'+(studio.n=(studio.n||0)+1)+'" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="'+(tint||"#3A3448")+'"/><stop offset="0.62" stop-color="#221E2E"/>'+
+    '<stop offset="0.63" stop-color="#191622"/><stop offset="1" stop-color="#100E18"/></linearGradient></defs>'+
+    '<rect width="96" height="60" fill="url(#stG'+studio.n+')"/>'+
+    '<ellipse cx="48" cy="47" rx="34" ry="5" fill="#000" opacity=".45"/>'+
+    inner;
+}
+/* how each weapon should sit in the frame: scale, x, y */
+var WEP_FIT={
+ sock:[1.5,26,28], baguette:[1.25,20,30], trout:[1.5,26,28], bowling:[1.7,22,22],
+ garden:[1.6,32,14], nailbat:[1.3,22,28], fire:[1.3,30,16], chain:[0.95,16,30],
+ bees:[1.35,28,16], tuba:[1.0,18,30], ak:[0.92,22,30], vending:[1.05,32,16],
+ catapult:[1.4,30,16], lawn:[1.1,22,26], cannon:[1.05,18,28], anvil:[1.5,24,26],
+ pigeon:[1.5,24,26], jetski:[1.15,20,28], piano:[1.05,18,28], whale:[1.0,20,28],
+ blackhole:[1.6,24,24]
+};
+function wepThumb(w){
+  var f=WEP_FIT[w.id]||[1.2,24,28];
+  var art=WEP_ART[w.id]?WEP_ART[w.id]("#0E0C14"):'';
+  return studio('<g transform="translate('+f[1]+','+f[2]+') scale('+f[0]+')">'+art+'</g>');
+}
+/* ── body armour ── */
+var VEST_ART=[
+ null,
+ /* kevlar */
+ '<path d="M30 16h36v6l-4 22H34l-4-22z" fill="#3E4652"/>'+
+ '<path d="M30 16h36v6H30z" fill="#4E5866"/>'+
+ '<path d="M36 24h24M36 30h24M36 36h24" stroke="#2E3640" stroke-width="1.6"/>'+
+ '<path d="M48 16v28" stroke="#2E3640" stroke-width="1.4"/>'+
+ '<rect x="40" y="19" width="16" height="3" rx="1.5" fill="#8E96A4"/>',
+ /* heavy */
+ '<path d="M28 14h40v8l-5 24H33l-5-24z" fill="#2E3A46"/>'+
+ '<path d="M28 14h40v8H28z" fill="#3E4C5A"/>'+
+ '<rect x="36" y="24" width="24" height="13" rx="2" fill="#586878"/>'+
+ '<path d="M36 28h24M36 32h24" stroke="#38444F" stroke-width="1.4"/>'+
+ '<rect x="30" y="38" width="10" height="6" rx="1" fill="#586878"/>'+
+ '<rect x="56" y="38" width="10" height="6" rx="1" fill="#586878"/>'+
+ '<circle cx="48" cy="19" r="2.4" fill="#D8434F"/>',
+ /* military plate */
+ '<path d="M26 12h44v9l-6 26H32l-6-26z" fill="#3A4232"/>'+
+ '<path d="M26 12h44v9H26z" fill="#4C563E"/>'+
+ '<rect x="34" y="23" width="28" height="16" rx="2" fill="#5E6A4A"/>'+
+ '<path d="M34 27h28M34 31h28M34 35h28" stroke="#3A4232" stroke-width="1.3"/>'+
+ '<rect x="28" y="40" width="12" height="7" rx="1.5" fill="#5E6A4A"/>'+
+ '<rect x="56" y="40" width="12" height="7" rx="1.5" fill="#5E6A4A"/>'+
+ '<rect x="42" y="15" width="12" height="4" rx="2" fill="#8E9678"/>'+
+ '<circle cx="34" cy="18" r="1.8" fill="#3FA95A"/>'
+];
+/* ── the crew ── */
+var CREW_ART={
+ lawyer:'<circle cx="48" cy="20" r="8" fill="#F0D2B4"/>'+
+   '<path d="M40 18q8-7 16 0v-3q-8-6-16 0z" fill="#3A3644"/>'+
+   '<path d="M32 48V34q0-7 8-9l8 6 8-6q8 2 8 9v14z" fill="#22202C"/>'+
+   '<path d="M44 27l4 4 4-4-4 21z" fill="#F5F2EA"/>'+
+   '<path d="M46 31h4l-1 6h-2z" fill="#B03A44"/>'+
+   '<rect x="60" y="36" width="12" height="9" rx="1" fill="#5A4030"/>',
+ driver:'<circle cx="48" cy="20" r="8" fill="#E0B48E"/>'+
+   '<path d="M38 16h20l1-4H37z" fill="#2E3440"/><path d="M36 16h24v2.5H36z" fill="#3E4652"/>'+
+   '<path d="M32 48V34q0-7 8-9h16q8 2 8 9v14z" fill="#3A4652"/>'+
+   '<circle cx="72" cy="30" r="8" fill="none" stroke="#8E96A4" stroke-width="3"/>'+
+   '<path d="M72 22v16M64 30h16" stroke="#8E96A4" stroke-width="2"/>',
+ guard:'<circle cx="48" cy="20" r="8" fill="#C99A72"/>'+
+   '<path d="M40 15q8-6 16 0v-2q-8-5-16 0z" fill="#2A2630"/>'+
+   '<path d="M26 48V34q0-8 10-10h24q10 2 10 10v14z" fill="#2E3440"/>'+
+   '<path d="M40 24l8 5 8-5" stroke="#1E222A" stroke-width="2" fill="none"/>'+
+   '<rect x="36" y="34" width="24" height="5" rx="1" fill="#1E222A"/>'+
+   '<circle cx="66" cy="22" r="2.4" fill="#22202A"/><path d="M66 24v6" stroke="#22202A" stroke-width="1.6"/>',
+ fixer:'<circle cx="48" cy="20" r="8" fill="#EFC9A4"/>'+
+   '<path d="M39 17q9-8 18 0v-2q-9-7-18 0z" fill="#4A3830"/>'+
+   '<rect x="38" y="17" width="20" height="5" rx="2.5" fill="#22202A"/>'+
+   '<path d="M32 48V34q0-7 8-9h16q8 2 8 9v14z" fill="#4A3E52"/>'+
+   '<path d="M44 27h8l-2 12h-4z" fill="#E8912A"/>'+
+   '<circle cx="70" cy="34" r="7" fill="#2A2630"/><path d="M70 30v8M66 34h8" stroke="#8E96A4" stroke-width="1.6"/>',
+ chem:'<circle cx="48" cy="20" r="8" fill="#F0D2B4"/>'+
+   '<path d="M38 20q0-9 10-9t10 9" fill="none" stroke="#C9C3B6" stroke-width="2.5"/>'+
+   '<path d="M32 48V34q0-7 8-9h16q8 2 8 9v14z" fill="#EFEDE6"/>'+
+   '<rect x="42" y="28" width="12" height="4" rx="1" fill="#C9C3B6"/>'+
+   '<path d="M66 26h10l-1 8-4 10-4-10z" fill="#8FE0B4" opacity=".9"/>'+
+   '<path d="M66 26h10" stroke="#C9C3B6" stroke-width="2"/>'+
+   '<circle cx="71" cy="40" r="1.6" fill="#3FA95A"/>'
+};
+
+function thumb(inner,bg){
+  return '<span class="lthumb" style="background:'+(bg||"linear-gradient(160deg,#2A2536,#171320)")+'">'+
+    '<svg viewBox="0 0 96 60">'+inner+'</svg></span>';
+}
+/* one listing row: picture, details, price, button */
+function listCard(o){
+  var specs=(o.specs||[]).map(function(x){return '<span class="lspec">'+x+'</span>';}).join("");
+  return '<div class="lcard'+(o.owned?" owned":"")+'">'+
+    o.thumb+
+    '<span class="lbody">'+
+      '<span class="ltitle">'+esc(o.title)+(o.tag?'<em>'+esc(o.tag)+'</em>':'')+'</span>'+
+      (o.blurb?'<span class="lblurb">'+o.blurb+'</span>':'')+
+      (specs?'<span class="lspecs">'+specs+'</span>':'')+
+    '</span>'+
+    '<span class="lright">'+
+      '<span class="lprice'+(o.owned?" own":"")+'">'+(o.owned?"OWNED":money(o.price))+'</span>'+
+      (o.btn||'')+
+    '</span></div>';
+}
+
+/* ══════════ THE INTERNET ══════════
+   Each app is a website. They load, badly, like real ones. */
+var SITES={
+ market:{u:"streetvalue.net",       n:"STREETVALUE",       t:"Live prices. No questions. No refunds.", c:"#2FBF6A"},
+ travel:{u:"getmeoutofhere.com",    n:"GET ME OUT OF HERE",t:"Ten cities. Several of them survivable.", c:"#3E9BF0"},
+ stash: {u:"shiftyproperties.co",   n:"SHIFTY PROPERTIES", t:"Buildings, storage, tenants and things that quietly earn.", c:"#E8912A"},
+ store: {u:"dogfight.biz",          n:"DOGFIGHT",          t:"Weapons, armour and transport. Cash only, no receipts.", c:"#9B5DE5"},
+ crew:  {u:"hire-a-guy.co",         n:"HIRE-A-GUY",        t:"Staff who don't ask, and favours that cost money.", c:"#25B7B0"},
+ bank:  {u:"fleece.bank",           n:"FLEECE BANK",       t:"Your money. Our building. Our rules.", c:"#1FA45C"},
+ doc:   {u:"drnowski.md",           n:"DR NOWSKI",         t:"Discreet. Cash only. Struck off in two countries.", c:"#F0555F"},
+ wait:  {u:"lielow.net",            n:"LIE LOW",           t:"Doing nothing, professionally, since 1994.", c:"#5A5FD8"},
+ log:   {u:"wordonthestreet.info",  n:"WORD ON THE STREET",t:"Usually right. Occasionally catastrophic.", c:"#F2B32C"},
+ score: {u:"theboard.gg",           n:"THE BOARD",         t:"Everyone who is doing better than you.", c:"#D9A521"}
+};
+var LOAD_LINES=["Connecting","Resolving host","Waiting for reply","Downloading","Almost there",
+  "Rendering","Loading adverts nobody asked for","Negotiating with the server"];
+var pageLoading=false, loadTimer=null, loadPct=0, loadTick=null;
+
+function browserBar(v){
+  var st=SITES[v];
+  if(!st) return "";
+  return '<div class="bbar">'+
+    '<button class="bback" data-back="1">&#8249;</button>'+
+    '<span class="burl"><span class="block">&#128274;</span>'+esc(st.u)+'</span>'+
+    '<button class="bclose" data-close="1">&#10005;</button>'+
+  '</div>';
+}
+function siteHead(v){
+  var st=SITES[v];
+  if(!st) return "";
+  return '<div class="shead" style="border-color:'+st.c+'">'+
+    '<div class="slogo" style="color:'+st.c+'">'+esc(st.n)+'</div>'+
+    '<div class="stag">'+esc(st.t)+'</div></div>';
+}
+function loadingHTML(v){
+  var st=SITES[v]||{u:"",n:"",c:"#E8912A"};
+  return browserBar(v)+
+    '<div class="loadwrap">'+
+      '<div class="loadsite" style="color:'+st.c+'">'+esc(st.n)+'</div>'+
+      '<div class="loadbar"><i id="loadfill" style="background:'+st.c+'"></i></div>'+
+      '<div class="loadtxt" id="loadtxt">'+esc(LOAD_LINES[ri(0,LOAD_LINES.length-1)])+'&hellip;</div>'+
+      '<div class="loadurl">'+esc(st.u)+'</div>'+
+    '</div>';
+}
+function startLoad(v){
+  pageLoading=true; loadPct=0;
+  clearTimeout(loadTimer); clearInterval(loadTick);
+  render();
+  var total=380+Math.random()*520;
+  var t0=Date.now();
+  loadTick=setInterval(function(){
+    var k=Math.min(1,(Date.now()-t0)/total);
+    /* stall around 70% like everything always does */
+    var shown=k<0.7?k:0.7+(k-0.7)*0.55;
+    var el=document.getElementById("loadfill");
+    if(el) el.style.width=Math.round(shown*100)+"%";
+    var tx=document.getElementById("loadtxt");
+    if(tx && Math.random()<0.08) tx.textContent=LOAD_LINES[ri(0,LOAD_LINES.length-1)]+"…";
+  },40);
+  loadTimer=setTimeout(function(){
+    clearInterval(loadTick);
+    pageLoading=false; render();
+  }, total);
+}
+
+/* ══════════ HOME SCREEN ══════════
+   Squircle icons with their own glyph and colour, like a phone. */
+var APPS=[
+ {id:"market", n:"Market",  c1:"#3FD97A", c2:"#0E7A3C",
+  g:'<defs><linearGradient id="mkA" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#CFE9D8"/></linearGradient></defs>'+
+    /* awning */
+    '<path d="M4 9h24l-2 4H6z" fill="#fff" opacity=".95"/>'+
+    '<path d="M6 9v4M10 9v4M14 9v4M18 9v4M22 9v4M26 9v4" stroke="#0E7A3C" stroke-width="1.6" opacity=".55"/>'+
+    /* crate */
+    '<path d="M7 14h18v13H7z" fill="url(#mkA)"/>'+
+    '<path d="M7 14h18v13H7z" fill="none" stroke="#0B5C2D" stroke-width="1.2" opacity=".35"/>'+
+    /* produce */
+    '<circle cx="12" cy="19" r="2.6" fill="#E8483F"/><circle cx="17.5" cy="18.4" r="2.2" fill="#F2A32C"/>'+
+    '<circle cx="21.6" cy="19.4" r="2.4" fill="#8E4AC8"/>'+
+    /* the rising line */
+    '<path d="M9 25l4-3 3.5 2.4L24 20" fill="none" stroke="#0E7A3C" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<circle cx="24" cy="20" r="1.8" fill="#0E7A3C"/>'},
+
+ {id:"travel", n:"Travel",  c1:"#5AB4FF", c2:"#14509E",
+  g:'<defs><radialGradient id="tvG" cx="0.35" cy="0.3" r="0.8">'+
+      '<stop offset="0" stop-color="#BFE4FF"/><stop offset="1" stop-color="#3B7FD4"/></radialGradient></defs>'+
+    '<circle cx="16" cy="17" r="11" fill="url(#tvG)"/>'+
+    '<path d="M6.5 13q5 2.5 10 0t9 1.5" fill="none" stroke="#2E6BB8" stroke-width="1.3" opacity=".8"/>'+
+    '<path d="M7 21q6 2 11 .5t8-2" fill="none" stroke="#2E6BB8" stroke-width="1.3" opacity=".8"/>'+
+    '<path d="M16 6v22M9 8.5q3 8.5 0 17M23 8.5q-3 8.5 0 17" fill="none" stroke="#2E6BB8" stroke-width="1.1" opacity=".55"/>'+
+    /* the aeroplane */
+    '<path d="M24.5 6.5l-3.2 6.4 4.6 1.2 1.6-1.6-1.2-3.4 1.2-1.2z" fill="#fff"/>'+
+    '<path d="M18 12.5l-6.5 3.8 2.4 1 6-3z" fill="#fff"/>'+
+    '<path d="M9 22q4-1.5 8-4.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-dasharray="2 2" opacity=".9"/>'},
+
+ {id:"stash",  n:"Property",c1:"#F5A63C", c2:"#96490A",
+  g:'<defs><linearGradient id="prW" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0" stop-color="#FFF3C9"/><stop offset="1" stop-color="#F2C25A"/></linearGradient></defs>'+
+    '<path d="M3 15L16 5l13 10v2h-3v12H6V17H3z" fill="#F5EDE0"/>'+
+    '<path d="M16 5L3 15h4l9-7 9 7h4z" fill="#B8442A"/>'+
+    '<rect x="21.5" y="7" width="3" height="5" fill="#8E3620"/>'+
+    '<rect x="9" y="18" width="5" height="5" rx=".6" fill="url(#prW)"/>'+
+    '<rect x="18" y="18" width="5" height="5" rx=".6" fill="url(#prW)"/>'+
+    '<path d="M11.5 18v5M9 20.5h5M20.5 18v5M18 20.5h5" stroke="#C99A3E" stroke-width=".8"/>'+
+    '<rect x="13.5" y="24" width="5" height="5" rx=".5" fill="#7A4A22"/>'+
+    '<circle cx="17.4" cy="26.6" r=".7" fill="#F5D14F"/>'},
+
+ {id:"store",  n:"Gear",   c1:"#B478F5", c2:"#4E1E92",
+  g:'<defs><linearGradient id="stB" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0" stop-color="#4A4458"/><stop offset="1" stop-color="#23202E"/></linearGradient></defs>'+
+    /* shop front */
+    '<rect x="4" y="12" width="24" height="16" rx="1.5" fill="url(#stB)"/>'+
+    '<path d="M3 8h26l-2.5 4h-21z" fill="#fff"/>'+
+    '<path d="M6 8l-.8 4M11 8l-.5 4M16 8v4M21 8l.5 4M26 8l.8 4" stroke="#B478F5" stroke-width="1.5"/>'+
+    /* window with a gun silhouette */
+    '<rect x="6.5" y="14.5" width="9" height="8" fill="#8E86A8" opacity=".55"/>'+
+    /* a helmet and a wheel in the window: kit, not just guns */
+    '<path d="M7.5 20a2.6 2.6 0 0 1 5.2 0z" fill="#1C1A24"/>'+
+    '<circle cx="14" cy="19.5" r="1.9" fill="none" stroke="#1C1A24" stroke-width="1.1"/>'+
+    /* door */
+    '<rect x="18" y="15" width="8" height="13" rx=".8" fill="#8E86A8" opacity=".45"/>'+
+    '<circle cx="19.6" cy="21.5" r=".9" fill="#F5D14F"/>'},
+
+ {id:"crew",   n:"Payroll", c1:"#3FD8CE", c2:"#0A6862",
+  g:'<circle cx="16" cy="10.5" r="4.6" fill="#fff"/>'+
+    '<path d="M8.5 27c0-4.6 3.4-7.4 7.5-7.4s7.5 2.8 7.5 7.4z" fill="#fff"/>'+
+    '<circle cx="7" cy="14" r="3.6" fill="#CFF5F2"/>'+
+    '<path d="M1.5 27c0-3.6 2.5-5.8 5.5-5.8 1 0 2 .25 2.8.7" fill="#CFF5F2"/>'+
+    '<circle cx="25" cy="14" r="3.6" fill="#CFF5F2"/>'+
+    '<path d="M30.5 27c0-3.6-2.5-5.8-5.5-5.8-1 0-2 .25-2.8.7" fill="#CFF5F2"/>'+
+    '<path d="M13.5 21.5h5l-1 5.5h-3z" fill="#0A6862" opacity=".45"/>'},
+
+ {id:"bank",   n:"Bank",    c1:"#35C46F", c2:"#075C33",
+  g:'<path d="M16 4l13 6.5v2.5H3v-2.5z" fill="#fff"/>'+
+    '<path d="M3 25.5h26V29H3z" fill="#fff"/>'+
+    '<rect x="6" y="13" width="3.6" height="12.5" fill="#EAF7EF"/>'+
+    '<rect x="12" y="13" width="3.6" height="12.5" fill="#EAF7EF"/>'+
+    '<rect x="18" y="13" width="3.6" height="12.5" fill="#EAF7EF"/>'+
+    '<rect x="24" y="13" width="3.6" height="12.5" fill="#EAF7EF"/>'+
+    '<circle cx="16" cy="9" r="3.4" fill="#F5D14F"/>'+
+    '<path d="M16 6.6v4.8M14.6 8h2.6a1.2 1.2 0 0 1 0 2.4h-2.2a1.2 1.2 0 0 0 0 2.4h2.6" '+
+      'stroke="#7A5A0A" stroke-width=".9" fill="none"/>'},
+
+ {id:"doc",    n:"Doctor",  c1:"#FF6B73", c2:"#9C1420",
+  g:'<path d="M11 8h10V6.5a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2z" fill="#E8E4DA"/>'+
+    '<rect x="4" y="8" width="24" height="19" rx="3" fill="#F5F2EA"/>'+
+    '<path d="M4 15h24v3H4z" fill="#D8D2C6"/>'+
+    '<path d="M13.6 11h4.8v3.2h3.2v4.8h-3.2v3.2h-4.8v-3.2h-3.2v-4.8h3.2z" fill="#D8323E"/>'+
+    '<rect x="6" y="10" width="2" height="15" rx="1" fill="#C9C3B6"/>'},
+
+ {id:"wait",   n:"Lie Low", c1:"#7B7FF0", c2:"#25266E",
+  g:'<defs><radialGradient id="lwM" cx="0.35" cy="0.3" r="0.8">'+
+      '<stop offset="0" stop-color="#FFFBE8"/><stop offset="1" stop-color="#E8DFA8"/></radialGradient></defs>'+
+    '<circle cx="4" cy="6" r="1" fill="#fff" opacity=".9"/><circle cx="26" cy="5" r="1.3" fill="#fff" opacity=".9"/>'+
+    '<circle cx="9" cy="10" r=".8" fill="#fff" opacity=".7"/><circle cx="29" cy="12" r=".9" fill="#fff" opacity=".7"/>'+
+    '<path d="M23 20A9.5 9.5 0 0 1 12.5 9.5 9.5 9.5 0 1 0 23 20z" fill="url(#lwM)"/>'+
+    '<circle cx="17" cy="13" r="1.4" fill="#E0D28E" opacity=".6"/>'+
+    '<circle cx="13" cy="18" r="1" fill="#E0D28E" opacity=".5"/>'+
+    '<path d="M2 27q4-3 8 0t8 0 8 0 6 0" fill="none" stroke="#fff" stroke-width="1.6" opacity=".45"/>'},
+
+ {id:"log",    n:"Word",    c1:"#FFC94A", c2:"#9A6605",
+  g:'<path d="M24 8h4v16.5a2.5 2.5 0 0 1-4 1.6z" fill="#D8CBA8"/>'+
+    '<rect x="4" y="5" width="20.5" height="22" rx="1.5" fill="#FAF6EA"/>'+
+    '<rect x="6.5" y="7.5" width="15.5" height="4" fill="#2B2833"/>'+
+    '<rect x="6.5" y="13.5" width="7" height="5.5" fill="#C9C3B6"/>'+
+    '<path d="M15 14h7M15 16.2h7M15 18.4h5" stroke="#8E8A80" stroke-width="1.2" stroke-linecap="round"/>'+
+    '<path d="M6.5 21.5h15.5M6.5 23.6h15.5M6.5 25.7h10" stroke="#8E8A80" stroke-width="1.1" stroke-linecap="round"/>'},
+
+ {id:"score",  n:"Scores",  c1:"#F5C542", c2:"#8A5D04",
+  g:'<defs><linearGradient id="scT" x1="0" y1="0" x2="1" y2="1">'+
+      '<stop offset="0" stop-color="#FFF3C0"/><stop offset="0.5" stop-color="#F2CB5A"/>'+
+      '<stop offset="1" stop-color="#C79312"/></linearGradient></defs>'+
+    '<path d="M10 4h12v8.5a6 6 0 0 1-12 0z" fill="url(#scT)"/>'+
+    '<path d="M10 6.5H6.5v2A4.5 4.5 0 0 0 10.8 13M22 6.5h3.5v2A4.5 4.5 0 0 1 21.2 13" '+
+      'fill="none" stroke="url(#scT)" stroke-width="2"/>'+
+    '<rect x="14.4" y="18" width="3.2" height="4" fill="#C79312"/>'+
+    '<path d="M9.5 22h13l1.2 5H8.3z" fill="url(#scT)"/>'+
+    '<path d="M13.5 7.5l1 2.2 2.4.3-1.8 1.7.5 2.4-2.1-1.2-2.1 1.2.5-2.4-1.8-1.7 2.4-.3z" fill="#fff" opacity=".85"/>'}
+];
+function appIcon(a){
+  var badge="";
+  if(a.id==="market" && S.rumour.length) badge='<span class="ibadge">'+S.rumour.length+'</span>';
+  if(a.id==="doc" && S.hp<100) badge='<span class="ibadge">'+Math.round(100-S.hp)+'</span>';
+  if(a.id==="wait" && S.heat>=52) badge='<span class="ibadge">'+Math.round(S.heat)+'</span>';
+  if(a.id==="bank" && S.debt>0) badge='<span class="ibadge dim">!</span>';
+  return '<button class="iapp" data-go="'+a.id+'">'+
+    '<span class="isq" style="background:linear-gradient(157deg,'+a.c1+' 0%,'+a.c1+' 22%,'+a.c2+' 100%)">'+
+      '<span class="igloss"></span>'+
+      '<svg viewBox="0 0 32 32">'+a.g+'</svg>'+
+      '<span class="iring"></span>'+badge+'</span>'+
+    '<span class="ilab">'+esc(a.n)+'</span></button>';
+}
+
+/* ── status lines still used on some screens ── */
+function menuGroup(title,rows){
+  return '<div class="mgroup"><div class="mghead">'+title+'</div>'+rows.join("")+'</div>';
+}
+function row(go,name,hint,dot){
+  return '<button class="mrowbtn" data-go="'+go+'">'+
+    (dot?'<span class="mdot"></span>':'')+
+    '<span class="mtxt"><b>'+esc(name)+'</b><small>'+hint+'</small></span>'+
+    '<span class="mchev">&#8250;</span></button>';
+}
+function marketHint(){
+  var n=0; GOODS.forEach(function(g){ if(S.prices[g.id]) n++; });
+  var lo=localName();
+  return n+' on sale in '+esc(city().n)+(lo?(' &middot; '+esc(lo)+' only here'):'');
+}
+function travelHint(){
+  return S.ride==="foot" ? "No vehicle &mdash; you're flying commercial"
+    : ("By "+esc(ride().n).toLowerCase()+" &middot; "+used().toLocaleString()+"/"+cap().toLocaleString()+" loaded");
+}
+function propHint(){
+  var owned=PROPS.filter(function(p){return S.props[p.id];}).length;
+  var biz=BIZ.filter(function(b){return S.biz[b.id];}).length;
+  if(!owned&&!biz) return "Buy buildings, storage and businesses here";
+  var bits=[];
+  if(owned) bits.push(owned+" propert"+(owned>1?"ies":"y")+" &middot; "+stashUsed().toLocaleString()+"/"+stashCap().toLocaleString());
+  if(biz) bits.push(money(bizIncome())+"/day coming in");
+  return bits.join(" &middot; ");
+}
+function storeHint(){
+  var W=wep();
+  return "Guns, armour, vehicles &middot; "+(W?esc(W.n):"no weapon")+
+    ", "+(S.vestT?esc(VESTS.filter(function(v){return v.t===S.vestT;})[0].n).toLowerCase():"no armour");
+}
+function crewHint(){
+  var n=CREW.filter(function(c){return S.crew[c.id];}).length;
+  return (n?(n+" on the payroll"):"Nobody works for you")+" &middot; bribes and laundering here";
+}
+function bankHint(){
+  return money(S.bank)+" saved &middot; "+(S.debt?("owe "+money(S.debt)):"no debt");
+}
+function docHint(){
+  return S.hp>=100?"Not a scratch on you":(Math.round(S.hp)+"% health &mdash; get patched up");
+}
+function heatHint(){
+  return Math.round(S.heat)+"% heat &middot; "+(S.heat>52?"people are looking for you":"1 comes off per day resting");
+}
 function homeHTML(){
   var bars="";
   for(var i=0;i<MILES.length;i++) bars+='<i class="'+(i<S.mile?"hit":"")+'"></i>';
@@ -2705,10 +3670,13 @@ function homeHTML(){
   if(S.rumour.length) warn+='<div class="note" style="color:var(--sodium)">&#9679; '+S.rumour.length+' rumour'+(S.rumour.length>1?"s":"")+' about tomorrow &mdash; see the market.</div>';
   return '<div class="note">'+esc(c.n).toUpperCase()+', '+c.cc+' &middot; DAY '+Math.min(S.day,S.days)+' OF '+S.days+
     ' &middot; travelling by '+esc(ride().n).toLowerCase()+'</div>'+
-    '<div class="milebar">'+bars+'</div><div class="note">'+nx+'</div>'+warn+'<div class="apps">'+
-    app("market","Market",false,S.rumour.length>0)+app("travel","Travel")+app("store","Store")+
-    app("crew","Payroll")+app("stash","Stash")+app("bank","Bank")+
-    app("doc","Doctor")+app("wait","Lie Low")+app("log","Word")+app("score","Scores")+'</div>';
+    '<div class="milebar">'+bars+'</div><div class="note">'+nx+'</div>'+warn+
+    '<div class="iappgrid">'+APPS.map(appIcon).join("")+'</div>'+
+    '<div class="idock">'+
+      '<span>'+marketHint()+'</span>'+
+      '<span>'+travelHint()+'</span>'+
+      '<span>'+bankHint()+'</span>'+
+    '</div>';
 }
 
 /* ── market ── */
@@ -2734,6 +3702,12 @@ function marketHTML(){
     });
     h+='<div class="newsfoot">Usually right, not always, and it misses things.</div></div>';
   }else h+='<div class="newsbar quiet">Nobody\'s talking tonight. Looks like a quiet day coming.</div>';
+  var cc=city(), lo=localName();
+  h+='<div class="note" style="color:var(--chalk)">'+esc(cc.d)+'</div>';
+  h+='<div class="note">Prices here run at '+Math.round(cc.m*100)+'% of the street average'+
+     (cc.common&&cc.common.length?(' &middot; plentiful: '+cc.common.map(function(id){return good(id).n;}).join(", ")):'')+
+     (cc.rare&&cc.rare.length?(' &middot; scarce: '+cc.rare.map(function(id){return good(id).n;}).join(", ")):'')+
+     (lo?(' &middot; <b style="color:var(--sodium)">'+esc(lo)+' is sold nowhere else</b>'):'')+'</div>';
   h+='<div class="note">Tap a name for its chart. Load '+space().toLocaleString()+' free of '+cap().toLocaleString()+
     (prop?(' &middot; '+prop.n+' here has room for '+roomAt(prop.id).toLocaleString()):'')+'.</div>';
   GOODS.forEach(function(g){
@@ -2875,6 +3849,7 @@ function legRisk(to){
   base *= r.risk * t.heat * border;
   base *= (1 + S.heat/55);
   base *= M("police");
+  base *= (0.8+city(to).heat*0.35);              /* some places are simply worse to be caught in */
   if(isHot()) base *= 1.65;              /* driving something that's on a list */
   if(hasCrew("driver")) base*=0.80;
   return clamp(base,0.01,0.92);
@@ -2902,7 +3877,9 @@ function travelHTML(){
        '<small>'+esc(c.d)+' &middot; ~'+km.toLocaleString()+'km'+
        (from.cc!==c.cc?' &middot; border crossing':'')+
        ' &middot; <b style="color:'+(rk<0.26?"var(--cash)":rk<0.45?"var(--sodium)":"var(--heat)")+'">'+
-       lbl+' risk ('+Math.round(rk*100)+'%)</b></small></button>';
+       lbl+' risk ('+Math.round(rk*100)+'%)'+
+       (localName(c.id)?(' &middot; <span style="color:var(--sodium)">'+esc(localName(c.id))+' only here</span>'):'')+
+       '</b></small></button>';
   });
   h+='<div class="sec">OR DON\'T COME BACK</div>';
   h+='<button class="opt nuke" data-go="vanish"><em>'+money(vanishFee())+'</em>Skip town for good'+
@@ -2944,9 +3921,15 @@ function storeHTML(){
   h+='<div class="sec">WEAPONS &mdash; FOR WHEN RUNNING ISN\'T WORKING</div>';
   WEAPONS.forEach(function(w){
     var own=S.wep[w.id];
-    h+='<button class="opt'+(own?" owned":"")+'" data-wep="'+w.id+'"'+((own||S.cash<w.p)?" disabled":"")+'>'+
-      '<em>'+(own?"OWNED":money(w.p))+'</em>'+w.n+
-      '<small>wins about '+Math.round(w.w*10)+' fights in 10</small></button>';
+    h+=listCard({
+      thumb:'<span class="lthumb"><svg viewBox="0 0 96 60">'+wepThumb(w)+'</svg></span>',
+      title:w.n, tag:(own?"OWNED":""),
+      specs:["wins about "+Math.round(w.w*10)+" in 10",
+             "vs 4 police: "+Math.round(fightOdds(w.w,4)*100)+"%"],
+      price:w.p, owned:own,
+      btn:'<button class="lbuy" data-wep="'+w.id+'"'+((own||S.cash<w.p)?" disabled":"")+'>'+
+          (own?"OWNED":(S.cash<w.p?"TOO DEAR":"BUY"))+'</button>'
+    });
   });
   if(S.nuke){
     h+='<button class="opt nuke" data-detonate="1"><em>ARMED</em>Suitcase atomic bomb'+
@@ -2958,22 +3941,34 @@ function storeHTML(){
   }
   h+='<div class="sec">BODY ARMOUR</div>';
   VESTS.forEach(function(v){
+    if(!v.t) return;
     var own=S.vestT>=v.t;
-    h+='<button class="opt'+(own?" owned":"")+'" data-vest="'+v.id+'"'+((own||S.cash<v.p)?" disabled":"")+'>'+
-      '<em>'+(own?"WORN":money(v.p))+'</em>'+v.n+
-      '<small>takes '+Math.round(v.r*100)+'% off every beating</small></button>';
+    h+=listCard({
+      thumb:'<span class="lthumb"><svg viewBox="0 0 96 60">'+studio(VEST_ART[v.t],"#2E3648")+'</svg></span>',
+      title:v.n, tag:(own?"WORN":""),
+      blurb:esc(v.d||""),
+      specs:["soaks "+Math.round(v.r*100)+"% of damage",
+             "+"+Math.round((v.t===1?8:v.t===2?17:27))+"% to win fights"],
+      price:v.p, owned:own,
+      btn:'<button class="lbuy" data-vest="'+v.t+'"'+((own||S.cash<v.p)?" disabled":"")+'>'+
+          (own?"WORN":(S.cash<v.p?"TOO DEAR":"BUY"))+'</button>'
+    });
   });
   h+='<div class="sec">TRANSPORT &mdash; YOU CANNOT MOVE PRODUCT WITHOUT IT</div>';
   RIDES.forEach(function(r){
     var own=S.owned[r.id], act=S.ride===r.id, fits=used()<=S.coat+r.cap;
     var lock=act||(!own&&S.cash<r.p)||(own&&!fits);
-    h+='<button class="opt'+(act?" active":own?" owned":"")+'" data-ride="'+r.id+'"'+(lock?" disabled":"")+'>'+
-      '<em>'+(act?"IN USE":own?(fits?"USE":"TOO SMALL"):money(r.p))+'</em>'+r.n+
-      '<small>+'+r.cap.toLocaleString()+' load &middot; risk &times;'+r.risk.toFixed(2)+
-      (r.up?' &middot; '+money(r.up)+'/day to run':' &middot; free, and awful')+
-      ' &middot; '+esc(r.d)+(own&&!fits?' &middot; <b style="color:var(--heat)">won\'t hold your load</b>':'')+
-      (own&&isHot(r.id)?' &middot; <b style="color:var(--heat)">STOLEN &mdash; 65% more likely to be stopped</b>':'')+
-      '</small></button>';
+    var sp=["+"+r.cap.toLocaleString()+" load","risk &times;"+r.risk.toFixed(2),
+            r.up?(money(r.up)+"/day"):"free, and awful"];
+    if(own&&!fits) sp.push('<b style="color:var(--heat)">won\'t hold your load</b>');
+    if(own&&isHot(r.id)) sp.push('<b style="color:var(--heat)">STOLEN</b>');
+    h+=listCard({
+      thumb:thumb(RIDE_ART[r.id]||RIDE_ART.sedan),
+      title:r.n, tag:(act?"IN USE":own?"IN THE GARAGE":""),
+      blurb:esc(r.d), specs:sp, price:r.p, owned:own,
+      btn:'<button class="lbuy" data-ride="'+r.id+'"'+(lock?" disabled":"")+'>'+
+          (act?"DRIVING":own?(fits?"DRIVE":"TOO SMALL"):(S.cash<r.p?"TOO DEAR":"BUY"))+'</button>'
+    });
     if(own&&isHot(r.id))
       h+='<button class="opt" data-respray="'+r.id+'" style="margin-top:-4px;font-size:11px;padding:7px 13px">'+
          '<em>'+money(Math.round(r.p*0.18+4000))+'</em>Respray and replate the '+r.n.toLowerCase()+
@@ -2983,39 +3978,68 @@ function storeHTML(){
          '<em>+'+money(Math.round(r.p*0.60))+'</em>Sell the '+r.n.toLowerCase()+
          '<small>drops '+money(r.up)+'/day of upkeep</small></button>';
   });
-  h+='<div class="sec">PROPERTY &mdash; STORAGE THEY MOSTLY CAN\'T REACH</div>';
-  PROPS.forEach(function(p){
-    var own=S.props[p.id], c=city(p.loc);
-    h+='<button class="opt'+(own?" owned":"")+'" data-prop="'+p.id+'"'+((own||S.cash<p.p)?" disabled":"")+'>'+
-      '<em>'+(own?"OWNED":money(p.p))+'</em>'+p.n+' in '+c.n+
-      '<small>holds '+p.cap.toLocaleString()+' &middot; '+money(p.up)+'/day &middot; small chance of a raid</small></button>';
-    if(own)
-      h+='<button class="opt" data-sellprop="'+p.id+'" style="margin-top:-4px;font-size:11px;padding:7px 13px">'+
-         '<em>+'+money(Math.round(p.p*0.60))+'</em>Sell the '+p.n.toLowerCase()+
-         '<small>drops '+money(p.up)+'/day &middot; contents sold at 75%</small></button>';
-  });
-  h+='<div class="sec">SERVICES</div>';
-  var bribe=Math.round(40000+S.heat*S.heat*180+worth()*0.004);
-  h+='<button class="opt" data-svc="bribe"'+((S.cash<bribe||S.heat<5)?" disabled":"")+'>'+
-     '<em>'+money(bribe)+'</em>Bribe the precinct<small>Drops 30 heat. Costs more the hotter and richer you are.</small></button>';
-  var lm=Math.round(S.cash*0.10);
-  h+='<button class="opt" data-svc="launder"'+((S.cash<50000||S.heat<3)?" disabled":"")+'>'+
-     '<em>'+money(lm)+'</em>Launder through a nightclub<small>Burns 10% of your cash to lose 8 heat</small></button>';
-  h+='<button class="opt" data-svc="party"'+(S.cash<2500000?" disabled":"")+'>'+
-     '<em>'+money(2500000)+'</em>Throw an enormous party<small>Pure indulgence. Full health, +10 heat, and he enjoys it.</small></button>';
+
   return h;
 }
 function crewHTML(){
   var h='<div class="note">People cost money every single day, whether you use them or not. '+
     'Current payroll and upkeep: '+money(upkeep())+' a day.</div>';
+  h+='<div class="sec">STAFF</div>';
   CREW.forEach(function(c){
     var own=S.crew[c.id];
-    h+='<button class="opt'+(own?" owned":"")+'" data-crew="'+c.id+'"'+((own||S.cash<c.p)?" disabled":"")+'>'+
-      '<em>'+(own?"ON PAYROLL":money(c.p))+'</em>'+c.n+
-      '<small>'+esc(c.d)+' &middot; '+money(c.up)+'/day</small></button>';
+    h+=listCard({
+      thumb:'<span class="lthumb"><svg viewBox="0 0 96 60">'+studio(CREW_ART[c.id]||"","#2A3244")+'</svg></span>',
+      title:c.n, tag:(own?"ON PAYROLL":""),
+      blurb:esc(c.d),
+      specs:[money(c.up)+"/day to keep"],
+      price:c.p, owned:own,
+      btn:'<button class="lbuy" data-crew="'+c.id+'"'+((own||S.cash<c.p)?" disabled":"")+'>'+
+          (own?"HIRED":(S.cash<c.p?"TOO DEAR":"HIRE"))+'</button>'
+    });
     if(own)
       h+='<button class="opt" data-fire="'+c.id+'" style="margin-top:-4px;font-size:11px;padding:7px 13px">'+
          '<em>FREE</em>Let the '+c.n.toLowerCase()+' go<small>saves '+money(c.up)+'/day</small></button>';
+  });
+  h+='<div class="sec">SERVICES &mdash; PAYING PROBLEMS AWAY</div>';
+  var bribe=Math.round((40000+S.heat*S.heat*180+worth()*0.004)*(city().cost||1));
+  h+=listCard({
+    thumb:'<span class="lthumb"><svg viewBox="0 0 96 60">'+studio(
+      '<rect x="20" y="22" width="56" height="26" rx="2" fill="#2E4A38"/>'+
+      '<rect x="20" y="22" width="56" height="7" fill="#3E5E48"/>'+
+      '<circle cx="48" cy="37" r="7" fill="#5EA872"/><path d="M48 32v10M45 34h5a1.6 1.6 0 0 1 0 3.2h-3a1.6 1.6 0 0 0 0 3.2h5" stroke="#1E3A28" stroke-width="1.2" fill="none"/>'+
+      '<path d="M30 14h36l-4 8H34z" fill="#4A5A8E"/><circle cx="48" cy="17" r="2.4" fill="#F5D14F"/>',"#2A3A48")+'</svg></span>',
+    title:"Bribe the precinct", blurb:"An envelope, a handshake, and a captain who suddenly has other priorities.",
+    specs:["drops 30 heat","costs more the hotter and richer you are"],
+    price:bribe,
+    btn:'<button class="lbuy" data-svc="bribe"'+((S.cash<bribe||S.heat<5)?" disabled":"")+'>'+
+        (S.heat<5?"NO NEED":(S.cash<bribe?"TOO DEAR":"PAY"))+'</button>'
+  });
+  var lm=Math.round(S.cash*0.10);
+  h+=listCard({
+    thumb:'<span class="lthumb"><svg viewBox="0 0 96 60">'+studio(
+      '<rect x="14" y="16" width="68" height="30" rx="3" fill="#241E32"/>'+
+      '<circle cx="48" cy="24" r="6" fill="#C9CDD6"/>'+
+      '<path d="M48 30L30 46M48 30l18 16M48 30v16" stroke="#8E4AC8" stroke-width="2" opacity=".7"/>'+
+      '<rect x="20" y="40" width="10" height="6" fill="#1A1622"/><rect x="66" y="40" width="10" height="6" fill="#1A1622"/>'+
+      '<path d="M36 44h24l2 4H34z" fill="#3FA95A"/>',"#241E32")+'</svg></span>',
+    title:"Launder through a nightclub", blurb:"The takings go in dirty and come out as a very busy Tuesday.",
+    specs:["burns 10% of your cash","loses 8 heat"],
+    price:lm,
+    btn:'<button class="lbuy" data-svc="launder"'+((S.cash<50000||S.heat<3)?" disabled":"")+'>'+
+        (S.heat<3?"NO NEED":(S.cash<50000?"TOO DEAR":"WASH IT"))+'</button>'
+  });
+  h+=listCard({
+    thumb:'<span class="lthumb"><svg viewBox="0 0 96 60">'+studio(
+      '<path d="M20 46h56l-4-18H24z" fill="#8E4AC8"/>'+
+      '<path d="M28 28h40l2-8H26z" fill="#F06BD0"/>'+
+      '<circle cx="34" cy="16" r="4" fill="#F5D14F"/><circle cx="48" cy="12" r="5" fill="#4FC3E8"/>'+
+      '<circle cx="62" cy="16" r="4" fill="#3FA95A"/>'+
+      '<path d="M30 36h36M30 41h28" stroke="#B478F5" stroke-width="1.6"/>',"#3A2450")+'</svg></span>',
+    title:"Throw an enormous party", blurb:"Pure indulgence. He will not remember it and neither will anyone else.",
+    specs:["full health","+10 heat"],
+    price:2500000,
+    btn:'<button class="lbuy" data-svc="party"'+(S.cash<2500000?" disabled":"")+'>'+
+        (S.cash<2500000?"TOO DEAR":"THROW IT")+'</button>'
   });
   h+='<div class="sec">WHAT YOU\'RE PAYING FOR</div>';
   var lines=[];
@@ -3031,6 +4055,7 @@ function bankHTML(){
   var h='<div class="ledger">'+
     '<div class="lrow"><span>Cash in hand</span><b>'+money(S.cash)+'</b></div>'+
     '<div class="lrow"><span>On deposit</span><b class="cg">'+money(S.bank)+'</b></div>'+
+    (bizIncome()?('<div class="lrow"><span>Tenants and businesses</span><b class="cg">+'+money(bizIncome())+' / day</b></div>'):'')+
     '<div class="lrow"><span>Interest earning</span><b class="cg">+'+money(daily)+' / day</b></div>'+
     '<div class="lrow"><span>Interest earned so far</span><b class="cg">'+money(S.interest)+'</b></div>'+
     '<div class="lrow"><span>Owed to the shark</span><b class="ch">'+money(S.debt)+'</b></div>'+
@@ -3055,49 +4080,135 @@ function bankHTML(){
   return h;
 }
 function docHTML(){
-  var missing=100-S.hp, cost=Math.round(missing*90*(1+S.mile*0.35)*M("docCost"));
+  var missing=100-S.hp, cost=Math.round(missing*90*(1+S.mile*0.35)*M("docCost")*(city().cost||1));
   if(!missing) return '<div class="note">Not a scratch on you. Come back bleeding.</div>';
   return '<div class="note">A back room with a bare bulb. No questions, no records.</div>'+
     '<button class="opt" data-doc="1"'+(S.cash>=cost?"":" disabled")+'>Patch me up<small>'+money(cost)+
     ' to go from '+Math.round(S.hp)+'% to 100%'+(S.cash<cost?" &mdash; you can\'t afford it":"")+'</small></button>';
 }
 function stashHTML(){
-  var prop=hasProp();
-  var W=wep();
-  var h='<div class="note">On you: '+used().toLocaleString()+' of '+cap().toLocaleString()+
-    ' &middot; weapon: '+(W?W.n:"none")+(S.nuke?" + an atomic bomb":"")+'</div>';
-  var any=false;
-  GOODS.forEach(function(g){
-    if(!S.inv[g.id])return; any=true;
-    h+='<div class="mrow"><button class="mname" data-chart="'+g.id+'"><i style="background:'+g.c+'"></i>'+
-       '<span>'+g.n+'<small>&times;'+S.inv[g.id].toLocaleString()+'</small></span></button>'+
-       '<div class="none">'+(S.prices[g.id]?money(S.inv[g.id]*S.prices[g.id]):"no market")+
-       ((S.cost[g.id]||0)?'<br>paid '+money(S.cost[g.id])+' ea':'')+'</div>'+
-       '<div class="mbtns"><button data-put="'+g.id+'"'+((prop&&roomAt(prop.id)>0)?"":" disabled")+'>STORE</button></div></div>';
-  });
-  if(!any) h+='<div class="note">You\'re carrying nothing.</div>';
-  if(stashCap()){
-    h+='<div class="sec">WAREHOUSES &mdash; '+stashUsed().toLocaleString()+' OF '+stashCap().toLocaleString()+' TOTAL</div>';
-    PROPS.forEach(function(pr2){
-      if(!S.props[pr2.id])return;
-      var here=pr2.loc===S.loc, b=bin(pr2.id);
-      h+='<div class="note" style="color:'+(here?"var(--cash)":"var(--sodium)")+';margin-bottom:5px">'+
-         pr2.n+' &middot; '+city(pr2.loc).n+' &middot; '+usedAt(pr2.id).toLocaleString()+'/'+pr2.cap.toLocaleString()+
-         (here?" &middot; you're here":" &middot; you'd have to travel there")+'</div>';
-      var any2=false;
-      GOODS.forEach(function(g){
-        if(!b[g.id])return; any2=true;
-        h+='<div class="mrow"><button class="mname" data-chart="'+g.id+'"><i style="background:'+g.c+'"></i>'+
-           '<span>'+g.n+'<small>&times;'+b[g.id].toLocaleString()+'</small></span></button>'+
-           '<div class="none">'+money(b[g.id]*(S.nat[g.id]||0))+
-           ((S.cost[g.id]||0)?'<br>paid '+money(S.cost[g.id])+' ea':'')+'</div>'+
-           '<div class="mbtns"><button data-take="'+g.id+'"'+((here&&space()>0)?"":" disabled")+'>TAKE</button></div></div>';
+  var here=hasProp();
+  var h='<div class="scrhead"><button class="back" data-back="1">&#8592;</button><h3>Property</h3></div>';
+  var inc=bizIncome();
+  h+='<div class="note">Storage, security, tenants and anything else that quietly earns. '+
+     (inc?('You are taking <b style="color:var(--cash)">'+money(inc)+' a day</b> in income.')
+        :'Nothing is earning you anything yet.')+'</div>';
+
+  h+='<div class="sec">BUILDINGS</div>';
+  PROPS.forEach(function(p){
+    var own=S.props[p.id], u=own?pup(p.id):{sto:0,sec:0,ten:0};
+    var c=city(p.loc), atHome=(S.loc===p.loc);
+    if(!own){
+      var afford=S.cash>=p.p;
+      h+=listCard({
+        thumb:thumb(PROP_ART[p.id]||PROP_ART.lockup),
+        title:p.n, tag:c.n,
+        blurb:esc(c.d).slice(0,86),
+        specs:[STORAGE[0].cap.toLocaleString()+" units", money(p.up)+"/day",
+               "expands to "+STORAGE[STORAGE.length-1].cap.toLocaleString()],
+        price:p.p,
+        btn:'<button class="lbuy" data-prop="'+p.id+'"'+(afford?"":" disabled")+'>'+
+            (afford?"BUY":"TOO DEAR")+'</button>'
       });
-      if(!any2) h+='<div class="note" style="opacity:.6">empty</div>';
+      return;
+    }
+    var st=STORAGE[u.sto], se=SECURITY[u.sec], te=TENANTS[u.ten];
+    var used=usedAt(p.id);
+    h+='<div class="setting" style="border:1px solid var(--edge);padding:11px;margin-bottom:12px">'+
+      '<div class="setrow"><span class="setname">'+esc(p.n)+' &middot; '+esc(c.n)+'</span>'+
+      '<span class="setval">'+used.toLocaleString()+'/'+st.cap.toLocaleString()+'</span></div>'+
+      '<div class="sethint">'+esc(st.n)+' &middot; '+esc(se.n)+' &middot; '+esc(te.n)+
+      (te.inc?(' paying '+money(te.inc)+'/day'):'')+'</div>';
+    /* storage */
+    if(u.sto<STORAGE.length-1){
+      var ns=STORAGE[u.sto+1];
+      h+='<button class="opt" data-upg="sto:'+p.id+'"'+(S.cash>=ns.p?"":" disabled")+
+         ' style="margin-top:8px"><em>'+money(ns.p)+'</em>Expand to '+ns.cap.toLocaleString()+' units'+
+         '<small>'+esc(ns.n)+' &middot; adds '+money(ns.up)+'/day</small></button>';
+    }else h+='<div class="sethint" style="color:var(--cash);margin-top:6px">Storage fully built out.</div>';
+    /* security */
+    if(u.sec<SECURITY.length-1){
+      var nse=SECURITY[u.sec+1];
+      h+='<button class="opt" data-upg="sec:'+p.id+'"'+(S.cash>=nse.p?"":" disabled")+
+         '><em>'+money(nse.p)+'</em>Security: '+esc(nse.n)+
+         '<small>'+esc(nse.d)+' &middot; raids '+Math.round((1-nse.r)*100)+'% less likely &middot; '+money(nse.up)+'/day</small></button>';
+    }else h+='<div class="sethint" style="color:var(--cash)">Nigel is here. Nothing is getting in.</div>';
+    /* tenants */
+    if(u.ten<TENANTS.length-1){
+      var nt=TENANTS[u.ten+1];
+      h+='<button class="opt" data-upg="ten:'+p.id+'"'+(S.cash>=nt.p?"":" disabled")+
+         '><em>'+money(nt.p)+'</em>Tenants: '+esc(nt.n)+
+         '<small>'+esc(nt.d)+' &middot; pays '+money(nt.inc)+'/day &middot; more footfall means more attention</small></button>';
+    }
+    h+='<button class="opt" data-sellprop="'+p.id+'" style="font-size:11px;padding:7px 12px">Sell the building'+
+       '<small>60% back &middot; upgrades are lost &middot; stock liquidated at 75%</small></button>';
+    h+='</div>';
+  });
+
+  h+='<div class="sec">INVESTMENTS &mdash; THEY PAY EVERY DAY</div>';
+  h+='<div class="note">None of these do what they say they do. All of them make money.</div>';
+  BIZ.forEach(function(b){
+    var own=S.biz[b.id];
+    h+=listCard({
+      thumb:thumb(BIZ_ART[b.id]||BIZ_ART.wash),
+      title:b.n, tag:(own?"YOURS":""),
+      blurb:esc(b.d),
+      specs:['<b style="color:var(--cash)">'+money(b.inc)+'/day</b>', "+"+b.heat+" heat/day"],
+      price:b.p, owned:own,
+      btn:'<button class="lbuy" data-biz="'+b.id+'"'+((own||S.cash<b.p)?" disabled":"")+'>'+
+          (own?"OWNED":(S.cash<b.p?"TOO DEAR":"BUY"))+'</button>'
     });
+  });
+
+  if(here){
+    var room=capOf(here.id)-usedAt(here.id);
+    h+='<div class="sec">MOVING STOCK &mdash; YOU ARE IN '+esc(here.n).toUpperCase()+'</div>';
+    h+='<div class="note">'+usedAt(here.id).toLocaleString()+' stored here, room for '+
+       Math.max(0,room).toLocaleString()+' more.</div>';
+    var any=false;
+    GOODS.forEach(function(g){
+      var carry=S.inv[g.id], held=bin(here.id)[g.id];
+      if(!carry&&!held) return;
+      any=true;
+      h+='<div class="mrow"><div class="mname"><span class="dot" style="background:'+g.c+'"></span>'+
+         '<span>'+esc(g.n)+'<small>'+(carry?carry.toLocaleString()+' on you':'')+
+         (carry&&held?' &middot; ':'')+(held?held.toLocaleString()+' stored':'')+'</small></span></div>'+
+         '<div class="mbtns">'+
+         '<button data-put="'+g.id+'"'+((carry&&room>0)?"":" disabled")+'>STORE</button>'+
+         '<button data-take="'+g.id+'"'+(held?"":" disabled")+'>TAKE</button>'+
+         '</div></div>';
+    });
+    if(!any) h+='<div class="note">Nothing on you and nothing stored here yet.</div>';
   }
-  return h+'<div class="note" style="margin-top:12px">Net worth '+money(worth())+
-    ' &mdash; cash '+money(net())+' plus '+money(goodsVal())+' in goods</div>';
+  return h;
+}
+function upgradeProp(spec){
+  var bits=spec.split(":"), kind=bits[0], id=bits[1];
+  if(!S.props[id]) return;
+  var u=pup(id);
+  var tbl = kind==="sto"?STORAGE : kind==="sec"?SECURITY : TENANTS;
+  var key = kind==="sto"?"sto" : kind==="sec"?"sec" : "ten";
+  if(u[key]>=tbl.length-1) return;
+  var nx=tbl[u[key]+1];
+  if(S.cash<nx.p){ toast("You can't afford that.","bad"); return; }
+  S.cash-=nx.p; u[key]++;
+  var p=PROPS.filter(function(x){return x.id===id;})[0];
+  if(kind==="sto"){ say("Expanded "+p.n.toLowerCase()+" to "+nx.cap.toLocaleString()+" units.","good");
+    toast(p.n+" now holds "+nx.cap.toLocaleString()+".","good"); }
+  else if(kind==="sec"){ say("Security at "+p.n.toLowerCase()+": "+nx.n+".","good");
+    toast(nx.n+" is now on the door.","good"); }
+  else { say("Tenants moved into "+p.n.toLowerCase()+": "+nx.n+".","good");
+    toast(nx.n+" &mdash; "+money(nx.inc)+" a day.","good"); }
+  animate("happy"); go("stash"); paint();
+}
+function buyBiz(id){
+  var b=BIZ.filter(function(x){return x.id===id;})[0];
+  if(!b||S.biz[b.id]) return;
+  if(S.cash<b.p){ toast("You can't afford it.","bad"); return; }
+  S.cash-=b.p; S.biz[b.id]=1;
+  say("Bought "+b.n.toLowerCase()+". "+money(b.inc)+" a day, apparently.","good");
+  toast(b.n+" is yours. "+money(b.inc)+" a day.","good");
+  animate("happy"); remark("property"); go("stash"); paint();
 }
 function logHTML(){
   if(!S.log.length) return '<div class="note">Nothing yet.</div>';
@@ -3128,6 +4239,8 @@ scr.addEventListener("click",function(e){
   if(d.vest) return buyVest(d.vest);
   if(d.ride) return buyRide(d.ride);
   if(d.prop) return buyProp(d.prop);
+  if(d.upg) return upgradeProp(d.upg);
+  if(d.biz) return buyBiz(d.biz);
   if(d.crew) return buyCrew(d.crew);
   if(d.svc) return service(d.svc);
   if(d.sellride) return sellRide(d.sellride);
@@ -3138,7 +4251,7 @@ scr.addEventListener("click",function(e){
   if(d.vanish) return finish(false,"vanish");
   if(d.detonate) return detonate();
   if(d.doc){
-    var c=Math.round((100-S.hp)*90*(1+S.mile*0.35)*M("docCost"));
+    var c=Math.round((100-S.hp)*90*(1+S.mile*0.35)*M("docCost")*(city().cost||1));
     S.cash-=c; S.hp=100; S.bandage=0;
     say("Doctor patched you up for "+money(c)+".","good");
     toast("Stitched up. Good as new.","good"); flashMood("rich"); remark("heal");
@@ -3426,7 +4539,7 @@ function buyProp(id){
   S.cash-=p.p; S.props[id]=1;
   say("Bought the "+p.n.toLowerCase()+" in "+c.n+".","good");
   toast(p.n+" in "+c.n+" is yours. "+money(p.up)+" a day to keep.","good"); remark("property");
-  animate("happy"); go("store"); paint();
+  animate("happy"); go("stash"); paint();
 }
 function buyCrew(id){
   var c=CREW.filter(function(x){return x.id===id;})[0];
@@ -3455,6 +4568,7 @@ function sellRide(id){
   go("store"); paint();
 }
 function sellProp(id){
+  if(S.pup&&S.pup[id]) S.pup[id]={sto:0,sec:0,ten:0};
   var p=PROPS.filter(function(x){return x.id===id;})[0];
   var back=Math.round(p.p*0.60), sold=0, b=bin(id);
   GOODS.forEach(function(g){
@@ -3563,6 +4677,12 @@ function endDay(){
   var gained=Math.round(S.bank*(C("bankRate")/100));
   S.bank+=gained; S.interest+=gained; S.lastInterest=gained;
   S.borrowedToday=0;
+  var earned=bizIncome();
+  if(earned>0){
+    S.cash+=earned;
+    if(S.day%5===0) say("Tenants and businesses paid in "+money(earned*5)+" over five days.","good");
+  }
+  if(bizHeat()>0) addHeat(bizHeat());
   var due=upkeep();
   if(due>0){
     var short=due;
@@ -3592,7 +4712,9 @@ function raidCheck(){
   if(!stashUsed()) return;
   PROPS.forEach(function(p){
     if(!S.props[p.id]) return;
-    var chance=0.014*(1+S.heat/70)*M("raids");
+    var u=pup(p.id);
+    var chance=0.014*(1+S.heat/70)*M("raids")*SECURITY[u.sec].r;
+    chance*=(1+u.ten*0.12);            /* more people coming and going, more talk */
     if(hasCrew("lawyer")) chance*=0.6;
     if(Math.random()<chance){
       var frac=0.25+Math.random()*0.45, lost=0, b=bin(p.id);
@@ -4003,7 +5125,7 @@ function roadblockHTML(){
   var n=pend.units, W=wep(), v=VESTS.filter(function(x){return x.t===S.vestT;})[0];
   var runOdds=Math.round(clamp(0.62-n*0.075-S.heat/500,0.05,0.9)*100);
   var fOdds=W?Math.round(fightOdds(W.w,n)*100):0;
-  var bribe=Math.round((18000+n*22000)*(1+S.mile*0.5));
+  var bribe=Math.round((18000+n*22000)*(1+S.mile*0.5)*(city().cost||1));
   var scene = n<=1 ? "A single patrol car has pulled you over."
     : n<=2 ? "Two cars. They've boxed you in against the kerb."
     : n<=3 ? "Three cars across the road and a man with a clipboard."
@@ -4030,7 +5152,7 @@ function roadblockHTML(){
 }
 function roadChoice(k){
   var n=pend.units, dead=false;
-  var bribe=Math.round((18000+n*22000)*(1+S.mile*0.5));
+  var bribe=Math.round((18000+n*22000)*(1+S.mile*0.5)*(city().cost||1));
   if(k==="fight"){
     var W=wep();
     if(Math.random()<fightOdds(W.w,n)){
